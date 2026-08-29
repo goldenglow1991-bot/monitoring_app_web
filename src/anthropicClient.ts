@@ -1,31 +1,24 @@
-import { MODEL_NAME } from './items';
-
 export class AnthropicError extends Error {}
 
-// Anthropic APIはCORSに対応しており、
-// `anthropic-dangerous-direct-browser-access: true` ヘッダーを付けることで
-// ブラウザから直接呼び出せる。
+// AI下書き生成は、共有のAnthropic APIキーを保持するサーバー側エンドポイント
+// (api/generate-draft)経由で呼び出す。共有キーはブラウザには一切渡さず、
+// 代わりにこのユーザーのSupabaseアクセストークンで本人確認を行う。
 export async function generateDraft(params: {
-  apiKey: string;
+  accessToken: string;
   userPrompt: string;
   systemPrompt: string;
 }): Promise<string> {
   let resp: Response;
   try {
-    resp = await fetch('https://api.anthropic.com/v1/messages', {
+    resp = await fetch('/api/generate-draft', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'x-api-key': params.apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
+        authorization: `Bearer ${params.accessToken}`,
       },
       body: JSON.stringify({
-        model: MODEL_NAME,
-        max_tokens: 2048,
-        system: params.systemPrompt,
-        thinking: { type: 'disabled' },
-        messages: [{ role: 'user', content: params.userPrompt }],
+        userPrompt: params.userPrompt,
+        systemPrompt: params.systemPrompt,
       }),
     });
   } catch (e) {
@@ -36,8 +29,8 @@ export async function generateDraft(params: {
     let detail = await resp.text();
     try {
       const decoded = JSON.parse(detail);
-      if (decoded?.error?.message) {
-        detail = decoded.error.message;
+      if (decoded?.detail) {
+        detail = decoded.detail;
       }
     } catch {
       // レスポンスがJSONでない場合は本文をそのまま使う
@@ -46,10 +39,5 @@ export async function generateDraft(params: {
   }
 
   const decoded = await resp.json();
-  const content = (decoded.content as Array<{ type: string; text?: string }>) ?? [];
-  let text = '';
-  for (const block of content) {
-    if (block.type === 'text') text += block.text ?? '';
-  }
-  return text;
+  return (decoded.text as string | undefined) ?? '';
 }

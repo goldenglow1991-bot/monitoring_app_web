@@ -95,6 +95,16 @@ async function requireUserId(): Promise<string> {
   return uid;
 }
 
+// AI下書き生成をサーバー(api/generate-draft)に依頼する際、本人確認のために
+// 添える現在のセッションのアクセストークン。
+export async function getAccessToken(): Promise<string> {
+  const { data, error } = await supabase.auth.getSession();
+  if (error) throw error;
+  const token = data.session?.access_token;
+  if (!token) throw new Error('ログインしていません。');
+  return token;
+}
+
 // サインアップ時に選んだ施設種別(ユーザーメタデータのfacility_type)を、
 // facility_configがまだ一度も作られていない(=初回ログイン)場合にだけ
 // 適用する。2回目以降のログインや、アプリ内で既に設定済みの場合は何もしない。

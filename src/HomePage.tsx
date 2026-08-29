@@ -13,7 +13,6 @@ import {
 } from './items';
 import { compileNotes, pastRecordsText, buildUserPrompt } from './reportBuilder';
 import { generateDraft, AnthropicError } from './anthropicClient';
-import { hashPin } from './pinLock';
 import { currentYearMonth, furiganaSortKey, sortUsers } from './utils';
 import {
   showWarning,
@@ -26,9 +25,6 @@ import {
   showHistoryDialog,
   showAddPastRecordDialog,
   showItemVisibilityDialog,
-  showApiKeySettingsDialog,
-  showManagePinDialog,
-  requirePin,
 } from './dialogs';
 import { ItemRow } from './components/ItemRow';
 import { UserListPanelWide, UserListPanelNarrow, UserSelectorMobile, type UserListPage } from './components/UserListPanel';
@@ -537,11 +533,6 @@ export function HomePage({ onExit }: { onExit: () => void }) {
       const ok = await showConfirm('確認', '生成結果欄に既に文章があります。上書きして再生成しますか?');
       if (!ok) return;
     }
-    const apiKey = ((config.api_key as string | undefined) ?? '').trim();
-    if (apiKey === '') {
-      await showWarning('APIキー未設定', '先に「APIキー設定」からAnthropic APIキーを設定してください。');
-      return;
-    }
     const user = users.find((u) => u.id === selectedUserId)!;
     const target = yearMonth;
     const records = storage.loadRecords(selectedUserId);
@@ -560,7 +551,8 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     let resultText: string | undefined;
     let errorMessage: string | undefined;
     try {
-      resultText = await generateDraft({ apiKey, userPrompt, systemPrompt });
+      const accessToken = await storage.getAccessToken();
+      resultText = await generateDraft({ accessToken, userPrompt, systemPrompt });
     } catch (e) {
       errorMessage = e instanceof AnthropicError ? e.message : String(e);
     }
@@ -637,32 +629,6 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         });
       },
     });
-  }
-
-  async function openApiKeySettings() {
-    const pinOk = await requirePin(config.pin_hash);
-    if (!pinOk) return;
-    const current = (config.api_key as string | undefined) ?? '';
-    const result = await showApiKeySettingsDialog(current);
-    if (result == null) return;
-    persistConfig({ ...config, api_key: result });
-    await showWarning('設定完了', 'APIキーを保存しました。');
-  }
-
-  async function openManagePin() {
-    const hasPin = !!(config.pin_hash && config.pin_hash.length > 0);
-    const action = await showManagePinDialog({ hasPin, currentHash: config.pin_hash });
-    if (!action) return;
-    if (action.type === 'remove') {
-      const next = { ...config };
-      delete next.pin_hash;
-      persistConfig(next);
-      await showWarning('解除完了', 'PIN保護を解除しました。');
-      return;
-    }
-    const hash = await hashPin(action.pin);
-    persistConfig({ ...config, pin_hash: hash });
-    await showWarning('設定完了', 'PINを設定しました。');
   }
 
   // 毎回の描画で作り直す通常の関数(useCallbackで固定しない)。以下のRef経由の
@@ -822,8 +788,6 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           </div>
           <div className="top-bar-group top-bar-group-end">
             <button className="btn btn-outlined" onClick={openModeSelectDialog}>モード選択</button>
-            <button className="btn btn-outlined" onClick={openManagePin}>APIキー保護PIN</button>
-            <button className="btn btn-filled" onClick={openApiKeySettings}>APIキー設定</button>
           </div>
         </div>
       </div>
