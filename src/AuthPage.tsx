@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { supabase } from './supabaseClient';
 import { facilityTypePresets } from './items';
-import { showTermsDialog } from './dialogs';
+import { showTermsDialog, showPrivacyDialog } from './dialogs';
 import { termsVersion } from './termsContent';
+import { privacyVersion } from './privacyContent';
 
 type Mode = 'login' | 'signup' | 'forgot';
 
@@ -45,6 +46,7 @@ export function AuthPage() {
         const metadata: Record<string, string> = {
           terms_agreed_at: new Date().toISOString(),
           terms_version: termsVersion,
+          privacy_version: privacyVersion,
         };
         if (registeredName.trim() !== '') metadata.registered_name = registeredName.trim();
         if (facilityType) metadata.facility_type = facilityType;
@@ -215,6 +217,8 @@ export function AuthPage() {
                   />
                   <span>
                     <button type="button" className="inline-link" onClick={() => showTermsDialog()}>利用規約</button>
+                    と
+                    <button type="button" className="inline-link" onClick={() => showPrivacyDialog()}>プライバシーポリシー</button>
                     に同意する
                   </span>
                 </label>

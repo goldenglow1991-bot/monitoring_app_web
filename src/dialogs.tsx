@@ -5,6 +5,7 @@ import type { DeletedUser, MonthlyRecord, User } from './types';
 import { hashPin, isValidPinFormat } from './pinLock';
 import { katakanaToHiragana, isHiraganaOnly } from './utils';
 import { termsText } from './termsContent';
+import { privacyText } from './privacyContent';
 
 // ---- 汎用: 警告・確認 ----
 
@@ -25,6 +26,18 @@ export function showTermsDialog(): Promise<void> {
     <ModalShell width={560}>
       <h2 className="modal-title">利用規約</h2>
       <p className="modal-body">{termsText}</p>
+      <div className="modal-actions">
+        <button className="btn btn-text" onClick={() => close()}>閉じる</button>
+      </div>
+    </ModalShell>
+  ));
+}
+
+export function showPrivacyDialog(): Promise<void> {
+  return openDialog<void>((close) => (
+    <ModalShell width={560}>
+      <h2 className="modal-title">プライバシーポリシー</h2>
+      <p className="modal-body">{privacyText}</p>
       <div className="modal-actions">
         <button className="btn btn-text" onClick={() => close()}>閉じる</button>
       </div>
