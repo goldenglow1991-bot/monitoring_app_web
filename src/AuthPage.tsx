@@ -8,6 +8,30 @@ import { privacyVersion } from './privacyContent';
 
 type Mode = 'login' | 'signup' | 'forgot';
 
+// Supabase Authのエラーメッセージ(英語)を日本語に置き換える。
+// 未知のメッセージはそのまま表示する(想定外のエラーでも情報が消えないように)。
+function translateAuthError(message: string): string {
+  if (/invalid login credentials/i.test(message)) {
+    return 'メールアドレスまたはパスワードが正しくありません。';
+  }
+  if (/email not confirmed/i.test(message)) {
+    return 'メールアドレスの確認が完了していません。届いている確認メール内のリンクを開いてください。';
+  }
+  if (/already registered/i.test(message)) {
+    return 'このメールアドレスは既に登録されています。ログインするか、パスワードをお忘れの場合は再設定してください。';
+  }
+  if (/password.*(least|should be at least)/i.test(message)) {
+    return 'パスワードは6文字以上で入力してください。';
+  }
+  if (/unable to validate email address/i.test(message)) {
+    return 'メールアドレスの形式が正しくありません。';
+  }
+  if (/for security purposes.*only request this/i.test(message)) {
+    return 'しばらく時間をおいてから再度お試しください。';
+  }
+  return message;
+}
+
 export function AuthPage({
   initialMode = 'login',
   onBack,
@@ -48,7 +72,7 @@ export function AuthPage({
     try {
       if (mode === 'login') {
         const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-        if (error) setErrorText(error.message);
+        if (error) setErrorText(translateAuthError(error.message));
       } else {
         const metadata: Record<string, string> = {
           terms_agreed_at: new Date().toISOString(),
@@ -66,11 +90,7 @@ export function AuthPage({
           options: { data: metadata },
         });
         if (error) {
-          if (/already registered/i.test(error.message)) {
-            setErrorText('このメールアドレスは既に登録されています。ログインするか、パスワードをお忘れの場合は再設定してください。');
-          } else {
-            setErrorText(error.message);
-          }
+          setErrorText(translateAuthError(error.message));
         } else if (data.user && data.user.identities && data.user.identities.length === 0) {
           // メール確認が有効な場合、既に登録済みのメールアドレスでも
           // エラーにはならず(メール総当たり対策)、identitiesが空で返る。
@@ -97,7 +117,7 @@ export function AuthPage({
         redirectTo: window.location.origin,
       });
       if (error) {
-        setErrorText(error.message);
+        setErrorText(translateAuthError(error.message));
       } else {
         setResetSentTo(email.trim());
       }
