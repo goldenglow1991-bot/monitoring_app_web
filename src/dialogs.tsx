@@ -6,6 +6,8 @@ import { katakanaToHiragana, isHiraganaOnly } from './utils';
 import { termsText } from './termsContent';
 import { privacyText } from './privacyContent';
 import { tokushohoText } from './tokushohoContent';
+import { planTiers, freeGenerationLimit } from './stripePrices';
+import { createCheckoutSession } from './storage';
 
 // ---- 汎用: 警告・確認 ----
 
@@ -42,6 +44,74 @@ export function showPrivacyDialog(): Promise<void> {
         <button className="btn btn-text" onClick={() => close()}>閉じる</button>
       </div>
     </ModalShell>
+  ));
+}
+
+function PricingDialogView({
+  currentResidentCount,
+  close,
+}: {
+  currentResidentCount: number;
+  close: (value: void) => void;
+}) {
+  const [busyKey, setBusyKey] = useState<string | null>(null);
+  const [errorText, setErrorText] = useState<string | null>(null);
+
+  const eligible = planTiers.filter((t) => t.maxResidents >= currentResidentCount);
+  const recommendedKey = eligible[0]?.key;
+
+  async function selectPlan(planKey: string) {
+    setErrorText(null);
+    setBusyKey(planKey);
+    try {
+      const url = await createCheckoutSession(planKey);
+      window.location.href = url;
+    } catch (e) {
+      setErrorText(e instanceof Error ? e.message : String(e));
+      setBusyKey(null);
+    }
+  }
+
+  return (
+    <ModalShell width={480}>
+      <h2 className="modal-title">プランを選択</h2>
+      <p className="modal-body">
+        無料の{freeGenerationLimit}回を使い切りました。引き続きAI下書き生成をご利用いただくには、いずれかのプランへのお申し込みが必要です。
+      </p>
+      {eligible.length === 0 && (
+        <p className="hint-error">
+          現在の登録人数({currentResidentCount}人)に対応するプランがありません。利用者を150人以下に減らすか、お問い合わせください。
+        </p>
+      )}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {planTiers.map((tier) => {
+          const disabled = tier.maxResidents < currentResidentCount;
+          return (
+            <button
+              key={tier.key}
+              className={tier.key === recommendedKey ? 'btn btn-filled btn-block' : 'btn btn-outlined btn-block'}
+              disabled={disabled || busyKey != null}
+              onClick={() => selectPlan(tier.key)}
+            >
+              {tier.label}: {tier.priceYen.toLocaleString()}円/月
+              {tier.key === recommendedKey ? '(おすすめ)' : ''}
+              {disabled ? ' — 利用者を減らしてください' : ''}
+              {busyKey === tier.key ? '(処理中...)' : ''}
+            </button>
+          );
+        })}
+      </div>
+      {errorText && <p className="hint-error">{errorText}</p>}
+      <div className="modal-actions">
+        <button className="btn btn-text" onClick={() => close()}>閉じる</button>
+      </div>
+    </ModalShell>
+  );
+}
+
+export function showPricingDialog(currentResidentCount: number): Promise<void> {
+  return openDialog<void>((close) => (
+    <PricingDialogView currentResidentCount={currentResidentCount} close={close} />
   ));
 }
 

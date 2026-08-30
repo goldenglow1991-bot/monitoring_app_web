@@ -56,6 +56,24 @@ create table if not exists facility_config (
   updated_at timestamptz not null default now()
 );
 
+-- 課金関連(無料10回のカウントは生涯累計。サブスク有効中は参照しない)。
+-- 既存のfacility_configテーブルに対して列を追加する(テーブル自体は上のcreate
+-- table if not existsが初回作成済みのため、新規列はalterで追加する必要がある)。
+alter table facility_config add column if not exists free_generations_used integer not null default 0;
+alter table facility_config add column if not exists stripe_customer_id text;
+alter table facility_config add column if not exists stripe_subscription_id text;
+alter table facility_config add column if not exists subscription_plan text;
+alter table facility_config add column if not exists subscription_status text;
+
+-- ---------- 月ごとのAI生成回数(表示専用。上限判定には使わない) ----------
+create table if not exists ai_usage (
+  user_id uuid not null references auth.users(id) on delete cascade,
+  year_month text not null,
+  count integer not null default 0,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, year_month)
+);
+
 -- ---------- updated_atの自動更新 ----------
 create or replace function set_updated_at()
 returns trigger as $$
@@ -84,6 +102,7 @@ create trigger facility_config_set_updated_at
 alter table residents enable row level security;
 alter table monthly_records enable row level security;
 alter table facility_config enable row level security;
+alter table ai_usage enable row level security;
 
 drop policy if exists residents_owner on residents;
 create policy residents_owner on residents
@@ -102,3 +121,10 @@ create policy facility_config_owner on facility_config
   for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+-- ai_usageへの書き込みはサービスロールキー(RLS対象外)を使うサーバー関数のみ。
+-- 本人は自分の利用回数を読めるだけでよいため、selectポリシーのみ用意する。
+drop policy if exists ai_usage_owner_read on ai_usage;
+create policy ai_usage_owner_read on ai_usage
+  for select
+  using (auth.uid() = user_id);

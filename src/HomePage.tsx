@@ -12,7 +12,8 @@ import {
   type ItemDef,
 } from './items';
 import { compileNotes, pastRecordsText, buildUserPrompt } from './reportBuilder';
-import { generateDraft, AnthropicError } from './anthropicClient';
+import { generateDraft, AnthropicError, QuotaExceededError } from './anthropicClient';
+import { planTiers, freeGenerationLimit } from './stripePrices';
 import { currentYearMonth, furiganaSortKey, sortUsers } from './utils';
 import {
   showWarning,
@@ -25,6 +26,7 @@ import {
   showHistoryDialog,
   showAddPastRecordDialog,
   showItemVisibilityDialog,
+  showPricingDialog,
 } from './dialogs';
 import { ItemRow } from './components/ItemRow';
 import { UserListPanelWide, UserListPanelNarrow, UserSelectorMobile, type UserListPage } from './components/UserListPanel';
@@ -113,6 +115,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
   });
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [config, setConfigState] = useState<AppConfig>(() => storage.loadConfig());
+  const [monthlyUsageCount, setMonthlyUsageCount] = useState<number | null>(null);
   const [itemStatus, setItemStatus] = useState<Record<string, string>>(emptyItemStatus);
   const [itemFree, setItemFree] = useState<Record<string, string>>(emptyItemFree);
   const [extraNotes, setExtraNotes] = useState('');
@@ -139,6 +142,21 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     return currentYearMonth().split('-')[1];
   });
   const yearMonth = `${year}-${month}`;
+
+  useEffect(() => {
+    storage.getMonthlyUsageCount().then(setMonthlyUsageCount).catch((e) => console.error('利用状況の取得に失敗しました', e));
+
+    const checkoutResult = new URLSearchParams(window.location.search).get('checkout');
+    if (checkoutResult) {
+      window.history.replaceState({}, '', window.location.pathname);
+      if (checkoutResult === 'success') {
+        // Webhookの反映に多少タイムラグがあるため、少し待ってから最新状態を取り直す。
+        setTimeout(() => {
+          storage.loadAll().then(() => setConfigState(storage.loadConfig())).catch((e) => console.error('設定の再取得に失敗しました', e));
+        }, 2000);
+      }
+    }
+  }, []);
 
   const dirtyRef = useRef(false);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -550,15 +568,25 @@ export function HomePage({ onExit }: { onExit: () => void }) {
 
     let resultText: string | undefined;
     let errorMessage: string | undefined;
+    let quotaExceeded = false;
     try {
       const accessToken = await storage.getAccessToken();
       resultText = await generateDraft({ accessToken, userPrompt, systemPrompt });
     } catch (e) {
-      errorMessage = e instanceof AnthropicError ? e.message : String(e);
+      if (e instanceof QuotaExceededError) {
+        quotaExceeded = true;
+      } else {
+        errorMessage = e instanceof AnthropicError ? e.message : String(e);
+      }
     }
 
     setIsGenerating(false);
     setStatusText('');
+
+    if (quotaExceeded) {
+      await showPricingDialog(users.length);
+      return;
+    }
 
     if (errorMessage) {
       await showWarning('生成エラー', `${requestingName}さん(${requestingTarget})の文章生成に失敗しました:\n${errorMessage}`);
@@ -629,6 +657,21 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         });
       },
     });
+  }
+
+  const isSubscribed = config.subscription_status === 'active' || config.subscription_status === 'trialing';
+
+  async function openBilling() {
+    try {
+      if (isSubscribed) {
+        const url = await storage.createPortalSession();
+        window.location.href = url;
+      } else {
+        await showPricingDialog(users.length);
+      }
+    } catch (e) {
+      await showWarning('エラー', e instanceof Error ? e.message : String(e));
+    }
   }
 
   // 毎回の描画で作り直す通常の関数(useCallbackで固定しない)。以下のRef経由の
@@ -787,6 +830,12 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             </span>
           </div>
           <div className="top-bar-group top-bar-group-end">
+            <span className="usage-status">
+              {isSubscribed
+                ? `ご利用中: ${planTiers.find((t) => t.key === config.subscription_plan)?.label ?? config.subscription_plan}${monthlyUsageCount != null ? ` ｜ 今月${monthlyUsageCount}回` : ''}`
+                : `無料枠 残り${Math.max(0, freeGenerationLimit - ((config.free_generations_used as number | undefined) ?? 0))}回`}
+            </span>
+            <button className="btn btn-outlined" onClick={openBilling}>{isSubscribed ? 'プラン管理' : 'プランを見る'}</button>
             <button className="btn btn-outlined" onClick={openModeSelectDialog}>モード選択</button>
           </div>
         </div>

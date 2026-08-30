@@ -1,4 +1,6 @@
 export class AnthropicError extends Error {}
+// 無料枠(生成10回)を使い切り、プランへの加入が必要な状態。
+export class QuotaExceededError extends Error {}
 
 // AI下書き生成は、共有のAnthropic APIキーを保持するサーバー側エンドポイント
 // (api/generate-draft)経由で呼び出す。共有キーはブラウザには一切渡さず、
@@ -29,10 +31,14 @@ export async function generateDraft(params: {
     let detail = await resp.text();
     try {
       const decoded = JSON.parse(detail);
+      if (decoded?.error === 'quota_exceeded') {
+        throw new QuotaExceededError();
+      }
       if (decoded?.detail) {
         detail = decoded.detail;
       }
-    } catch {
+    } catch (e) {
+      if (e instanceof QuotaExceededError) throw e;
       // レスポンスがJSONでない場合は本文をそのまま使う
     }
     throw new AnthropicError(`APIエラー(${resp.status}): ${detail}`);

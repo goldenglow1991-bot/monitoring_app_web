@@ -1,4 +1,4 @@
-import type { User } from './types';
+import type { User } from './types.js';
 
 export function currentYearMonth(): string {
   const now = new Date();

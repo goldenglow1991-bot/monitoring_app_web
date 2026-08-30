@@ -163,6 +163,7 @@
   white-space: nowrap;
 }
 .year-month-picker select { margin: 0 2px; }
+.usage-status { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
 
 .content-area {
   flex: 1;
