@@ -652,6 +652,7 @@
   background: #fafafa;
 }
 .lp-footer-logo { font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+.lp-footer-link { display: inline-block; margin-top: 8px; font-size: 13px; }
 
 @media (max-width: 720px) {
   .lp-section { padding: 64px 20px; }

@@ -5,6 +5,7 @@ import type { DeletedUser, MonthlyRecord, User } from './types';
 import { katakanaToHiragana, isHiraganaOnly } from './utils';
 import { termsText } from './termsContent';
 import { privacyText } from './privacyContent';
+import { tokushohoText } from './tokushohoContent';
 
 // ---- 汎用: 警告・確認 ----
 
@@ -37,6 +38,18 @@ export function showPrivacyDialog(): Promise<void> {
     <ModalShell width={560}>
       <h2 className="modal-title">プライバシーポリシー</h2>
       <p className="modal-body">{privacyText}</p>
+      <div className="modal-actions">
+        <button className="btn btn-text" onClick={() => close()}>閉じる</button>
+      </div>
+    </ModalShell>
+  ));
+}
+
+export function showTokushohoDialog(): Promise<void> {
+  return openDialog<void>((close) => (
+    <ModalShell width={560}>
+      <h2 className="modal-title">特定商取引法に基づく表記</h2>
+      <p className="modal-body">{tokushohoText}</p>
       <div className="modal-actions">
         <button className="btn btn-text" onClick={() => close()}>閉じる</button>
       </div>
