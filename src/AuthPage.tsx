@@ -130,22 +130,24 @@ export function AuthPage({
             ) : (
               <>
                 <div className="auth-forgot-header">パスワードの再設定</div>
-                <div className="field">
-                  <label>メールアドレス</label>
-                  <input
-                    type="email"
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') sendResetEmail(); }}
-                  />
-                </div>
+                <form onSubmit={(e) => { e.preventDefault(); sendResetEmail(); }}>
+                  <div className="field">
+                    <label>メールアドレス</label>
+                    <input
+                      type="email"
+                      name="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
 
-                {errorText && <p className="hint-error">{errorText}</p>}
+                  {errorText && <p className="hint-error">{errorText}</p>}
 
-                <button className="btn btn-filled auth-submit" disabled={busy} onClick={sendResetEmail}>
-                  {busy ? '送信中...' : '再設定メールを送信'}
-                </button>
+                  <button type="submit" className="btn btn-filled auth-submit" disabled={busy}>
+                    {busy ? '送信中...' : '再設定メールを送信'}
+                  </button>
+                </form>
                 <button type="button" className="inline-link auth-forgot-back" onClick={() => switchMode('login')}>ログインへ戻る</button>
               </>
             )
@@ -168,85 +170,87 @@ export function AuthPage({
                 </button>
               </div>
 
-              <div className="field">
-                <label>メールアドレス</label>
-                <input
-                  type="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
-                />
-              </div>
-              <div className="field">
-                <label>パスワード</label>
-                <input
-                  type="password"
-                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
-                />
-              </div>
-
-              {mode === 'login' && (
-                <button type="button" className="inline-link auth-forgot-link" onClick={() => switchMode('forgot')}>
-                  パスワードをお忘れですか?
-                </button>
-              )}
-
-              {mode === 'signup' && (
+              <form onSubmit={(e) => { e.preventDefault(); submit(); }}>
                 <div className="field">
-                  <label>施設種別(あとから変更できます)</label>
-                  <select
-                    value={facilityType}
-                    onChange={(e) => setFacilityType(e.target.value)}
-                  >
-                    <option value="">選択しない(標準の項目で始める)</option>
-                    {facilityTypePresets.map((p) => (
-                      <option key={p.key} value={p.key}>{p.label}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {mode === 'signup' && (
-                <div className="field">
-                  <label>登録予定利用者数(任意)</label>
-                  <select
-                    value={expectedResidentCount}
-                    onChange={(e) => setExpectedResidentCount(e.target.value)}
-                  >
-                    <option value="">選択しない</option>
-                    {planTiers.map((t) => (
-                      <option key={t.key} value={String(t.maxResidents)}>{t.label}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {mode === 'signup' && (
-                <label className="checkbox-row">
+                  <label>メールアドレス</label>
                   <input
-                    type="checkbox"
-                    checked={agreedToTerms}
-                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    type="email"
+                    name="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
-                  <span>
-                    <button type="button" className="inline-link" onClick={() => showTermsDialog()}>利用規約</button>
-                    と
-                    <button type="button" className="inline-link" onClick={() => showPrivacyDialog()}>プライバシーポリシー</button>
-                    に同意する
-                  </span>
-                </label>
-              )}
+                </div>
+                <div className="field">
+                  <label>パスワード</label>
+                  <input
+                    type="password"
+                    name="password"
+                    autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
 
-              {errorText && <p className="hint-error">{errorText}</p>}
-              {infoText && <p className="hint-muted">{infoText}</p>}
+                {mode === 'login' && (
+                  <button type="button" className="inline-link auth-forgot-link" onClick={() => switchMode('forgot')}>
+                    パスワードをお忘れですか?
+                  </button>
+                )}
 
-              <button className="btn btn-filled auth-submit" disabled={busy} onClick={submit}>
-                {busy ? '処理中...' : mode === 'login' ? 'ログイン' : '登録する'}
-              </button>
+                {mode === 'signup' && (
+                  <div className="field">
+                    <label>施設種別(あとから変更できます)</label>
+                    <select
+                      value={facilityType}
+                      onChange={(e) => setFacilityType(e.target.value)}
+                    >
+                      <option value="">選択しない(標準の項目で始める)</option>
+                      {facilityTypePresets.map((p) => (
+                        <option key={p.key} value={p.key}>{p.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {mode === 'signup' && (
+                  <div className="field">
+                    <label>登録予定利用者数(任意)</label>
+                    <select
+                      value={expectedResidentCount}
+                      onChange={(e) => setExpectedResidentCount(e.target.value)}
+                    >
+                      <option value="">選択しない</option>
+                      {planTiers.map((t) => (
+                        <option key={t.key} value={String(t.maxResidents)}>{t.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {mode === 'signup' && (
+                  <label className="checkbox-row">
+                    <input
+                      type="checkbox"
+                      checked={agreedToTerms}
+                      onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    />
+                    <span>
+                      <button type="button" className="inline-link" onClick={() => showTermsDialog()}>利用規約</button>
+                      と
+                      <button type="button" className="inline-link" onClick={() => showPrivacyDialog()}>プライバシーポリシー</button>
+                      に同意する
+                    </span>
+                  </label>
+                )}
+
+                {errorText && <p className="hint-error">{errorText}</p>}
+                {infoText && <p className="hint-muted">{infoText}</p>}
+
+                <button type="submit" className="btn btn-filled auth-submit" disabled={busy}>
+                  {busy ? '処理中...' : mode === 'login' ? 'ログイン' : '登録する'}
+                </button>
+              </form>
             </>
           )}
         </div>
