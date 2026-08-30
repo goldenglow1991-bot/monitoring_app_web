@@ -58,6 +58,24 @@
 .icon-btn:hover, .icon-btn-small:hover { background: #eee; }
 .icon-btn-small { font-size: 16px; padding: 2px 6px; }
 
+.usage-guide-btn {
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.usage-guide-btn:hover { background: var(--teal-dark); }
+
 /* ---------- start page ---------- */
 .start-page {
   position: relative;
@@ -90,6 +108,10 @@
   margin-top: 40px;
   padding: 20px 32px;
   font-size: 20px;
+}
+.start-usage-link {
+  margin-top: 24px;
+  font-size: 16px;
 }
 
 .auth-card {
@@ -130,7 +152,7 @@
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 15px;
   text-decoration: underline;
   cursor: pointer;
 }
@@ -387,7 +409,7 @@
   font-weight: 600;
 }
 .item-status-select {
-  width: 140px;
+  width: 80px;
   flex-shrink: 0;
   padding: 6px;
   border: 1px solid var(--border);

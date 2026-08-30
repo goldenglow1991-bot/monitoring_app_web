@@ -10,7 +10,7 @@ export function StartPage({ onStart }: { onStart: () => void }) {
         <button className="btn btn-filled start-button" onClick={onStart}>
           ▶ 入力を開始する
         </button>
-        <div>
+        <div className="start-usage-link">
           <button className="inline-link" onClick={() => showUsageGuideDialog()}>使いかた</button>
         </div>
         <div>
