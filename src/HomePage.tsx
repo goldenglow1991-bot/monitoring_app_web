@@ -584,7 +584,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     setStatusText('');
 
     if (quotaExceeded) {
-      await showPricingDialog(users.length);
+      await showPricingDialog(Math.max(users.length, config.expected_resident_count ?? 0));
       return;
     }
 
@@ -667,7 +667,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         const url = await storage.createPortalSession();
         window.location.href = url;
       } else {
-        await showPricingDialog(users.length);
+        await showPricingDialog(Math.max(users.length, config.expected_resident_count ?? 0));
       }
     } catch (e) {
       await showWarning('エラー', e instanceof Error ? e.message : String(e));

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from './supabaseClient';
 import { facilityTypePresets } from './items';
+import { planTiers } from './stripePrices';
 import { showTermsDialog, showPrivacyDialog } from './dialogs';
 import { termsVersion } from './termsContent';
 import { privacyVersion } from './privacyContent';
@@ -17,8 +18,8 @@ export function AuthPage({
   const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [registeredName, setRegisteredName] = useState('');
   const [facilityType, setFacilityType] = useState('');
+  const [expectedResidentCount, setExpectedResidentCount] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [busy, setBusy] = useState(false);
   const [errorText, setErrorText] = useState<string | null>(null);
@@ -54,8 +55,11 @@ export function AuthPage({
           terms_version: termsVersion,
           privacy_version: privacyVersion,
         };
-        if (registeredName.trim() !== '') metadata.registered_name = registeredName.trim();
         if (facilityType) metadata.facility_type = facilityType;
+        const parsedCount = parseInt(expectedResidentCount, 10);
+        if (expectedResidentCount.trim() !== '' && Number.isFinite(parsedCount) && parsedCount > 0) {
+          metadata.expected_resident_count = String(parsedCount);
+        }
         const { error, data } = await supabase.auth.signUp({
           email: email.trim(),
           password,
@@ -193,19 +197,6 @@ export function AuthPage({
 
               {mode === 'signup' && (
                 <div className="field">
-                  <label>登録名</label>
-                  <input
-                    type="text"
-                    value={registeredName}
-                    onChange={(e) => setRegisteredName(e.target.value)}
-                    placeholder="例: ○○デイサービス"
-                    onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
-                  />
-                </div>
-              )}
-
-              {mode === 'signup' && (
-                <div className="field">
                   <label>施設種別(あとから変更できます)</label>
                   <select
                     value={facilityType}
@@ -214,6 +205,21 @@ export function AuthPage({
                     <option value="">選択しない(標準の項目で始める)</option>
                     {facilityTypePresets.map((p) => (
                       <option key={p.key} value={p.key}>{p.label}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {mode === 'signup' && (
+                <div className="field">
+                  <label>登録予定利用者数(任意)</label>
+                  <select
+                    value={expectedResidentCount}
+                    onChange={(e) => setExpectedResidentCount(e.target.value)}
+                  >
+                    <option value="">選択しない</option>
+                    {planTiers.map((t) => (
+                      <option key={t.key} value={String(t.maxResidents)}>{t.label}</option>
                     ))}
                   </select>
                 </div>

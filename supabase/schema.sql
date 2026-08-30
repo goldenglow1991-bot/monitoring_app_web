@@ -65,6 +65,10 @@ alter table facility_config add column if not exists stripe_subscription_id text
 alter table facility_config add column if not exists subscription_plan text;
 alter table facility_config add column if not exists subscription_status text;
 
+-- サインアップ時に(任意で)申告してもらう、登録予定の利用者数。
+-- プラン選択画面のおすすめプラン算出に使う(実際の登録人数の下限は下回らない)。
+alter table facility_config add column if not exists expected_resident_count integer;
+
 -- ---------- 月ごとのAI生成回数(表示専用。上限判定には使わない) ----------
 create table if not exists ai_usage (
   user_id uuid not null references auth.users(id) on delete cascade,
