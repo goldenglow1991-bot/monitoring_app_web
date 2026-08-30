@@ -260,9 +260,10 @@
   overflow-y: auto;
 }
 .user-row {
-  padding: 6px 12px;
+  padding: 2px 12px;
   font-size: 21px;
   font-weight: 600;
+  line-height: 1.2;
   cursor: pointer;
 }
 .user-row:hover { background: #f0f0f0; }
@@ -409,7 +410,7 @@
   font-weight: 600;
 }
 .item-status-select {
-  width: 80px;
+  width: 110px;
   flex-shrink: 0;
   padding: 6px;
   border: 1px solid var(--border);
