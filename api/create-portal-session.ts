@@ -50,10 +50,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const stripe = new Stripe(stripeSecretKey);
-  const session = await stripe.billingPortal.sessions.create({
-    customer: config.stripe_customer_id as string,
-    return_url: origin,
-  });
-
-  res.status(200).json({ url: session.url });
+  try {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: config.stripe_customer_id as string,
+      return_url: origin,
+    });
+    res.status(200).json({ url: session.url });
+  } catch (e) {
+    res.status(500).json({ error: 'stripe_error', detail: e instanceof Error ? e.message : String(e) });
+  }
 }

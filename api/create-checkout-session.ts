@@ -54,28 +54,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const stripe = new Stripe(stripeSecretKey);
 
-  let customerId = config?.stripe_customer_id as string | null | undefined;
-  if (!customerId) {
-    const customer = await stripe.customers.create({ email, metadata: { supabase_user_id: uid } });
-    customerId = customer.id;
-    const { error: upsertError } = await admin
-      .from('facility_config')
-      .upsert({ user_id: uid, stripe_customer_id: customerId });
-    if (upsertError) {
-      res.status(500).json({ error: 'db_error', detail: upsertError.message });
-      return;
+  try {
+    let customerId = config?.stripe_customer_id as string | null | undefined;
+    if (!customerId) {
+      const customer = await stripe.customers.create({ email, metadata: { supabase_user_id: uid } });
+      customerId = customer.id;
+      const { error: upsertError } = await admin
+        .from('facility_config')
+        .upsert({ user_id: uid, stripe_customer_id: customerId });
+      if (upsertError) {
+        res.status(500).json({ error: 'db_error', detail: upsertError.message });
+        return;
+      }
     }
+
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      customer: customerId,
+      line_items: [{ price: tier.stripePriceId, quantity: 1 }],
+      success_url: `${origin}/?checkout=success`,
+      cancel_url: `${origin}/?checkout=cancel`,
+      metadata: { supabase_user_id: uid, plan_key: tier.key },
+      subscription_data: { metadata: { supabase_user_id: uid, plan_key: tier.key } },
+    });
+
+    res.status(200).json({ url: session.url });
+  } catch (e) {
+    res.status(500).json({ error: 'stripe_error', detail: e instanceof Error ? e.message : String(e) });
   }
-
-  const session = await stripe.checkout.sessions.create({
-    mode: 'subscription',
-    customer: customerId,
-    line_items: [{ price: tier.stripePriceId, quantity: 1 }],
-    success_url: `${origin}/?checkout=success`,
-    cancel_url: `${origin}/?checkout=cancel`,
-    metadata: { supabase_user_id: uid, plan_key: tier.key },
-    subscription_data: { metadata: { supabase_user_id: uid, plan_key: tier.key } },
-  });
-
-  res.status(200).json({ url: session.url });
 }

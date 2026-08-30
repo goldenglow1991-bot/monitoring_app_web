@@ -199,7 +199,7 @@ async function callBillingApi(path: string, body: Record<string, unknown>): Prom
     body: JSON.stringify(body),
   });
   const decoded = await resp.json();
-  if (!resp.ok) throw new Error(decoded?.error ?? `リクエストに失敗しました(${resp.status})`);
+  if (!resp.ok) throw new Error(decoded?.detail ?? decoded?.error ?? `リクエストに失敗しました(${resp.status})`);
   return decoded.url as string;
 }
 
