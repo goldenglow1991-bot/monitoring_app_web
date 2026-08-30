@@ -859,7 +859,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             </span>
             <button className="btn btn-outlined" onClick={openBilling}>{isSubscribed ? 'プラン管理' : 'プランを見る'}</button>
             <button className="btn btn-outlined" onClick={openModeSelectDialog}>モード選択</button>
-            <button className="btn btn-outlined" onClick={exportAllUsersDraftText}>テキスト一括出力</button>
+            <button className="btn btn-outlined" onClick={exportAllUsersDraftText}>今月分を出力</button>
             <button className="icon-btn-small" onClick={() => showUsageGuideDialog()} aria-label="使いかた" title="使いかた">?</button>
           </div>
         </div>
