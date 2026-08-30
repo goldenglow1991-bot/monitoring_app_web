@@ -27,6 +27,7 @@ import {
   showAddPastRecordDialog,
   showItemVisibilityDialog,
   showPricingDialog,
+  showUsageGuideDialog,
 } from './dialogs';
 import { ItemRow } from './components/ItemRow';
 import { UserListPanelWide, UserListPanelNarrow, UserSelectorMobile, type UserListPage } from './components/UserListPanel';
@@ -674,6 +675,27 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     }
   }
 
+  async function exportAllUsersDraftText() {
+    const ok = await showConfirm('一括出力', `対象年月(${year}年${month}月)の全利用者分の生成結果を、テキストファイルとして出力しますか?`);
+    if (!ok) return;
+
+    const blocks = users.map((user) => {
+      const text = (user.id === selectedUserId ? draft : storage.loadRecords(user.id).find((r) => r.yearMonth === yearMonth)?.draft ?? '').trim();
+      return `■ ${user.name}\n${text !== '' ? text : '(生成結果なし)'}`;
+    });
+    const content = blocks.join('\n\n') + '\n';
+
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `モニタリング_${year}年${month}月.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   // 毎回の描画で作り直す通常の関数(useCallbackで固定しない)。以下のRef経由の
   // 呼び出しは、mount時に一度だけ作られるタイマー/visibilitychangeハンドラから
   // 「常に最新のクロージャ」を呼び出すためのもの(古いstateを掴んだままにしない)。
@@ -837,6 +859,8 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             </span>
             <button className="btn btn-outlined" onClick={openBilling}>{isSubscribed ? 'プラン管理' : 'プランを見る'}</button>
             <button className="btn btn-outlined" onClick={openModeSelectDialog}>モード選択</button>
+            <button className="btn btn-outlined" onClick={exportAllUsersDraftText}>テキスト一括出力</button>
+            <button className="icon-btn-small" onClick={() => showUsageGuideDialog()} aria-label="使いかた" title="使いかた">?</button>
           </div>
         </div>
       </div>

@@ -115,6 +115,40 @@ export function showPricingDialog(currentResidentCount: number): Promise<void> {
   ));
 }
 
+const usageGuideText = `① 利用者を追加
+左側の利用者一覧の「利用者を追加」から、お名前を登録します。
+
+② 留意点を追加(任意)
+既往歴や注意事項など、あらかじめ知っておきたいことがあれば「留意点を追加・編集」から記録しておけます。
+
+③ モード選択で所見項目を調整
+右上の「モード選択」から、所見の項目を施設に合わせて追加・削除できます。
+
+④ 今月の所見を入力
+プルダウンでの選択・自由記入欄への入力のどちらでも構いません。両方空欄のままでも生成できるので、無理にすべて埋める必要はありません。項目の左端の「☰」をドラッグすると並び順を入れ替えられ、生成される文章の順番もある程度調整できます。
+また、「過去の記録の追加・編集」から過去3か月分のモニタリングを入力しておくと、AIによる生成の精度が上がります。
+
+⑤ 文章を生成
+「文章を生成」ボタンでAIが下書きを作成します。生成後の文章は自由に編集できます。
+
+⑥ コピーして貼り付け
+「まとめてコピー」でクリップボードにコピーし、お使いの記録システムなどへ貼り付けてください。
+
+その他
+右上の「テキスト一括出力」から、対象年月の全利用者分の生成結果をまとめてテキストファイルとして書き出すこともできます。`;
+
+export function showUsageGuideDialog(): Promise<void> {
+  return openDialog<void>((close) => (
+    <ModalShell width={560}>
+      <h2 className="modal-title">使いかた</h2>
+      <p className="modal-body">{usageGuideText}</p>
+      <div className="modal-actions">
+        <button className="btn btn-text" onClick={() => close()}>閉じる</button>
+      </div>
+    </ModalShell>
+  ));
+}
+
 export function showTokushohoDialog(): Promise<void> {
   return openDialog<void>((close) => (
     <ModalShell width={560}>

@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { showUsageGuideDialog } from './dialogs';
 
 export function StartPage({ onStart }: { onStart: () => void }) {
   return (
@@ -9,6 +10,9 @@ export function StartPage({ onStart }: { onStart: () => void }) {
         <button className="btn btn-filled start-button" onClick={onStart}>
           ▶ 入力を開始する
         </button>
+        <div>
+          <button className="inline-link" onClick={() => showUsageGuideDialog()}>使いかた</button>
+        </div>
         <div>
           <button className="logout-link" onClick={() => supabase.auth.signOut()}>
             ログアウト
