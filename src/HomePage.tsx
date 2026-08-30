@@ -122,6 +122,10 @@ export function HomePage({ onExit }: { onExit: () => void }) {
   const [extraNotes, setExtraNotes] = useState('');
   const [draft, setDraft] = useState('');
   const [draftGenerated, setDraftGenerated] = useState(false);
+  // storage.loadRecords()はReactの状態ではない単なるキャッシュなので、
+  // 保存が完了しても自動では再描画されない(利用者一覧の✓表示が古いまま
+  // になる)。保存完了後にこれを更新して強制的に再描画させる。
+  const [, bumpRecordsTick] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [statusText, setStatusText] = useState('');
   const [rowPageIndex, setRowPageIndex] = useState(0);
@@ -334,6 +338,8 @@ export function HomePage({ onExit }: { onExit: () => void }) {
       await storage.upsertMonthlyRecord(selectedUserId, record);
     } catch (e) {
       console.error('確認済みチェックの保存に失敗しました', e);
+    } finally {
+      bumpRecordsTick((n) => n + 1);
     }
   }
 
@@ -728,6 +734,19 @@ export function HomePage({ onExit }: { onExit: () => void }) {
   const resetIdleTimer = useCallback(() => {
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     idleTimerRef.current = setTimeout(() => saveAndExitRef.current(), IDLE_TIMEOUT_MS);
+  }, []);
+
+  // 未保存の変更があるままタブ・ブラウザを閉じようとした時に、ブラウザ標準の
+  // 離脱確認ダイアログを出す。文言はブラウザ側の定型文で、独自メッセージは
+  // 表示できない(全ブラウザ共通の仕様)。
+  useEffect(() => {
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!dirtyRef.current) return;
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => window.removeEventListener('beforeunload', onBeforeUnload);
   }, []);
 
   useEffect(() => {
