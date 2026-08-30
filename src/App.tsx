@@ -81,7 +81,7 @@ export default function App() {
     return (
       <>
         {showAuth ? (
-          <AuthPage initialMode={authInitialMode} />
+          <AuthPage initialMode={authInitialMode} onBack={() => setShowAuth(false)} />
         ) : (
           <LandingPage
             onGetStarted={() => {

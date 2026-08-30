@@ -7,7 +7,13 @@ import { privacyVersion } from './privacyContent';
 
 type Mode = 'login' | 'signup' | 'forgot';
 
-export function AuthPage({ initialMode = 'login' }: { initialMode?: 'login' | 'signup' }) {
+export function AuthPage({
+  initialMode = 'login',
+  onBack,
+}: {
+  initialMode?: 'login' | 'signup';
+  onBack?: () => void;
+}) {
   const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -98,6 +104,11 @@ export function AuthPage({ initialMode = 'login' }: { initialMode?: 'login' | 's
 
   return (
     <div className="start-page">
+      {onBack && (
+        <button type="button" className="icon-btn start-back-btn" onClick={onBack} aria-label="トップに戻る">
+          ←
+        </button>
+      )}
       <div className="start-page-inner">
         <div className="start-title">assist</div>
         <div className="start-subtitle">モニタリング作成支援アプリ</div>

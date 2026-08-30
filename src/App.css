@@ -60,10 +60,17 @@
 
 /* ---------- start page ---------- */
 .start-page {
+  position: relative;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.start-back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 22px;
 }
 .start-page-inner {
   text-align: center;
