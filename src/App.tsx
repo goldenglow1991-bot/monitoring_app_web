@@ -18,8 +18,26 @@ export default function App() {
   const [dataReady, setDataReady] = useState(false);
   const [loadErrorText, setLoadErrorText] = useState<string | null>(null);
   const [passwordRecovery, setPasswordRecovery] = useState(false);
-  const [showAuth, setShowAuth] = useState(false);
+  const [showAuth, setShowAuth] = useState(
+    () => new URLSearchParams(window.location.search).get('screen') === 'auth',
+  );
   const [authInitialMode, setAuthInitialMode] = useState<'login' | 'signup'>('login');
+
+  // LP⇔ログイン画面の行き来をブラウザの履歴に積む。「戻る」ボタンで
+  // LPに戻れるようにするため、URLの変更(popstate)に合わせて画面を切り替える。
+  useEffect(() => {
+    const onPopState = () => {
+      setShowAuth(new URLSearchParams(window.location.search).get('screen') === 'auth');
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  function goToAuth(mode: 'login' | 'signup') {
+    setAuthInitialMode(mode);
+    setShowAuth(true);
+    window.history.pushState({}, '', '/?screen=auth');
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
@@ -37,6 +55,10 @@ export default function App() {
       if (!newSession) {
         setPage('start');
         setShowAuth(false);
+        window.history.replaceState({}, '', '/');
+      } else {
+        // ログイン成功後はURLからscreen=authを消しておく(履歴には残さない)。
+        window.history.replaceState({}, '', '/');
       }
     });
     return () => sub.subscription.unsubscribe();
@@ -81,17 +103,11 @@ export default function App() {
     return (
       <>
         {showAuth ? (
-          <AuthPage initialMode={authInitialMode} onBack={() => setShowAuth(false)} />
+          <AuthPage initialMode={authInitialMode} onBack={() => window.history.back()} />
         ) : (
           <LandingPage
-            onGetStarted={() => {
-              setAuthInitialMode('signup');
-              setShowAuth(true);
-            }}
-            onLogin={() => {
-              setAuthInitialMode('login');
-              setShowAuth(true);
-            }}
+            onGetStarted={() => goToAuth('signup')}
+            onLogin={() => goToAuth('login')}
           />
         )}
         <DialogHost />
