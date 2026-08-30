@@ -12,7 +12,7 @@
 /* ---------- buttons ---------- */
 .btn {
   border-radius: 999px;
-  padding: 8px 16px;
+  padding: 6px 16px;
   border: 1px solid transparent;
   font-weight: 600;
   white-space: nowrap;
@@ -35,7 +35,7 @@
   border: none;
 }
 .btn-text:hover { background: var(--teal-light); }
-.btn-compact { padding: 8px 16px; }
+.btn-compact { padding: 6px 16px; }
 .btn-block {
   width: 100%;
   margin-bottom: 4px;
@@ -163,7 +163,7 @@
   white-space: nowrap;
 }
 .year-month-picker select { margin: 0 2px; }
-.usage-status { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+.usage-status { font-size: 15px; font-weight: 700; color: var(--teal-dark); white-space: nowrap; }
 
 .content-area {
   flex: 1;
