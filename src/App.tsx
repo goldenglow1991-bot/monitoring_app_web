@@ -3,6 +3,7 @@ import type { Session } from '@supabase/supabase-js';
 import { StartPage } from './StartPage';
 import { HomePage } from './HomePage';
 import { AuthPage } from './AuthPage';
+import { LandingPage } from './LandingPage';
 import { ResetPasswordPage } from './ResetPasswordPage';
 import { DialogHost } from './dialogHost';
 import { supabase } from './supabaseClient';
@@ -17,6 +18,8 @@ export default function App() {
   const [dataReady, setDataReady] = useState(false);
   const [loadErrorText, setLoadErrorText] = useState<string | null>(null);
   const [passwordRecovery, setPasswordRecovery] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const [authInitialMode, setAuthInitialMode] = useState<'login' | 'signup'>('login');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
@@ -31,7 +34,10 @@ export default function App() {
         }
         return newSession;
       });
-      if (!newSession) setPage('start');
+      if (!newSession) {
+        setPage('start');
+        setShowAuth(false);
+      }
     });
     return () => sub.subscription.unsubscribe();
   }, []);
@@ -74,7 +80,20 @@ export default function App() {
   if (!session) {
     return (
       <>
-        <AuthPage />
+        {showAuth ? (
+          <AuthPage initialMode={authInitialMode} />
+        ) : (
+          <LandingPage
+            onGetStarted={() => {
+              setAuthInitialMode('signup');
+              setShowAuth(true);
+            }}
+            onLogin={() => {
+              setAuthInitialMode('login');
+              setShowAuth(true);
+            }}
+          />
+        )}
         <DialogHost />
       </>
     );

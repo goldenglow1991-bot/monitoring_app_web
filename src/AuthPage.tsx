@@ -7,8 +7,8 @@ import { privacyVersion } from './privacyContent';
 
 type Mode = 'login' | 'signup' | 'forgot';
 
-export function AuthPage() {
-  const [mode, setMode] = useState<Mode>('login');
+export function AuthPage({ initialMode = 'login' }: { initialMode?: 'login' | 'signup' }) {
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [registeredName, setRegisteredName] = useState('');
