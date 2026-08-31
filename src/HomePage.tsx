@@ -102,6 +102,20 @@ function emptyItemStatus(): Record<string, string> {
   return result;
 }
 
+// 対象年月の初期値。毎月10日以降は、前回選んでいた月に関わらず当月を優先する
+// (1〜9日の間は、これまで通り前回選んでいた月を復元する)。
+function defaultYearMonth(): string {
+  if (new Date().getDate() >= 10) {
+    return currentYearMonth();
+  }
+  const last = (storage.loadConfig().last_year_month as string | undefined) ?? '';
+  const parts = last.split('-');
+  if (parts.length === 2 && TOP_YEAR_VALUES.includes(parts[0]) && MONTH_VALUES.includes(parts[1])) {
+    return last;
+  }
+  return currentYearMonth();
+}
+
 function emptyItemFree(): Record<string, string> {
   const result: Record<string, string> = {};
   for (const item of itemCatalog) result[item.key] = '';
@@ -130,22 +144,8 @@ export function HomePage({ onExit }: { onExit: () => void }) {
   const [statusText, setStatusText] = useState('');
   const [rowPageIndex, setRowPageIndex] = useState(0);
 
-  const [year, setYear] = useState<string>(() => {
-    const last = (storage.loadConfig().last_year_month as string | undefined) ?? '';
-    const parts = last.split('-');
-    if (parts.length === 2 && TOP_YEAR_VALUES.includes(parts[0]) && MONTH_VALUES.includes(parts[1])) {
-      return parts[0];
-    }
-    return currentYearMonth().split('-')[0];
-  });
-  const [month, setMonth] = useState<string>(() => {
-    const last = (storage.loadConfig().last_year_month as string | undefined) ?? '';
-    const parts = last.split('-');
-    if (parts.length === 2 && TOP_YEAR_VALUES.includes(parts[0]) && MONTH_VALUES.includes(parts[1])) {
-      return parts[1];
-    }
-    return currentYearMonth().split('-')[1];
-  });
+  const [year, setYear] = useState<string>(() => defaultYearMonth().split('-')[0]);
+  const [month, setMonth] = useState<string>(() => defaultYearMonth().split('-')[1]);
   const yearMonth = `${year}-${month}`;
 
   useEffect(() => {
@@ -876,7 +876,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
                 ? `ご利用中: ${planTiers.find((t) => t.key === config.subscription_plan)?.label ?? config.subscription_plan}${monthlyUsageCount != null ? ` ｜ 今月${monthlyUsageCount}回` : ''}`
                 : `無料枠 残り${Math.max(0, freeGenerationLimit - ((config.free_generations_used as number | undefined) ?? 0))}回`}
             </span>
-            <button className="btn btn-outlined" onClick={openBilling}>{isSubscribed ? 'プラン管理' : 'プランを見る'}</button>
+            <button className="btn btn-outlined" onClick={openBilling}>{isSubscribed ? 'プラン管理' : 'プラン選択'}</button>
             <button className="btn btn-outlined" onClick={openModeSelectDialog}>モード選択</button>
             <button className="btn btn-outlined" onClick={exportAllUsersDraftText}>今月分を出力</button>
             <button className="usage-guide-btn" onClick={() => showUsageGuideDialog()} aria-label="使いかた" title="使いかた">?</button>
