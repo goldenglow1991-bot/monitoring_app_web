@@ -14,7 +14,7 @@ import { supabase } from './supabaseClient';
 
 export function showWarning(title: string, message: string): Promise<void> {
   return openDialog<void>((close) => (
-    <ModalShell width={360}>
+    <ModalShell width={360} onBackdropClick={() => close()}>
       <h2 className="modal-title">{title}</h2>
       <p className="modal-body">{message}</p>
       <div className="modal-actions">
@@ -26,7 +26,7 @@ export function showWarning(title: string, message: string): Promise<void> {
 
 export function showTermsDialog(): Promise<void> {
   return openDialog<void>((close) => (
-    <ModalShell width={560}>
+    <ModalShell width={560} onBackdropClick={() => close()}>
       <h2 className="modal-title">利用規約</h2>
       <p className="modal-body">{termsText}</p>
       <div className="modal-actions">
@@ -38,7 +38,7 @@ export function showTermsDialog(): Promise<void> {
 
 export function showPrivacyDialog(): Promise<void> {
   return openDialog<void>((close) => (
-    <ModalShell width={560}>
+    <ModalShell width={560} onBackdropClick={() => close()}>
       <h2 className="modal-title">プライバシーポリシー</h2>
       <p className="modal-body">{privacyText}</p>
       <div className="modal-actions">
@@ -74,7 +74,7 @@ function PricingDialogView({
   }
 
   return (
-    <ModalShell width={480}>
+    <ModalShell width={480} onBackdropClick={() => close()}>
       <h2 className="modal-title">プランを選択</h2>
       <p className="modal-body">
         無料の{freeGenerationLimit}回を使い切りました。引き続きAI下書き生成をご利用いただくには、いずれかのプランへのお申し込みが必要です。
@@ -212,7 +212,7 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
   }
 
   return (
-    <ModalShell width={360}>
+    <ModalShell width={360} onBackdropClick={() => close()}>
       <h2 className="modal-title">アカウント</h2>
       <p className="modal-body">{email ?? '読み込み中...'}</p>
 
@@ -298,7 +298,7 @@ const usageGuideText = `① 利用者を追加
 
 export function showUsageGuideDialog(): Promise<void> {
   return openDialog<void>((close) => (
-    <ModalShell width={560}>
+    <ModalShell width={560} onBackdropClick={() => close()}>
       <h2 className="modal-title">使いかた</h2>
       <p className="modal-body">{usageGuideText}</p>
       <div className="modal-actions">
@@ -310,7 +310,7 @@ export function showUsageGuideDialog(): Promise<void> {
 
 export function showTokushohoDialog(): Promise<void> {
   return openDialog<void>((close) => (
-    <ModalShell width={560}>
+    <ModalShell width={560} onBackdropClick={() => close()}>
       <h2 className="modal-title">特定商取引法に基づく表記</h2>
       <p className="modal-body">{tokushohoText}</p>
       <div className="modal-actions">
@@ -322,7 +322,7 @@ export function showTokushohoDialog(): Promise<void> {
 
 export function showConfirm(title: string, message: string): Promise<boolean> {
   return openDialog<boolean>((close) => (
-    <ModalShell width={360}>
+    <ModalShell width={360} onBackdropClick={() => close(false)}>
       <h2 className="modal-title">{title}</h2>
       <p className="modal-body">{message}</p>
       <div className="modal-actions">
@@ -336,7 +336,7 @@ export function showConfirm(title: string, message: string): Promise<boolean> {
 /// 保存確認: null=キャンセル(何もしない), true=保存して続行, false=保存せず続行
 export function showSaveConfirm(): Promise<boolean | null> {
   return openDialog<boolean | null>((close) => (
-    <ModalShell width={380}>
+    <ModalShell width={380} onBackdropClick={() => close(null)}>
       <h2 className="modal-title">保存の確認</h2>
       <p className="modal-body">保存されていない変更があります。保存しますか?{'\n'}「いいえ」を選ぶと変更は破棄されます。</p>
       <div className="modal-actions">
@@ -388,7 +388,7 @@ function AddUserDialogView({ close }: { close: (value: User | null) => void }) {
   }
 
   return (
-    <ModalShell width={360}>
+    <ModalShell width={360} onBackdropClick={() => close(null)}>
       <h2 className="modal-title">利用者を追加</h2>
       <div className="field">
         <label>名前(漢字)</label>
@@ -435,7 +435,7 @@ function RenameUserDialogView({
   }
 
   return (
-    <ModalShell width={360}>
+    <ModalShell width={360} onBackdropClick={() => close(null)}>
       <h2 className="modal-title">利用者名を編集</h2>
       <div className="field">
         <label>名前</label>
@@ -468,7 +468,7 @@ function EditPrecautionsDialogView({
 }) {
   const [text, setText] = useState(initialPrecautions);
   return (
-    <ModalShell width={480}>
+    <ModalShell width={480} onBackdropClick={() => close(null)}>
       <h2 className="modal-title">留意点の追加・編集 - {userName}</h2>
       <p className="modal-body">重要な既往歴や注意事項(月をまたいで保持されます):</p>
       <textarea
@@ -514,7 +514,7 @@ function RestoreDialogView({
 }) {
   const [trash, setTrash] = useState(initialTrash);
   return (
-    <ModalShell width={440}>
+    <ModalShell width={440} onBackdropClick={() => close()}>
       <h2 className="modal-title">削除した利用者一覧</h2>
       <div className="modal-list">
         {trash.length === 0 ? (
@@ -590,7 +590,7 @@ export function showHistoryDialog(params: { userName: string; records: MonthlyRe
     .filter((r) => r.report !== '')
     .sort((a, b) => (a.yearMonth > b.yearMonth ? -1 : a.yearMonth < b.yearMonth ? 1 : 0));
   return openDialog<void>((close) => (
-    <ModalShell width={560}>
+    <ModalShell width={560} onBackdropClick={() => close()}>
       <h2 className="modal-title">過去の記録 - {params.userName}</h2>
       <div className="modal-list modal-list-tall">
         {confirmed.length === 0 ? (
@@ -651,7 +651,7 @@ function AddPastRecordDialogView({
   }
 
   return (
-    <ModalShell width={560}>
+    <ModalShell width={560} onBackdropClick={() => close()}>
       <h2 className="modal-title">過去の記録の追加・編集 - {userName}</h2>
       <div className="row-inline">
         <span>対象年月:</span>
@@ -743,7 +743,7 @@ function ItemVisibilityDialogView({
   const [toneKey, setToneKey] = useState(currentToneKey);
 
   return (
-    <ModalShell width={440}>
+    <ModalShell width={440} onBackdropClick={() => close()}>
       <h2 className="modal-title">モード選択</h2>
       <div className="modal-list modal-list-tall">
         <div className="facility-preset-label">言葉遣い</div>
