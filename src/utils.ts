@@ -1,5 +1,29 @@
 import type { User } from './types.js';
 
+// Supabase Authのエラーメッセージ(英語)を日本語に置き換える。
+// 未知のメッセージはそのまま表示する(想定外のエラーでも情報が消えないように)。
+export function translateAuthError(message: string): string {
+  if (/invalid login credentials/i.test(message)) {
+    return 'メールアドレスまたはパスワードが正しくありません。';
+  }
+  if (/email not confirmed/i.test(message)) {
+    return 'メールアドレスの確認が完了していません。届いている確認メール内のリンクを開いてください。';
+  }
+  if (/already registered/i.test(message)) {
+    return 'このメールアドレスは既に登録されています。ログインするか、パスワードをお忘れの場合は再設定してください。';
+  }
+  if (/password.*(least|should be at least)/i.test(message)) {
+    return 'パスワードは6文字以上で入力してください。';
+  }
+  if (/unable to validate email address/i.test(message)) {
+    return 'メールアドレスの形式が正しくありません。';
+  }
+  if (/for security purposes.*only request this/i.test(message)) {
+    return 'しばらく時間をおいてから再度お試しください。';
+  }
+  return message;
+}
+
 export function currentYearMonth(): string {
   const now = new Date();
   const month = String(now.getMonth() + 1).padStart(2, '0');

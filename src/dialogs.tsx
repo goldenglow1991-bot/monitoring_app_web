@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { openDialog, ModalShell } from './dialogHost';
 import { itemCategories, itemCatalog, tonePresets, facilityTypePresets } from './items';
 import type { DeletedUser, MonthlyRecord, User } from './types';
-import { katakanaToHiragana, isHiraganaOnly } from './utils';
+import { katakanaToHiragana, isHiraganaOnly, translateAuthError } from './utils';
 import { termsText } from './termsContent';
 import { privacyText } from './privacyContent';
 import { tokushohoText } from './tokushohoContent';
@@ -120,6 +120,13 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
   const [email, setEmail] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
+  const [pwError, setPwError] = useState<string | null>(null);
+  const [pwSuccess, setPwSuccess] = useState(false);
+  const [pwBusy, setPwBusy] = useState(false);
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
   }, []);
@@ -144,16 +151,93 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
     }
   }
 
+  function startChangingPassword() {
+    setChangingPassword(true);
+    setPwSuccess(false);
+    setPwError(null);
+    setNewPassword('');
+    setNewPasswordConfirm('');
+  }
+
+  function cancelChangingPassword() {
+    setChangingPassword(false);
+    setPwError(null);
+    setNewPassword('');
+    setNewPasswordConfirm('');
+  }
+
+  async function submitPasswordChange() {
+    setPwError(null);
+    if (!/^[A-Za-z0-9]{8,}$/.test(newPassword)) {
+      setPwError('パスワードは8文字以上の半角英数字で入力してください。');
+      return;
+    }
+    if (newPassword !== newPasswordConfirm) {
+      setPwError('パスワードが一致しません。');
+      return;
+    }
+    setPwBusy(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) {
+        setPwError(translateAuthError(error.message));
+      } else {
+        setChangingPassword(false);
+        setNewPassword('');
+        setNewPasswordConfirm('');
+        setPwSuccess(true);
+      }
+    } finally {
+      setPwBusy(false);
+    }
+  }
+
   return (
     <ModalShell width={360}>
       <h2 className="modal-title">アカウント</h2>
       <p className="modal-body">{email ?? '読み込み中...'}</p>
-      <div className="modal-actions">
-        <button className="btn btn-outlined" disabled={busy} onClick={openBilling}>
-          {isSubscribed ? 'プラン管理' : 'プランを見る'}
-        </button>
-        <button className="btn btn-text" onClick={() => close()}>閉じる</button>
-      </div>
+
+      {changingPassword ? (
+        <>
+          <div className="field">
+            <label>新しいパスワード</label>
+            <input
+              type="password"
+              autoComplete="new-password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <p className="hint-muted">8文字以上の半角英数字で入力してください</p>
+          </div>
+          <div className="field">
+            <label>新しいパスワード(確認)</label>
+            <input
+              type="password"
+              autoComplete="new-password"
+              value={newPasswordConfirm}
+              onChange={(e) => setNewPasswordConfirm(e.target.value)}
+            />
+          </div>
+          {pwError && <p className="hint-error">{pwError}</p>}
+          <div className="modal-actions">
+            <button className="btn btn-text" disabled={pwBusy} onClick={cancelChangingPassword}>キャンセル</button>
+            <button className="btn btn-filled" disabled={pwBusy} onClick={submitPasswordChange}>
+              {pwBusy ? '変更中...' : '変更する'}
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <button type="button" className="inline-link" onClick={startChangingPassword}>パスワードを変更</button>
+          {pwSuccess && <p className="hint-muted">パスワードを変更しました。</p>}
+          <div className="modal-actions">
+            <button className="btn btn-outlined" disabled={busy} onClick={openBilling}>
+              {isSubscribed ? 'プラン管理' : 'プランを見る'}
+            </button>
+            <button className="btn btn-text" onClick={() => close()}>閉じる</button>
+          </div>
+        </>
+      )}
     </ModalShell>
   );
 }
