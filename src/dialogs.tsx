@@ -121,6 +121,7 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
   const [busy, setBusy] = useState(false);
 
   const [changingPassword, setChangingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [pwError, setPwError] = useState<string | null>(null);
@@ -155,6 +156,7 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
     setChangingPassword(true);
     setPwSuccess(false);
     setPwError(null);
+    setCurrentPassword('');
     setNewPassword('');
     setNewPasswordConfirm('');
   }
@@ -162,12 +164,17 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
   function cancelChangingPassword() {
     setChangingPassword(false);
     setPwError(null);
+    setCurrentPassword('');
     setNewPassword('');
     setNewPasswordConfirm('');
   }
 
   async function submitPasswordChange() {
     setPwError(null);
+    if (currentPassword === '') {
+      setPwError('現在のパスワードを入力してください。');
+      return;
+    }
     if (!/^[A-Za-z0-9]{8,}$/.test(newPassword)) {
       setPwError('パスワードは8文字以上の半角英数字で入力してください。');
       return;
@@ -176,13 +183,25 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
       setPwError('パスワードが一致しません。');
       return;
     }
+    if (email == null) {
+      setPwError('メールアドレスを取得できませんでした。時間をおいて再度お試しください。');
+      return;
+    }
     setPwBusy(true);
     try {
+      // なりすまし防止(セッションが乗っ取られた端末等からの不正な変更を防ぐ)のため、
+      // 現在のパスワードで再認証できた場合のみ変更を許可する。
+      const { error: reauthError } = await supabase.auth.signInWithPassword({ email, password: currentPassword });
+      if (reauthError) {
+        setPwError('現在のパスワードが正しくありません。');
+        return;
+      }
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) {
         setPwError(translateAuthError(error.message));
       } else {
         setChangingPassword(false);
+        setCurrentPassword('');
         setNewPassword('');
         setNewPasswordConfirm('');
         setPwSuccess(true);
@@ -199,6 +218,15 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
 
       {changingPassword ? (
         <>
+          <div className="field">
+            <label>現在のパスワード</label>
+            <input
+              type="password"
+              autoComplete="current-password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+            />
+          </div>
           <div className="field">
             <label>新しいパスワード</label>
             <input
