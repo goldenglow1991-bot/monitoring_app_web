@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { openDialog, ModalShell } from './dialogHost';
 import { itemCategories, itemCatalog, tonePresets, facilityTypePresets } from './items';
 import type { DeletedUser, MonthlyRecord, User } from './types';
@@ -7,7 +7,8 @@ import { termsText } from './termsContent';
 import { privacyText } from './privacyContent';
 import { tokushohoText } from './tokushohoContent';
 import { planTiers, freeGenerationLimit } from './stripePrices';
-import { createCheckoutSession } from './storage';
+import { createCheckoutSession, createPortalSession, loadConfig, loadUsers } from './storage';
+import { supabase } from './supabaseClient';
 
 // ---- 汎用: 警告・確認 ----
 
@@ -113,6 +114,52 @@ export function showPricingDialog(currentResidentCount: number): Promise<void> {
   return openDialog<void>((close) => (
     <PricingDialogView currentResidentCount={currentResidentCount} close={close} />
   ));
+}
+
+function AccountDialogView({ close }: { close: (value: void) => void }) {
+  const [email, setEmail] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
+  }, []);
+
+  const config = loadConfig();
+  const isSubscribed = config.subscription_status === 'active' || config.subscription_status === 'trialing';
+
+  async function openBilling() {
+    setBusy(true);
+    try {
+      if (isSubscribed) {
+        const url = await createPortalSession();
+        window.location.href = url;
+      } else {
+        close();
+        await showPricingDialog(Math.max(loadUsers().length, config.expected_resident_count ?? 0));
+      }
+    } catch (e) {
+      await showWarning('エラー', e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <ModalShell width={360}>
+      <h2 className="modal-title">アカウント</h2>
+      <p className="modal-body">{email ?? '読み込み中...'}</p>
+      <div className="modal-actions">
+        <button className="btn btn-outlined" disabled={busy} onClick={openBilling}>
+          {isSubscribed ? 'プラン管理' : 'プランを見る'}
+        </button>
+        <button className="btn btn-text" onClick={() => close()}>閉じる</button>
+      </div>
+    </ModalShell>
+  );
+}
+
+export function showAccountDialog(): Promise<void> {
+  return openDialog<void>((close) => <AccountDialogView close={close} />);
 }
 
 const usageGuideText = `① 利用者を追加

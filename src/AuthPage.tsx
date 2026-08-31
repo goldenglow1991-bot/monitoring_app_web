@@ -64,6 +64,10 @@ export function AuthPage({
       setErrorText('メールアドレスとパスワードを入力してください。');
       return;
     }
+    if (mode === 'signup' && !/^[A-Za-z0-9]{8,}$/.test(password)) {
+      setErrorText('パスワードは8文字以上の半角英数字で入力してください。');
+      return;
+    }
     if (mode === 'signup' && !agreedToTerms) {
       setErrorText('利用規約への同意が必要です。');
       return;
@@ -210,6 +214,7 @@ export function AuthPage({
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                  {mode === 'signup' && <p className="hint-muted">8文字以上の半角英数字で入力してください</p>}
                 </div>
 
                 {mode === 'login' && (

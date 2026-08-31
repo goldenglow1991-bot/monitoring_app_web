@@ -109,10 +109,49 @@
   padding: 20px 32px;
   font-size: 20px;
 }
-.start-usage-link {
-  margin-top: 24px;
-  font-size: 16px;
+.start-menu {
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }
+.start-menu-btn {
+  font-size: 30px;
+  padding: 6px 16px;
+  line-height: 1;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+}
+.start-menu-btn:hover { background: #eee; }
+.start-menu-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  flex-direction: column;
+  min-width: 160px;
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  z-index: 10;
+}
+.start-menu:hover .start-menu-dropdown,
+.start-menu-dropdown.start-menu-dropdown-open {
+  display: flex;
+}
+.start-menu-dropdown button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 12px 18px;
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+}
+.start-menu-dropdown button:hover { background: var(--teal-light); }
 
 .auth-card {
   margin-top: 32px;
@@ -146,15 +185,6 @@
 .auth-submit {
   width: 100%;
   margin-top: 8px;
-}
-.logout-link {
-  margin-top: 16px;
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 15px;
-  text-decoration: underline;
-  cursor: pointer;
 }
 
 /* ---------- home page layout ---------- */
