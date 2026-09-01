@@ -150,18 +150,10 @@ export function HomePage({ onExit }: { onExit: () => void }) {
   const yearMonth = `${year}-${month}`;
 
   useEffect(() => {
+    // Stripe Checkoutからの戻り(?checkout=success)の検知とプラン情報の
+    // 再取得は、StartPage/HomePageどちらが表示されるかに関わらず必ず
+    // 一度通るApp.tsx側(ログイン直後のデータ読み込み)で行っている。
     storage.getMonthlyUsageCount().then(setMonthlyUsageCount).catch((e) => console.error('利用状況の取得に失敗しました', e));
-
-    const checkoutResult = new URLSearchParams(window.location.search).get('checkout');
-    if (checkoutResult) {
-      window.history.replaceState({}, '', window.location.pathname);
-      if (checkoutResult === 'success') {
-        // Webhookの反映に多少タイムラグがあるため、少し待ってから最新状態を取り直す。
-        setTimeout(() => {
-          storage.loadAll().then(() => setConfigState(storage.loadConfig())).catch((e) => console.error('設定の再取得に失敗しました', e));
-        }, 2000);
-      }
-    }
   }, []);
 
   const dirtyRef = useRef(false);

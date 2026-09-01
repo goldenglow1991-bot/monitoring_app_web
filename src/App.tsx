@@ -76,6 +76,20 @@ export default function App() {
         console.error('初回施設種別の適用に失敗しました', e);
       }
       await storage.loadAll();
+
+      // Stripe Checkoutから戻ってきた直後は、Webhookの反映に多少
+      // タイムラグがあるため、少し待ってから最新のプラン情報を取り直す。
+      // (この判定はStartPage/HomePageどちらが表示されるかに関わらず、
+      // ログイン直後に必ず一度だけ通るここで行う必要がある。)
+      const checkoutResult = new URLSearchParams(window.location.search).get('checkout');
+      if (checkoutResult) {
+        window.history.replaceState({}, '', window.location.pathname);
+        if (checkoutResult === 'success') {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          await storage.loadAll();
+        }
+      }
+
       if (!cancelled) setDataReady(true);
     })().catch((e) => {
       if (!cancelled) setLoadErrorText(e instanceof Error ? e.message : String(e));
