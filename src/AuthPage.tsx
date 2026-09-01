@@ -26,12 +26,18 @@ export function AuthPage({
   const [errorText, setErrorText] = useState<string | null>(null);
   const [infoText, setInfoText] = useState<string | null>(null);
   const [resetSentTo, setResetSentTo] = useState<string | null>(null);
+  // 画面切り替え直後、タップした位置に新しいボタンが現れて誤って連続タップ
+  // 判定されてしまうのを防ぐため、切り替えてから一瞬(400ms)はボタンを
+  // 無効化する。
+  const [screenJustSwitched, setScreenJustSwitched] = useState(false);
 
   function switchMode(next: Mode) {
     setMode(next);
     setErrorText(null);
     setInfoText(null);
     setResetSentTo(null);
+    setScreenJustSwitched(true);
+    setTimeout(() => setScreenJustSwitched(false), 400);
   }
 
   async function submit() {
@@ -145,7 +151,7 @@ export function AuthPage({
 
                   {errorText && <p className="hint-error">{errorText}</p>}
 
-                  <button type="submit" className="btn btn-filled auth-submit" disabled={busy}>
+                  <button type="submit" className="btn btn-filled auth-submit" disabled={busy || screenJustSwitched}>
                     {busy ? '送信中...' : '再設定メールを送信'}
                   </button>
                 </form>
@@ -249,7 +255,7 @@ export function AuthPage({
                 {errorText && <p className="hint-error">{errorText}</p>}
                 {infoText && <p className="hint-muted">{infoText}</p>}
 
-                <button type="submit" className="btn btn-filled auth-submit" disabled={busy}>
+                <button type="submit" className="btn btn-filled auth-submit" disabled={busy || screenJustSwitched}>
                   {busy ? '処理中...' : mode === 'login' ? 'ログイン' : '登録する'}
                 </button>
               </form>
