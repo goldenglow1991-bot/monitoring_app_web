@@ -380,6 +380,9 @@
 }
 .text-muted { color: var(--text-muted); }
 .section-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 700;
   font-size: 17px;
   margin-top: 16px;

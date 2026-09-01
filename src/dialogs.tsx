@@ -371,7 +371,7 @@ function AddUserDialogView({ close }: { close: (value: User | null) => void }) {
   async function submit() {
     const trimmedName = name.trim();
     if (trimmedName === '') {
-      await showWarning('未入力', '名前(漢字)を入力してください。');
+      await showWarning('未入力', '名前を入力してください。');
       return;
     }
     const raw = furigana.trim();
@@ -391,7 +391,7 @@ function AddUserDialogView({ close }: { close: (value: User | null) => void }) {
     <ModalShell width={360} onBackdropClick={() => close(null)}>
       <h2 className="modal-title">利用者を追加</h2>
       <div className="field">
-        <label>名前(漢字)</label>
+        <label>名前(漢字・ひらがな・カタカナ)</label>
         <input autoFocus value={name} onChange={(e) => setName(e.target.value)} />
       </div>
       <div className="field">

@@ -933,16 +933,54 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           <span className="right-panel-user-name">利用者: {selectedUser.name}</span>
           <button className="btn btn-outlined btn-pill" onClick={openHistoryDialog}>過去の記録を見る</button>
           <button className="btn btn-outlined btn-pill" onClick={openAddPastRecordDialog}>過去の記録の追加・編集</button>
+          <button
+            type="button"
+            className="usage-guide-btn"
+            aria-label="過去の記録の追加・編集について"
+            title="過去の記録の追加・編集について"
+            onClick={() => showWarning(
+              '過去の記録の追加・編集',
+              '今表示している対象年月以外の、過去の月の記録をあとから追加・編集できます。過去3か月分の記録を入力しておくと、AIによる文章生成の精度が上がります。',
+            )}
+          >
+            ?
+          </button>
         </div>
         <div className="right-panel-row">
           <span>留意点(重要な既往歴や注意事項)</span>
           <button className="btn btn-filled" onClick={openEditPrecautionsDialog}>留意点を追加・編集</button>
+          <button
+            type="button"
+            className="usage-guide-btn"
+            aria-label="留意点の追加・編集について"
+            title="留意点の追加・編集について"
+            onClick={() => showWarning(
+              '留意点の追加・編集',
+              '既往歴や注意事項など、月をまたいで保持しておきたい情報を記録できます。ここに入力した内容は、対象年月を変更しても保持されます。',
+            )}
+          >
+            ?
+          </button>
         </div>
         <div className="precautions-box">
           {selectedUser.precautions !== '' ? selectedUser.precautions : <span className="text-muted">(留意点は未設定です)</span>}
         </div>
 
-        <div className="section-heading">今月の所見(項目ごとにプルダウン選択+自由記入。左端の☰で並び替え可能)</div>
+        <div className="section-heading">
+          <span>今月の所見(項目ごとにプルダウン選択+自由記入。左端の☰で並び替え可能)</span>
+          <button
+            type="button"
+            className="usage-guide-btn"
+            aria-label="今月の所見について"
+            title="今月の所見について"
+            onClick={() => showWarning(
+              '今月の所見',
+              '各項目は、プルダウンでの選択・自由記入欄への入力のどちらでも構いません。両方空欄のままでも文章は生成できるので、無理にすべて埋める必要はありません。項目左端の「☰」をドラッグすると並び順を入れ替えられ、生成される文章の順番もある程度調整できます。',
+            )}
+          >
+            ?
+          </button>
+        </div>
         <div className="item-list" ref={itemListRef}>
           {visibleItems.length === 0 ? (
             <div className="empty-items-hint">※上部の「モード選択」から所見の項目を選んでください</div>
