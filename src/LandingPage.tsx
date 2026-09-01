@@ -180,7 +180,7 @@ export function LandingPage({
 
       <div className="lp-footer">
         <div className="lp-footer-logo">assist</div>
-        <div>[運営者名] ｜ お問い合わせ: [問い合わせ先メールアドレス]</div>
+        <div>Golden Glow(濱近正治) ｜ お問い合わせ: info@kaigoassist.jp</div>
         <button type="button" className="btn btn-text lp-footer-link" onClick={() => showTokushohoDialog()}>
           特定商取引法に基づく表記
         </button>
