@@ -88,10 +88,19 @@
   position: absolute;
   top: 20px;
   left: 20px;
-  font-size: 34px;
+  width: 48px;
+  height: 48px;
+  font-size: 22px;
   font-weight: 700;
-  padding: 4px 12px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+.start-back-btn:hover { background: var(--teal-dark); }
 .start-page-inner {
   text-align: center;
 }
