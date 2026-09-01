@@ -967,7 +967,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         </div>
 
         <div className="section-heading">
-          <span>今月の所見(項目ごとにプルダウン選択+自由記入。左端の☰で並び替え可能)</span>
+          <span>今月の所見(プルダウン選択+自由記入。左端の☰で並び替え可能)</span>
           <button
             type="button"
             className="usage-guide-btn"
