@@ -12,7 +12,7 @@ import {
   type ItemDef,
 } from './items';
 import { compileNotes, pastRecordsText, buildUserPrompt } from './reportBuilder';
-import { generateDraft, AnthropicError, QuotaExceededError } from './anthropicClient';
+import { generateDraft, AnthropicError, QuotaExceededError, ResidentLimitExceededError } from './anthropicClient';
 import { planTiers, freeGenerationLimit } from './stripePrices';
 import { currentYearMonth, furiganaSortKey, sortUsers } from './utils';
 import {
@@ -27,6 +27,7 @@ import {
   showAddPastRecordDialog,
   showItemVisibilityDialog,
   showPricingDialog,
+  showPlanChangeDialog,
   showUsageGuideDialog,
 } from './dialogs';
 import { ItemRow } from './components/ItemRow';
@@ -384,7 +385,25 @@ export function HomePage({ onExit }: { onExit: () => void }) {
 
   // ---------- users ----------
 
+  // 現在のプラン(未加入なら最小プラン)の登録人数の上限。実際の制限は
+  // api/generate-draft側(サーバー)でも必ず検証しており、ここでの判定は
+  // ユーザーへの早期案内のためのもの。
+  function currentPlanCap(): { cap: number; tierLabel: string } {
+    const isSubscribedNow = config.subscription_status === 'active' || config.subscription_status === 'trialing';
+    const tier = isSubscribedNow ? planTiers.find((t) => t.key === config.subscription_plan) : undefined;
+    const cap = tier?.maxResidents ?? planTiers[0].maxResidents;
+    return { cap, tierLabel: tier?.label ?? `〜${cap}人` };
+  }
+
   async function openAddUserDialog() {
+    const { cap: residentCap, tierLabel } = currentPlanCap();
+    if (users.length >= residentCap) {
+      await showPricingDialog(
+        users.length + 1,
+        `現在のプラン(${tierLabel})では、これ以上利用者を登録できません。引き続き利用者を追加するには、いずれかのプランへのお申し込みが必要です。`,
+      );
+      return;
+    }
     const user = await showAddUserDialog();
     if (!user) return;
     try {
@@ -454,6 +473,14 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     await showRestoreDialog({
       trash,
       onRestore: async (u: DeletedUser) => {
+        const { cap: residentCap, tierLabel } = currentPlanCap();
+        if (storage.loadUsers().length >= residentCap) {
+          await showPricingDialog(
+            storage.loadUsers().length + 1,
+            `現在のプラン(${tierLabel})では、これ以上利用者を登録できません。復元するには、プランを変更するか、他の利用者を削除してください。`,
+          );
+          return false;
+        }
         await storage.restoreUser(u);
         setUsers((prev) => {
           const restored: User = { id: u.id, name: u.name, furigana: u.furigana, precautions: u.precautions };
@@ -461,6 +488,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           sortUsers(next);
           return next;
         });
+        return true;
       },
       onDeletePermanently: async (u: DeletedUser) => {
         await storage.permanentlyDeleteUser(u);
@@ -576,12 +604,15 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     let resultText: string | undefined;
     let errorMessage: string | undefined;
     let quotaExceeded = false;
+    let residentLimitExceeded = false;
     try {
       const accessToken = await storage.getAccessToken();
       resultText = await generateDraft({ accessToken, userPrompt, systemPrompt });
     } catch (e) {
       if (e instanceof QuotaExceededError) {
         quotaExceeded = true;
+      } else if (e instanceof ResidentLimitExceededError) {
+        residentLimitExceeded = true;
       } else {
         errorMessage = e instanceof AnthropicError ? e.message : String(e);
       }
@@ -592,6 +623,15 @@ export function HomePage({ onExit }: { onExit: () => void }) {
 
     if (quotaExceeded) {
       await showPricingDialog(Math.max(users.length, config.expected_resident_count ?? 0));
+      return;
+    }
+
+    if (residentLimitExceeded) {
+      const { tierLabel } = currentPlanCap();
+      await showPricingDialog(
+        users.length,
+        `現在の登録人数(${users.length}人)が、ご利用中のプラン(${tierLabel})の上限を超えています。引き続きご利用いただくには、プランを変更するか、利用者を削除してください。`,
+      );
       return;
     }
 
@@ -671,8 +711,12 @@ export function HomePage({ onExit }: { onExit: () => void }) {
   async function openBilling() {
     try {
       if (isSubscribed) {
-        const url = await storage.createPortalSession();
-        window.location.href = url;
+        await showPlanChangeDialog({
+          currentResidentCount: users.length,
+          currentPlanKey: config.subscription_plan as string | undefined,
+          onOpenGeneralPortal: () => storage.createPortalSession(),
+          onSelectPlan: (planKey) => storage.createPortalSession(planKey),
+        });
       } else {
         await showPricingDialog(Math.max(users.length, config.expected_resident_count ?? 0));
       }

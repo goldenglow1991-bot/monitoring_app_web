@@ -1,6 +1,8 @@
 export class AnthropicError extends Error {}
 // 無料枠(生成10回)を使い切り、プランへの加入が必要な状態。
 export class QuotaExceededError extends Error {}
+// 登録人数が、現在のプラン(または無料枠)の上限人数を超えている状態。
+export class ResidentLimitExceededError extends Error {}
 
 // AI下書き生成は、共有のAnthropic APIキーを保持するサーバー側エンドポイント
 // (api/generate-draft)経由で呼び出す。共有キーはブラウザには一切渡さず、
@@ -34,11 +36,14 @@ export async function generateDraft(params: {
       if (decoded?.error === 'quota_exceeded') {
         throw new QuotaExceededError();
       }
+      if (decoded?.error === 'resident_limit_exceeded') {
+        throw new ResidentLimitExceededError();
+      }
       if (decoded?.detail) {
         detail = decoded.detail;
       }
     } catch (e) {
-      if (e instanceof QuotaExceededError) throw e;
+      if (e instanceof QuotaExceededError || e instanceof ResidentLimitExceededError) throw e;
       // レスポンスがJSONでない場合は本文をそのまま使う
     }
     throw new AnthropicError(`APIエラー(${resp.status}): ${detail}`);

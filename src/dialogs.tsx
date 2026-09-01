@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { openDialog, ModalShell } from './dialogHost';
 import { itemCategories, itemCatalog, tonePresets, facilityTypePresets } from './items';
 import type { DeletedUser, MonthlyRecord, User } from './types';
@@ -50,22 +50,30 @@ export function showPrivacyDialog(): Promise<void> {
 
 function PricingDialogView({
   currentResidentCount,
+  reason,
+  currentPlanKey,
+  selectPlan: selectPlanUrl,
+  footerExtra,
   close,
 }: {
   currentResidentCount: number;
+  reason: string;
+  currentPlanKey?: string;
+  selectPlan: (planKey: string) => Promise<string>;
+  footerExtra?: ReactNode;
   close: (value: void) => void;
 }) {
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [errorText, setErrorText] = useState<string | null>(null);
 
   const eligible = planTiers.filter((t) => t.maxResidents >= currentResidentCount);
-  const recommendedKey = eligible[0]?.key;
+  const recommendedKey = eligible.find((t) => t.key !== currentPlanKey)?.key ?? eligible[0]?.key;
 
   async function selectPlan(planKey: string) {
     setErrorText(null);
     setBusyKey(planKey);
     try {
-      const url = await createCheckoutSession(planKey);
+      const url = await selectPlanUrl(planKey);
       window.location.href = url;
     } catch (e) {
       setErrorText(e instanceof Error ? e.message : String(e));
@@ -76,9 +84,7 @@ function PricingDialogView({
   return (
     <ModalShell width={480} onBackdropClick={() => close()}>
       <h2 className="modal-title">プランを選択</h2>
-      <p className="modal-body">
-        無料の{freeGenerationLimit}回を使い切りました。引き続きAI下書き生成をご利用いただくには、いずれかのプランへのお申し込みが必要です。
-      </p>
+      <p className="modal-body">{reason}</p>
       {eligible.length === 0 && (
         <p className="hint-error">
           現在の登録人数({currentResidentCount}人)に対応するプランがありません。利用者を150人以下に減らすか、お問い合わせください。
@@ -86,7 +92,9 @@ function PricingDialogView({
       )}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {planTiers.map((tier) => {
-          const disabled = tier.maxResidents < currentResidentCount;
+          const isCurrent = tier.key === currentPlanKey;
+          const belowCurrentCount = tier.maxResidents < currentResidentCount;
+          const disabled = isCurrent || belowCurrentCount;
           return (
             <button
               key={tier.key}
@@ -95,14 +103,15 @@ function PricingDialogView({
               onClick={() => selectPlan(tier.key)}
             >
               {tier.label}: {tier.priceYen.toLocaleString()}円/月
-              {tier.key === recommendedKey ? '(おすすめ)' : ''}
-              {disabled ? ' — 利用者を減らしてください' : ''}
+              {isCurrent ? '(現在のプラン)' : tier.key === recommendedKey ? '(おすすめ)' : ''}
+              {!isCurrent && belowCurrentCount ? ' — 利用者を減らしてください' : ''}
               {busyKey === tier.key ? '(処理中...)' : ''}
             </button>
           );
         })}
       </div>
       {errorText && <p className="hint-error">{errorText}</p>}
+      {footerExtra}
       <div className="modal-actions">
         <button className="btn btn-text" onClick={() => close()}>閉じる</button>
       </div>
@@ -110,9 +119,56 @@ function PricingDialogView({
   );
 }
 
-export function showPricingDialog(currentResidentCount: number): Promise<void> {
+export function showPricingDialog(
+  currentResidentCount: number,
+  reason: string = `無料の${freeGenerationLimit}回を使い切りました。引き続きAI下書き生成をご利用いただくには、いずれかのプランへのお申し込みが必要です。`,
+): Promise<void> {
   return openDialog<void>((close) => (
-    <PricingDialogView currentResidentCount={currentResidentCount} close={close} />
+    <PricingDialogView
+      currentResidentCount={currentResidentCount}
+      reason={reason}
+      selectPlan={(planKey) => createCheckoutSession(planKey)}
+      close={close}
+    />
+  ));
+}
+
+// 加入中の事業所向けのプラン変更画面。現在の登録人数を下回るプランは
+// 選べないようにし、Stripe側では「このプランへの変更」を確定するだけの
+// 画面(flow_data)へ直接遷移させる。解約・支払い方法の変更は、通常の
+// Customer Portal(createPortalSession()、planKey省略)へ案内する。
+export function showPlanChangeDialog(params: {
+  currentResidentCount: number;
+  currentPlanKey?: string;
+  onOpenGeneralPortal: () => Promise<string>;
+  onSelectPlan: (planKey: string) => Promise<string>;
+}): Promise<void> {
+  return openDialog<void>((close) => (
+    <PricingDialogView
+      currentResidentCount={params.currentResidentCount}
+      currentPlanKey={params.currentPlanKey}
+      reason="ご利用中のプランを変更できます。現在の登録人数を下回るプランは選択できません。"
+      selectPlan={params.onSelectPlan}
+      footerExtra={
+        <p className="modal-body">
+          <button
+            type="button"
+            className="inline-link"
+            onClick={async () => {
+              try {
+                const url = await params.onOpenGeneralPortal();
+                window.location.href = url;
+              } catch (e) {
+                await showWarning('エラー', e instanceof Error ? e.message : String(e));
+              }
+            }}
+          >
+            解約・お支払い方法の変更はこちら
+          </button>
+        </p>
+      }
+      close={close}
+    />
   ));
 }
 
@@ -139,8 +195,12 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
     setBusy(true);
     try {
       if (isSubscribed) {
-        const url = await createPortalSession();
-        window.location.href = url;
+        await showPlanChangeDialog({
+          currentResidentCount: loadUsers().length,
+          currentPlanKey: config.subscription_plan as string | undefined,
+          onOpenGeneralPortal: () => createPortalSession(),
+          onSelectPlan: (planKey) => createPortalSession(planKey),
+        });
       } else {
         close();
         await showPricingDialog(Math.max(loadUsers().length, config.expected_resident_count ?? 0));
@@ -513,7 +573,7 @@ function RestoreDialogView({
   close,
 }: {
   trash: DeletedUser[];
-  onRestore: (u: DeletedUser) => Promise<void>;
+  onRestore: (u: DeletedUser) => Promise<boolean>;
   onDeletePermanently: (u: DeletedUser) => Promise<void>;
   close: () => void;
 }) {
@@ -535,7 +595,8 @@ function RestoreDialogView({
                 className="icon-btn"
                 title="復元する"
                 onClick={async () => {
-                  await onRestore(user);
+                  const restored = await onRestore(user);
+                  if (!restored) return;
                   const next = trash.filter((x) => x.id !== user.id);
                   setTrash(next);
                   if (next.length === 0) close();
@@ -571,7 +632,7 @@ function RestoreDialogView({
 
 export async function showRestoreDialog(params: {
   trash: DeletedUser[];
-  onRestore: (u: DeletedUser) => Promise<void>;
+  onRestore: (u: DeletedUser) => Promise<boolean>;
   onDeletePermanently: (u: DeletedUser) => Promise<void>;
 }): Promise<void> {
   if (params.trash.length === 0) {

@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
+import { planTiers } from '../src/stripePrices.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -32,7 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   const uid = userData.user.id;
 
-  const { origin } = (req.body ?? {}) as { origin?: string };
+  const { origin, planKey } = (req.body ?? {}) as { origin?: string; planKey?: string };
   if (!origin) {
     res.status(400).json({ error: 'invalid_request' });
     return;
@@ -41,7 +42,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const admin = createClient(supabaseUrl, serviceRoleKey);
   const { data: config, error: configError } = await admin
     .from('facility_config')
-    .select('stripe_customer_id')
+    .select('stripe_customer_id, stripe_subscription_id')
     .eq('user_id', uid)
     .maybeSingle();
   if (configError || !config?.stripe_customer_id) {
@@ -51,9 +52,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const stripe = new Stripe(stripeSecretKey);
   try {
+    // planKey指定時は、プラン変更確認画面へ直接遷移するflow_dataを組み立てる。
+    // (このアプリ側で登録人数の上限チェックを済ませた後にだけ呼ばれる想定。
+    // Stripeの通常のCustomer Portalのプラン変更機能自体は、事業所側の設定で
+    // 無効化し、変更はこの経路からのみ行えるようにする。)
+    let flowData: Stripe.BillingPortal.SessionCreateParams.FlowData | undefined;
+    if (planKey) {
+      const tier = planTiers.find((t) => t.key === planKey);
+      const subscriptionId = config.stripe_subscription_id as string | null | undefined;
+      if (!tier || !tier.stripePriceId || !subscriptionId) {
+        res.status(400).json({ error: 'invalid_request' });
+        return;
+      }
+      const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+      const item = subscription.items.data[0];
+      if (!item) {
+        res.status(400).json({ error: 'no_subscription' });
+        return;
+      }
+      flowData = {
+        type: 'subscription_update_confirm',
+        subscription_update_confirm: {
+          subscription: subscriptionId,
+          items: [{ id: item.id, price: tier.stripePriceId, quantity: 1 }],
+        },
+      };
+    }
+
     const session = await stripe.billingPortal.sessions.create({
       customer: config.stripe_customer_id as string,
       return_url: origin,
+      ...(flowData ? { flow_data: flowData } : {}),
     });
     res.status(200).json({ url: session.url });
   } catch (e) {

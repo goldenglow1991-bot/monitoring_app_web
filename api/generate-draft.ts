@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 import { MODEL_NAME } from '../src/items.js';
-import { freeGenerationLimit } from '../src/stripePrices.js';
+import { freeGenerationLimit, planTiers } from '../src/stripePrices.js';
 import { currentYearMonth } from '../src/utils.js';
 
 const ACTIVE_STATUSES = new Set(['active', 'trialing']);
@@ -53,7 +53,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const admin = createClient(supabaseUrl, serviceRoleKey);
   const { data: config, error: configError } = await admin
     .from('facility_config')
-    .select('free_generations_used, subscription_status')
+    .select('free_generations_used, subscription_status, subscription_plan')
     .eq('user_id', uid)
     .maybeSingle();
   if (configError) {
@@ -64,6 +64,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const freeUsed = (config?.free_generations_used as number | undefined) ?? 0;
   if (!hasActiveSubscription && freeUsed >= freeGenerationLimit) {
     res.status(429).json({ error: 'quota_exceeded' });
+    return;
+  }
+
+  // 登録人数が、現在のプラン(未加入の場合は最小プラン)の上限を超えていないか確認する。
+  // クライアント側の追加時チェックだけでは、加入後に大人数を登録してから
+  // 下位プランへダウングレードする、あるいはクライアントの改変により
+  // 上限チェックを回避されるおそれがあるため、課金機能の実行口である
+  // ここ(サーバー側)でも必ず検証する。
+  const currentTier = hasActiveSubscription
+    ? planTiers.find((t) => t.key === config?.subscription_plan)
+    : undefined;
+  const residentCap = currentTier?.maxResidents ?? planTiers[0].maxResidents;
+  const { count: residentCount, error: residentCountError } = await admin
+    .from('residents')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', uid)
+    .is('deleted_at', null);
+  if (residentCountError) {
+    res.status(500).json({ error: 'db_error', detail: residentCountError.message });
+    return;
+  }
+  if ((residentCount ?? 0) > residentCap) {
+    res.status(429).json({ error: 'resident_limit_exceeded' });
     return;
   }
 

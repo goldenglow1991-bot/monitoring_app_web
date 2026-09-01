@@ -216,8 +216,8 @@ export function createCheckoutSession(planKey: string): Promise<string> {
   return callBillingApi('/api/create-checkout-session', { planKey, origin: window.location.origin });
 }
 
-export function createPortalSession(): Promise<string> {
-  return callBillingApi('/api/create-portal-session', { origin: window.location.origin });
+export function createPortalSession(planKey?: string): Promise<string> {
+  return callBillingApi('/api/create-portal-session', { origin: window.location.origin, planKey });
 }
 
 // キャッシュだけを空に戻す(ログアウト時)。
