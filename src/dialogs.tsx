@@ -214,6 +214,11 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
   return (
     <ModalShell width={360} onBackdropClick={() => close()}>
       <h2 className="modal-title">アカウント</h2>
+      <p className="modal-body">
+        {isSubscribed
+          ? `ご利用中のプラン: ${planTiers.find((t) => t.key === config.subscription_plan)?.label ?? config.subscription_plan}`
+          : `無料枠 残り${Math.max(0, freeGenerationLimit - ((config.free_generations_used as number | undefined) ?? 0))}回`}
+      </p>
       <p className="modal-body">{email ?? '読み込み中...'}</p>
 
       {changingPassword ? (

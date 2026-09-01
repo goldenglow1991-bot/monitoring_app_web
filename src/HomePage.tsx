@@ -943,11 +943,11 @@ export function HomePage({ onExit }: { onExit: () => void }) {
               '今表示している対象年月以外の、過去の月の記録をあとから追加・編集できます。過去3か月分の記録を入力しておくと、AIによる文章生成の精度が上がります。',
             )}
           >
-            ?
+            !
           </button>
         </div>
         <div className="right-panel-row">
-          <span>留意点(重要な既往歴や注意事項)</span>
+          <span className="panel-label-strong">留意点(重要な既往歴や注意事項)</span>
           <button className="btn btn-filled" onClick={openEditPrecautionsDialog}>留意点を追加・編集</button>
           <button
             type="button"
@@ -959,7 +959,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
               '既往歴や注意事項など、月をまたいで保持しておきたい情報を記録できます。ここに入力した内容は、対象年月を変更しても保持されます。',
             )}
           >
-            ?
+            !
           </button>
         </div>
         <div className="precautions-box">
@@ -978,7 +978,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
               '各項目は、プルダウンでの選択・自由記入欄への入力のどちらでも構いません。両方空欄のままでも文章は生成できるので、無理にすべて埋める必要はありません。項目左端の「☰」をドラッグすると並び順を入れ替えられ、生成される文章の順番もある程度調整できます。',
             )}
           >
-            ?
+            !
           </button>
         </div>
         <div className="item-list" ref={itemListRef}>
@@ -1018,7 +1018,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         />
 
         <div className="generation-toolbar">
-          <span>生成結果(内容を確認し、自由に編集してください)</span>
+          <span className="panel-label-strong">生成結果(内容を確認し、自由に編集してください)</span>
           <button className="btn btn-filled" disabled={isGenerating} onClick={handleGenerateDraft}>
             {isGenerating ? '生成中...' : '文章を生成'}
           </button>

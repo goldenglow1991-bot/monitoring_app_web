@@ -379,6 +379,10 @@
   white-space: pre-wrap;
 }
 .text-muted { color: var(--text-muted); }
+.panel-label-strong {
+  font-weight: 700;
+  font-size: 17px;
+}
 .section-heading {
   display: flex;
   align-items: center;
