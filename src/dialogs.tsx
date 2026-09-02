@@ -6,6 +6,7 @@ import { katakanaToHiragana, isHiraganaOnly, translateAuthError } from './utils'
 import { termsText } from './termsContent';
 import { privacyText } from './privacyContent';
 import { tokushohoText } from './tokushohoContent';
+import { announcements } from './announcementsContent';
 import { planTiers, freeGenerationLimit } from './stripePrices';
 import { createCheckoutSession, createPortalSession, loadConfig, loadUsers } from './storage';
 import { supabase } from './supabaseClient';
@@ -404,6 +405,57 @@ const usageGuideText = `① 利用者を追加
 
 その他
 右上の「今月分を出力」から、対象年月の全利用者分の生成結果をまとめてテキストファイルとして書き出すこともできます。`;
+
+// ---- お知らせ(既読状態はブラウザのlocalStorageのみで管理する) ----
+
+const READ_ANNOUNCEMENT_IDS_KEY = 'assist_read_announcement_ids';
+
+function loadReadAnnouncementIds(): Set<string> {
+  try {
+    const raw = localStorage.getItem(READ_ANNOUNCEMENT_IDS_KEY);
+    return new Set(raw ? (JSON.parse(raw) as string[]) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function markAllAnnouncementsRead(): void {
+  try {
+    const ids = new Set(announcements.map((a) => a.id));
+    localStorage.setItem(READ_ANNOUNCEMENT_IDS_KEY, JSON.stringify([...ids]));
+  } catch {
+    // localStorageが使えない環境では既読管理を諦める(機能自体は壊さない)。
+  }
+}
+
+export function hasUnreadAnnouncements(): boolean {
+  const readIds = loadReadAnnouncementIds();
+  return announcements.some((a) => !readIds.has(a.id));
+}
+
+export function showAnnouncementsDialog(): Promise<void> {
+  markAllAnnouncementsRead();
+  return openDialog<void>((close) => (
+    <ModalShell width={480} onBackdropClick={() => close()}>
+      <h2 className="modal-title">お知らせ</h2>
+      {announcements.length === 0 ? (
+        <p className="modal-body">現在、お知らせはありません。</p>
+      ) : (
+        <div className="modal-list modal-list-tall">
+          {announcements.map((a) => (
+            <div key={a.id} className="history-entry">
+              <div className="history-entry-label">{a.date} {a.title}</div>
+              <div className="history-entry-body">{a.body}</div>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="modal-actions">
+        <button className="btn btn-text" onClick={() => close()}>閉じる</button>
+      </div>
+    </ModalShell>
+  ));
+}
 
 export function showUsageGuideDialog(): Promise<void> {
   return openDialog<void>((close) => (
@@ -851,22 +903,11 @@ function ItemVisibilityDialogView({
   const [keys, setKeys] = useState<Set<string>>(new Set(enabledKeys));
   const [selectedPreset, setSelectedPreset] = useState<string>(() => matchingPresetKey(new Set(enabledKeys)));
   const [toneKey, setToneKey] = useState(currentToneKey);
-  const [expanded, setExpanded] = useState(false);
 
   return (
-    <ModalShell width={expanded ? 900 : 440} onBackdropClick={() => close()}>
-      <h2 className="modal-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        モード選択
-        <button
-          type="button"
-          className="btn btn-text"
-          style={{ fontSize: 13, fontWeight: 600 }}
-          onClick={() => setExpanded((v) => !v)}
-        >
-          {expanded ? '通常サイズに戻す' : '画面を大きくする'}
-        </button>
-      </h2>
-      <div className="modal-list modal-list-tall" style={expanded ? { maxHeight: '75vh' } : undefined}>
+    <ModalShell width={440} onBackdropClick={() => close()}>
+      <h2 className="modal-title">モード選択</h2>
+      <div className="modal-list modal-list-tall">
         <div className="facility-preset-label">言葉遣い</div>
         <select
           className="facility-preset-select"

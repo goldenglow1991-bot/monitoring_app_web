@@ -1,10 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from './supabaseClient';
-import { showUsageGuideDialog, showAccountDialog } from './dialogs';
+import { showUsageGuideDialog, showAccountDialog, showAnnouncementsDialog, hasUnreadAnnouncements } from './dialogs';
 
 export function StartPage({ onStart }: { onStart: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const [hasUnread, setHasUnread] = useState(() => hasUnreadAnnouncements());
+
+  async function openAnnouncements() {
+    await showAnnouncementsDialog();
+    setHasUnread(false);
+  }
 
   // メニュー表示中に外側をタップ/クリックしたら閉じる。
   useEffect(() => {
@@ -18,6 +24,16 @@ export function StartPage({ onStart }: { onStart: () => void }) {
 
   return (
     <div className="start-page">
+      <button
+        type="button"
+        className="start-announce-btn"
+        aria-label="お知らせ"
+        title="お知らせ"
+        onClick={openAnnouncements}
+      >
+        🔔
+        {hasUnread && <span className="start-announce-badge" />}
+      </button>
       <div className="start-menu" ref={menuRef}>
         <button
           type="button"
