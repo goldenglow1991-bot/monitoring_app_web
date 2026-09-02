@@ -78,9 +78,9 @@ function UserListPageNav({
 }) {
   return (
     <div className="user-list-nav">
-      <button className="user-list-nav-btn" onClick={onPrevPage} title="前の表示" aria-label="前の表示">‹</button>
+      <button className="user-list-nav-btn" onClick={onPrevPage} title="前の表示" aria-label="前の表示">◀</button>
       <span className="user-list-nav-label">{label}</span>
-      <button className="user-list-nav-btn" onClick={onNextPage} title="次の表示" aria-label="次の表示">›</button>
+      <button className="user-list-nav-btn" onClick={onNextPage} title="次の表示" aria-label="次の表示">▶</button>
     </div>
   );
 }
