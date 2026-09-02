@@ -917,6 +917,24 @@ export function HomePage({ onExit }: { onExit: () => void }) {
   const narrow = contentWidth > 0 && contentWidth < 640;
   const narrowBreakpoint = 640;
   const comfortableBreakpoint = 900;
+
+  // スマホ幅では、留意点・所見欄をスクロールしている間だけ上部バー(年月・
+  // プラン選択等)を隠し、画面を広く使えるようにする。一番上まで戻るか、
+  // 上方向にスクロールしたら再び表示する。
+  const [topBarHidden, setTopBarHidden] = useState(false);
+  const lastScrollTopRef = useRef(0);
+  function handleMobileContentScroll(e: React.UIEvent<HTMLDivElement>) {
+    const scrollTop = e.currentTarget.scrollTop;
+    const delta = scrollTop - lastScrollTopRef.current;
+    if (scrollTop <= 8) {
+      setTopBarHidden(false);
+    } else if (delta > 4) {
+      setTopBarHidden(true);
+    } else if (delta < -4) {
+      setTopBarHidden(false);
+    }
+    lastScrollTopRef.current = scrollTop;
+  }
   const widthRatio = Math.min(1, Math.max(0, (contentWidth - narrowBreakpoint) / (comfortableBreakpoint - narrowBreakpoint)));
   const sidebarWidth = 190 + (220 - 190) * widthRatio;
   const topBarStacked = topBarWidth > 0 && topBarWidth < 1000;
@@ -946,7 +964,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           <span>{statusText}</span>
         </div>
       )}
-      <div className="top-bar" ref={topBarRef}>
+      <div className={`top-bar${mobile && topBarHidden ? ' top-bar-hidden' : ''}`} ref={topBarRef}>
         <div className={`top-bar-inner${topBarStacked ? ' top-bar-stacked' : ''}`}>
           <div className="top-bar-group">
             <button className="btn btn-filled btn-compact" onClick={saveAndExit}>保存して終了</button>
@@ -988,7 +1006,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
               onDelete={deleteUser}
               onRestore={openRestoreDialog}
             />
-            <div className="right-panel-scroll">
+            <div className="right-panel-scroll" onScroll={handleMobileContentScroll}>
               {renderRightPanel()}
             </div>
           </div>
