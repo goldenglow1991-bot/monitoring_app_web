@@ -12,7 +12,7 @@ import {
   type ItemDef,
 } from './items';
 import { compileNotes, pastRecordsText, buildUserPrompt } from './reportBuilder';
-import { generateDraft, AnthropicError, QuotaExceededError, ResidentLimitExceededError } from './anthropicClient';
+import { generateDraft, AnthropicError, QuotaExceededError, ResidentLimitExceededError, MonthlyLimitExceededError } from './anthropicClient';
 import { planTiers, freeGenerationLimit } from './stripePrices';
 import { currentYearMonth, furiganaSortKey, sortUsers } from './utils';
 import {
@@ -395,12 +395,31 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     return isSubscribedNow ? `現在のプラン(${tierLabel})` : `無料お試し中(上限${cap}人)`;
   }
 
+  // 上限超過時にプラン変更を促す画面を開く。加入中かどうかで、正しい遷移先
+  // (プラン変更用のCustomer Portal / 新規加入用のCheckout)を必ず出し分ける
+  // (加入中なのに新規加入用の画面を開くと、二重にサブスクを作ってしまう
+  // おそれがあるため)。
+  async function promptPlanUpgrade(reason: string, residentCountForDisplay: number) {
+    const { isSubscribedNow } = currentPlanCap();
+    if (isSubscribedNow) {
+      await showPlanChangeDialog({
+        currentResidentCount: residentCountForDisplay,
+        currentPlanKey: config.subscription_plan as string | undefined,
+        reason,
+        onOpenGeneralPortal: () => storage.createPortalSession(),
+        onSelectPlan: (planKey) => storage.createPortalSession(planKey),
+      });
+    } else {
+      await showPricingDialog(residentCountForDisplay, reason);
+    }
+  }
+
   async function openAddUserDialog() {
     const { cap: residentCap } = currentPlanCap();
     if (users.length >= residentCap) {
-      await showPricingDialog(
-        users.length + 1,
+      await promptPlanUpgrade(
         `${planPhrase()}では、これ以上利用者を登録できません。引き続き利用者を追加するには、いずれかのプランへのお申し込みが必要です。`,
+        users.length + 1,
       );
       return;
     }
@@ -475,9 +494,9 @@ export function HomePage({ onExit }: { onExit: () => void }) {
       onRestore: async (u: DeletedUser) => {
         const { cap: residentCap } = currentPlanCap();
         if (storage.loadUsers().length >= residentCap) {
-          await showPricingDialog(
-            storage.loadUsers().length + 1,
+          await promptPlanUpgrade(
             `${planPhrase()}では、これ以上利用者を登録できません。復元するには、プランを変更するか、他の利用者を削除してください。`,
+            storage.loadUsers().length + 1,
           );
           return false;
         }
@@ -605,6 +624,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     let errorMessage: string | undefined;
     let quotaExceeded = false;
     let residentLimitExceeded = false;
+    let monthlyLimitExceeded = false;
     try {
       const accessToken = await storage.getAccessToken();
       resultText = await generateDraft({ accessToken, userPrompt, systemPrompt });
@@ -613,6 +633,8 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         quotaExceeded = true;
       } else if (e instanceof ResidentLimitExceededError) {
         residentLimitExceeded = true;
+      } else if (e instanceof MonthlyLimitExceededError) {
+        monthlyLimitExceeded = true;
       } else {
         errorMessage = e instanceof AnthropicError ? e.message : String(e);
       }
@@ -627,9 +649,18 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     }
 
     if (residentLimitExceeded) {
-      await showPricingDialog(
-        users.length,
+      await promptPlanUpgrade(
         `現在の登録人数(${users.length}人)が、${planPhrase()}の上限を超えています。引き続きご利用いただくには、プランを変更するか、利用者を削除してください。`,
+        users.length,
+      );
+      return;
+    }
+
+    if (monthlyLimitExceeded) {
+      const { cap } = currentPlanCap();
+      await promptPlanUpgrade(
+        `今月のAI生成回数が上限(${cap * 3}回)に達しました。これは想定外の大量利用を防ぐための予防的な上限です。来月まで今しばらくお待ちいただくか、上位プランへの変更をご検討ください。`,
+        users.length,
       );
       return;
     }

@@ -90,6 +90,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  // 有料プランでも、月間の生成回数に予防的な上限(プランの上限人数の3倍)を
+  // 設ける。1人あたり月1回の生成が基本のため、作り直し等を考慮しても
+  // 通常の利用では十分な余裕があり、暴走的な利用(API費用の急増等)を
+  // 防ぐためのものであって、通常の利用を制限する意図ではない。
+  const yearMonth = currentYearMonth();
+  const { data: usageRow, error: usageError } = await admin
+    .from('ai_usage')
+    .select('count')
+    .eq('user_id', uid)
+    .eq('year_month', yearMonth)
+    .maybeSingle();
+  if (usageError) {
+    res.status(500).json({ error: 'db_error', detail: usageError.message });
+    return;
+  }
+  const monthlyUsageCount = (usageRow?.count as number | undefined) ?? 0;
+  if (hasActiveSubscription && currentTier) {
+    const monthlyCap = currentTier.maxResidents * 3;
+    if (monthlyUsageCount >= monthlyCap) {
+      res.status(429).json({ error: 'monthly_limit_exceeded' });
+      return;
+    }
+  }
+
   let anthropicRes: Response;
   try {
     anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -138,16 +162,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .from('facility_config')
       .upsert({ user_id: uid, free_generations_used: freeUsed + 1 });
   }
-  const yearMonth = currentYearMonth();
-  const { data: usageRow } = await admin
-    .from('ai_usage')
-    .select('count')
-    .eq('user_id', uid)
-    .eq('year_month', yearMonth)
-    .maybeSingle();
   await admin
     .from('ai_usage')
-    .upsert({ user_id: uid, year_month: yearMonth, count: ((usageRow?.count as number | undefined) ?? 0) + 1 });
+    .upsert({ user_id: uid, year_month: yearMonth, count: monthlyUsageCount + 1 });
 
   res.status(200).json({ text });
 }

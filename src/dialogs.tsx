@@ -174,6 +174,7 @@ export function showPricingDialog(
 export function showPlanChangeDialog(params: {
   currentResidentCount: number;
   currentPlanKey?: string;
+  reason?: string;
   onOpenGeneralPortal: () => Promise<string>;
   onSelectPlan: (planKey: string) => Promise<string>;
 }): Promise<void> {
@@ -181,7 +182,7 @@ export function showPlanChangeDialog(params: {
     <PricingDialogView
       currentResidentCount={params.currentResidentCount}
       currentPlanKey={params.currentPlanKey}
-      reason="ご利用中のプランを変更できます。現在の登録人数を下回るプランは選択できません。"
+      reason={params.reason ?? 'ご利用中のプランを変更できます。現在の登録人数を下回るプランは選択できません。'}
       selectPlan={params.onSelectPlan}
       footerExtra={
         <p className="modal-body">
