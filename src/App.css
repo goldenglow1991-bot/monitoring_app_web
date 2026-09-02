@@ -201,6 +201,8 @@
 
 .auth-card {
   margin-top: 32px;
+  margin-left: auto;
+  margin-right: auto;
   width: min(320px, 100%);
   text-align: left;
   background: #fff;
@@ -858,9 +860,9 @@
   .start-subtitle { font-size: 12px; }
   .start-button { padding: 14px 22px; font-size: 16px; margin-top: 28px; }
   .start-back-btn { font-size: 26px; top: 12px; left: 12px; }
-  .start-menu-btn, .start-announce-btn { width: 40px; height: 40px; font-size: 17px; top: 12px; }
-  .start-menu { right: 12px; }
-  .start-announce-btn { right: 60px; }
+  .start-menu-btn, .start-announce-btn { width: 40px; height: 40px; font-size: 17px; }
+  .start-menu { top: 12px; right: 12px; }
+  .start-announce-btn { top: 12px; right: 60px; }
   .auth-card { padding: 14px; }
 
   .top-bar { padding: 6px 10px; }
