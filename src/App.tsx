@@ -5,7 +5,7 @@ import { HomePage } from './HomePage';
 import { AuthPage } from './AuthPage';
 import { LandingPage } from './LandingPage';
 import { ResetPasswordPage } from './ResetPasswordPage';
-import { DialogHost } from './dialogHost';
+import { DialogHost, closeAllDialogs } from './dialogHost';
 import { supabase } from './supabaseClient';
 import * as storage from './storage';
 import './App.css';
@@ -95,6 +95,9 @@ export default function App() {
         if (prev?.user.id !== newSession?.user.id) {
           setDataReady(false);
           storage.clearCache();
+          // ログアウト・別ユーザーへの切り替え時、開きっぱなしのダイアログが
+          // 前のユーザーのデータのまま次のユーザーに表示され続けるのを防ぐ。
+          closeAllDialogs();
         }
         return newSession;
       });

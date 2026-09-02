@@ -30,6 +30,7 @@ import {
   showPlanChangeDialog,
   showUsageGuideDialog,
 } from './dialogs';
+import { closeAllDialogs } from './dialogHost';
 import { ItemRow } from './components/ItemRow';
 import { UserListPanelWide, UserListPanelNarrow, UserSelectorMobile, type UserListPage } from './components/UserListPanel';
 import { DndContext, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
@@ -786,6 +787,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
       const ok = await finalizeCurrentRecord();
       if (!ok) return;
     }
+    closeAllDialogs();
     onExit();
   }
 
@@ -796,6 +798,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     if (selectedUserIdRef.current != null) {
       await finalizeCurrentRecord({ silent: true });
     }
+    closeAllDialogs();
     onExit();
   }
   saveAndExitRef.current = silentSaveAndExit;

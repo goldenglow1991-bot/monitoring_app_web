@@ -132,3 +132,120 @@ drop policy if exists ai_usage_owner_read on ai_usage;
 create policy ai_usage_owner_read on ai_usage
   for select
   using (auth.uid() = user_id);
+
+-- ---------- facility_configの課金関連列を、サービスロール以外の書き込みから保護 ----------
+-- RLSは行単位(自分のuser_idの行かどうか)しか制限できず、列単位の制限はできない。
+-- そのため、facility_config_ownerポリシーだけでは、ログイン中の本人がクライアントから
+-- 直接subscription_status等を書き換えてプランを自称できてしまう。Stripeの
+-- Webhook/生成API(サービスロールキー使用)以外からのINSERT/UPDATEでは、
+-- これらの列を常に既存値(INSERT時はNULL/0)に固定することで、実質的に
+-- サービスロールのみが書き込めるようにする。
+create or replace function facility_config_protect_billing_columns()
+returns trigger as $$
+begin
+  if auth.role() is distinct from 'service_role' then
+    if TG_OP = 'UPDATE' then
+      new.subscription_status := old.subscription_status;
+      new.subscription_plan := old.subscription_plan;
+      new.stripe_customer_id := old.stripe_customer_id;
+      new.stripe_subscription_id := old.stripe_subscription_id;
+      new.free_generations_used := old.free_generations_used;
+    elsif TG_OP = 'INSERT' then
+      new.subscription_status := null;
+      new.subscription_plan := null;
+      new.stripe_customer_id := null;
+      new.stripe_subscription_id := null;
+      new.free_generations_used := 0;
+    end if;
+  end if;
+  return new;
+end;
+$$ language plpgsql;
+
+drop trigger if exists facility_config_protect_billing on facility_config;
+create trigger facility_config_protect_billing
+  before insert or update on facility_config
+  for each row execute function facility_config_protect_billing_columns();
+
+-- ---------- 無料枠/月間生成回数のアトミックな予約・解放 ----------
+-- 「上限チェック→(時間のかかるAI呼び出し)→カウント更新」という手順を
+-- サーバー側(api/generate-draft.ts)のJavaScriptで行うと、ほぼ同時に届いた
+-- 複数リクエストが両方とも古いカウントでチェックを通過してしまう(TOCTOU)。
+-- これを防ぐため、チェックとカウント更新を1つのUPDATE文で行い、Postgresの
+-- 行ロックにより同一ユーザーの同時リクエストを直列化する。AI呼び出し前に
+-- reserveで枠を確保し、AI呼び出しが失敗した場合のみreleaseで1つ戻す。
+--
+-- これらの関数はp_user_idを検証なしに受け取るため、クライアントから直接
+-- 呼び出せるとp_limit/p_capを自由に指定して上限を無効化できてしまう。
+-- そのため実行権限をservice_roleのみに限定する(下のrevoke/grantを参照)。
+
+create or replace function reserve_free_generation(p_user_id uuid, p_limit integer)
+returns boolean
+language plpgsql
+as $$
+declare
+  v_count integer;
+begin
+  insert into facility_config (user_id, free_generations_used)
+  values (p_user_id, 0)
+  on conflict (user_id) do nothing;
+
+  update facility_config
+    set free_generations_used = free_generations_used + 1
+    where user_id = p_user_id
+      and free_generations_used < p_limit;
+
+  get diagnostics v_count = row_count;
+  return v_count > 0;
+end;
+$$;
+
+create or replace function release_free_generation(p_user_id uuid)
+returns void
+language sql
+as $$
+  update facility_config
+    set free_generations_used = greatest(free_generations_used - 1, 0)
+    where user_id = p_user_id;
+$$;
+
+-- p_capにnullを渡すと上限チェックをせず、カウント(表示用)のみ増やす。
+create or replace function reserve_monthly_usage(p_user_id uuid, p_year_month text, p_cap integer)
+returns boolean
+language plpgsql
+as $$
+declare
+  v_count integer;
+begin
+  insert into ai_usage (user_id, year_month, count)
+  values (p_user_id, p_year_month, 0)
+  on conflict (user_id, year_month) do nothing;
+
+  update ai_usage
+    set count = count + 1
+    where user_id = p_user_id
+      and year_month = p_year_month
+      and (p_cap is null or count < p_cap);
+
+  get diagnostics v_count = row_count;
+  return v_count > 0;
+end;
+$$;
+
+create or replace function release_monthly_usage(p_user_id uuid, p_year_month text)
+returns void
+language sql
+as $$
+  update ai_usage
+    set count = greatest(count - 1, 0)
+    where user_id = p_user_id and year_month = p_year_month;
+$$;
+
+revoke all on function reserve_free_generation(uuid, integer) from public;
+revoke all on function release_free_generation(uuid) from public;
+revoke all on function reserve_monthly_usage(uuid, text, integer) from public;
+revoke all on function release_monthly_usage(uuid, text) from public;
+grant execute on function reserve_free_generation(uuid, integer) to service_role;
+grant execute on function release_free_generation(uuid) to service_role;
+grant execute on function reserve_monthly_usage(uuid, text, integer) to service_role;
+grant execute on function release_monthly_usage(uuid, text) to service_role;

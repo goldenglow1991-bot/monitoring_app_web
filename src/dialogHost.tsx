@@ -30,6 +30,16 @@ export function openDialog<T>(render: (close: (value: T) => void) => ReactNode):
   });
 }
 
+// ログアウト・ユーザー切り替え・ホーム画面からの離脱時に呼ぶ。開いたまま放置された
+// ダイアログが、共有端末での次の利用者に(前の利用者のデータのまま)表示され続けたり、
+// 古いクロージャで別の利用者の記録に書き込まれたりするのを防ぐ。
+// (呼び出し元のPromiseはresolveされないまま残るが、close()未呼び出しのままの
+// 破棄は元々openDialog利用側で想定されている挙動であり、問題ない。)
+export function closeAllDialogs() {
+  entries = [];
+  notify();
+}
+
 export function DialogHost() {
   const [list, setList] = useState<Entry[]>(entries);
   useEffect(() => {
