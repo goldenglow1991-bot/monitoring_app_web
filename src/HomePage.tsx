@@ -994,9 +994,23 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           </div>
           <div className="top-bar-group top-bar-group-end">
             <span className="usage-status">
-              {isSubscribed
-                ? `ご利用中: ${planTiers.find((t) => t.key === config.subscription_plan)?.label ?? config.subscription_plan}${monthlyUsageCount != null ? ` ｜ 今月${monthlyUsageCount}回` : ''}`
-                : `無料枠 残り${Math.max(0, freeGenerationLimit - ((config.free_generations_used as number | undefined) ?? 0))}回`}
+              {isSubscribed ? (
+                <>
+                  <span className="usage-status-line">
+                    ご利用中: {planTiers.find((t) => t.key === config.subscription_plan)?.label ?? config.subscription_plan}
+                  </span>
+                  {monthlyUsageCount != null && (
+                    <span className="usage-status-line">今月{monthlyUsageCount}回</span>
+                  )}
+                </>
+              ) : (
+                <>
+                  <span className="usage-status-line">無料枠</span>
+                  <span className="usage-status-line">
+                    残り{Math.max(0, freeGenerationLimit - ((config.free_generations_used as number | undefined) ?? 0))}回
+                  </span>
+                </>
+              )}
             </span>
             <button className="btn btn-outlined" onClick={openBilling}>{isSubscribed ? 'プラン管理' : 'プラン選択'}</button>
             <button className="btn btn-outlined" onClick={openModeSelectDialog}>モード選択</button>

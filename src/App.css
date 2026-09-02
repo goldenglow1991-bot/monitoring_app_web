@@ -279,7 +279,15 @@
   white-space: nowrap;
 }
 .year-month-picker select { margin: 0 2px; }
-.usage-status { font-size: 15px; font-weight: 700; color: var(--teal-dark); white-space: nowrap; }
+.usage-status {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--teal-dark);
+}
+.usage-status-line { white-space: nowrap; }
 
 .content-area {
   flex: 1;
