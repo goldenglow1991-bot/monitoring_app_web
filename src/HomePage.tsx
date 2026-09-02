@@ -895,7 +895,6 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             <button className="btn btn-filled btn-compact" onClick={saveAndExit}>保存して終了</button>
             <button className="btn btn-filled btn-compact" onClick={finalizeUser}>保存</button>
             <span className="year-month-picker">
-              対象年月:
               <select value={year} onChange={(e) => changeYearMonth(e.target.value, month)}>
                 {TOP_YEAR_VALUES.map((y) => <option key={y} value={y}>{y}</option>)}
               </select>

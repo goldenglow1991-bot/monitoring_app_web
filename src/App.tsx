@@ -23,6 +23,52 @@ export default function App() {
   );
   const [authInitialMode, setAuthInitialMode] = useState<'login' | 'signup'>('login');
 
+  // 1時間操作がないと自動的にログアウトする(共有端末での放置対策)。
+  // ホーム画面限定の「10分で保存してスタート画面に戻る」機能とは別に、
+  // ログイン中は画面によらず常に働く、より長いタイムアウト。
+  useEffect(() => {
+    if (!session) return;
+    const AUTO_LOGOUT_MS = 60 * 60 * 1000;
+    let idleTimer: ReturnType<typeof setTimeout> | null = null;
+    let backgroundedAt: number | null = null;
+
+    const resetIdleTimer = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        supabase.auth.signOut();
+      }, AUTO_LOGOUT_MS);
+    };
+    resetIdleTimer();
+
+    const onActivity = () => resetIdleTimer();
+    document.addEventListener('pointerdown', onActivity);
+
+    // バックグラウンドの間はタイマーが止まっている可能性があるため、
+    // 復帰時に1時間以上経っていればまとめてログアウト扱いにする。
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') {
+        if (idleTimer) clearTimeout(idleTimer);
+        backgroundedAt = Date.now();
+      } else {
+        const at = backgroundedAt;
+        backgroundedAt = null;
+        if (at != null && Date.now() - at >= AUTO_LOGOUT_MS) {
+          supabase.auth.signOut();
+        } else {
+          resetIdleTimer();
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      document.removeEventListener('pointerdown', onActivity);
+      document.removeEventListener('visibilitychange', onVisibility);
+      if (idleTimer) clearTimeout(idleTimer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user.id]);
+
   // LP⇔ログイン画面の行き来をブラウザの履歴に積む。「戻る」ボタンで
   // LPに戻れるようにするため、URLの変更(popstate)に合わせて画面を切り替える。
   useEffect(() => {
