@@ -851,11 +851,22 @@ function ItemVisibilityDialogView({
   const [keys, setKeys] = useState<Set<string>>(new Set(enabledKeys));
   const [selectedPreset, setSelectedPreset] = useState<string>(() => matchingPresetKey(new Set(enabledKeys)));
   const [toneKey, setToneKey] = useState(currentToneKey);
+  const [expanded, setExpanded] = useState(false);
 
   return (
-    <ModalShell width={440} onBackdropClick={() => close()}>
-      <h2 className="modal-title">モード選択</h2>
-      <div className="modal-list modal-list-tall">
+    <ModalShell width={expanded ? 900 : 440} onBackdropClick={() => close()}>
+      <h2 className="modal-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        モード選択
+        <button
+          type="button"
+          className="btn btn-text"
+          style={{ fontSize: 13, fontWeight: 600 }}
+          onClick={() => setExpanded((v) => !v)}
+        >
+          {expanded ? '通常サイズに戻す' : '画面を大きくする'}
+        </button>
+      </h2>
+      <div className="modal-list modal-list-tall" style={expanded ? { maxHeight: '75vh' } : undefined}>
         <div className="facility-preset-label">言葉遣い</div>
         <select
           className="facility-preset-select"

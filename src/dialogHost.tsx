@@ -61,7 +61,7 @@ export function ModalShell({
     <div className="modal-overlay" onMouseDown={(e) => {
       if (e.target === e.currentTarget) onBackdropClick?.();
     }}>
-      <div className="modal-card" style={{ width }}>
+      <div className="modal-card" style={{ width, maxWidth: '100%' }}>
         {children}
       </div>
     </div>
