@@ -105,6 +105,9 @@ function PricingDialogView({
         )}
       </h2>
       <p className="modal-body">{reason}</p>
+      <p className="hint-muted">
+        プランを変更すると、その時点で日割り計算が行われます。上位プランへの変更は差額をその場で請求、下位プランへの変更は差額を次回請求から差し引きます。二重に請求されることはありませんので、安心してご変更いただけます。
+      </p>
       {eligible.length === 0 && (
         <p className="hint-error">
           現在の登録人数({currentResidentCount}人)に対応するプランがありません。利用者を150人以下に減らすか、お問い合わせください。
@@ -137,11 +140,6 @@ function PricingDialogView({
           );
         })}
       </div>
-      {currentPlanKey && (
-        <p className="hint-muted">
-          プランを変更すると、その時点で日割り計算が行われます。上位プランへの変更は差額をその場で請求、下位プランへの変更は差額を次回請求から差し引きます。二重に請求されることはありませんので、安心してご変更いただけます。
-        </p>
-      )}
       {errorText && <p className="hint-error">{errorText}</p>}
       {footerExtra}
       <div className="modal-actions">
