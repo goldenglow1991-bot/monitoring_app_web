@@ -111,14 +111,18 @@ function PricingDialogView({
               disabled={disabled || busyKey != null}
               onClick={() => selectPlan(tier.key)}
             >
-              <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                <span>
-                  {tier.label}: {tier.priceYen.toLocaleString()}円/月
-                  {!isCurrent && belowCurrentCount ? ' — 利用者を減らしてください' : ''}
-                  {busyKey === tier.key ? '(処理中...)' : ''}
+              {isCurrent ? (
+                <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                  <span>{tier.label}: {tier.priceYen.toLocaleString()}円/月</span>
+                  <span>ご利用中</span>
                 </span>
-                {isCurrent && <span>ご利用中</span>}
-              </span>
+              ) : (
+                <>
+                  {tier.label}: {tier.priceYen.toLocaleString()}円/月
+                  {belowCurrentCount ? ' — 利用者を減らしてください' : ''}
+                  {busyKey === tier.key ? '(処理中...)' : ''}
+                </>
+              )}
             </button>
           );
         })}

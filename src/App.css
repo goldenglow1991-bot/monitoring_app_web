@@ -269,7 +269,10 @@
 }
 .right-panel-empty {
   padding: 24px;
-  color: var(--text-muted);
+  padding-top: 100px;
+  color: var(--teal-dark);
+  font-weight: 700;
+  font-size: 20px;
   text-align: center;
 }
 
