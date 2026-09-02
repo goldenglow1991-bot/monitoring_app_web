@@ -66,6 +66,17 @@ function PricingDialogView({
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [errorText, setErrorText] = useState<string | null>(null);
 
+  // Stripeの決済画面等へ遷移した後、ブラウザの「戻る」でbfcacheから
+  // このページがそのまま復元されると、「処理中...」の状態が残ったままに
+  // なってしまうため、pageshowで検知してクリアする。
+  useEffect(() => {
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) setBusyKey(null);
+    };
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, []);
+
   const eligible = planTiers.filter((t) => t.maxResidents >= currentResidentCount);
   const currentTierLabel = currentPlanKey
     ? planTiers.find((t) => t.key === currentPlanKey)?.label ?? currentPlanKey
@@ -203,6 +214,17 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
+  }, []);
+
+  // Stripeの決済・管理画面等へ遷移した後、ブラウザの「戻る」でbfcacheから
+  // このページがそのまま復元されると、ボタンが押せないままになってしまう
+  // ため、pageshowで検知してクリアする。
+  useEffect(() => {
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) setBusy(false);
+    };
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
   }, []);
 
   const config = loadConfig();
