@@ -139,7 +139,7 @@ function PricingDialogView({
       </div>
       {currentPlanKey && (
         <p className="hint-muted">
-          プランを変更すると、その時点で日割り計算が行われます。上位プランへの変更は差額をその場で請求、下位プランへの変更は差額を次回請求から差し引きます。
+          プランを変更すると、その時点で日割り計算が行われます。上位プランへの変更は差額をその場で請求、下位プランへの変更は差額を次回請求から差し引きます。二重に請求されることはありませんので、安心してご変更いただけます。
         </p>
       )}
       {errorText && <p className="hint-error">{errorText}</p>}
