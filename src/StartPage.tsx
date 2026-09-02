@@ -31,7 +31,7 @@ export function StartPage({ onStart }: { onStart: () => void }) {
         title="お知らせ"
         onClick={openAnnouncements}
       >
-        🔔
+        ✉
         {hasUnread && <span className="start-announce-badge" />}
       </button>
       <div className="start-menu" ref={menuRef}>
