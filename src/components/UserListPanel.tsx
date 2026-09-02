@@ -1,4 +1,31 @@
+import { useRef } from 'react';
 import type { User } from '../types';
+
+// 一覧を左右にスワイプすると、あいうえお順の表示を前後に切り替えられる
+// ようにする(タブレットでの操作性向上のため)。縦スクロールを妨げない
+// よう、横方向にはっきり動いた場合だけページ送りとして扱う。
+const SWIPE_THRESHOLD_PX = 50;
+
+function useSwipeNav(onPrevPage: () => void, onNextPage: () => void) {
+  const startRef = useRef<{ x: number; y: number } | null>(null);
+  return {
+    onTouchStart: (e: React.TouchEvent) => {
+      const t = e.touches[0];
+      startRef.current = { x: t.clientX, y: t.clientY };
+    },
+    onTouchEnd: (e: React.TouchEvent) => {
+      const start = startRef.current;
+      startRef.current = null;
+      if (!start) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - start.x;
+      const dy = t.clientY - start.y;
+      if (Math.abs(dx) > SWIPE_THRESHOLD_PX && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        if (dx < 0) onNextPage(); else onPrevPage();
+      }
+    },
+  };
+}
 
 export interface UserListPage {
   label: string;
@@ -51,9 +78,9 @@ function UserListPageNav({
 }) {
   return (
     <div className="user-list-nav">
-      <button className="icon-btn-small" onClick={onPrevPage} title="前の表示">‹</button>
+      <button className="user-list-nav-btn" onClick={onPrevPage} title="前の表示" aria-label="前の表示">‹</button>
       <span className="user-list-nav-label">{label}</span>
-      <button className="icon-btn-small" onClick={onNextPage} title="次の表示">›</button>
+      <button className="user-list-nav-btn" onClick={onNextPage} title="次の表示" aria-label="次の表示">›</button>
     </div>
   );
 }
@@ -63,15 +90,20 @@ function UserListContent({
   selectedUserId,
   onSelectUser,
   isDraftGenerated,
+  onPrevPage,
+  onNextPage,
 }: {
   page: UserListPage;
   selectedUserId: string | null;
   onSelectUser: (u: User) => void;
   isDraftGenerated: (userId: string) => boolean;
+  onPrevPage: () => void;
+  onNextPage: () => void;
 }) {
   const flat = page.label === 'あいうえお順';
+  const swipeHandlers = useSwipeNav(onPrevPage, onNextPage);
   return (
-    <div className="user-list-scroll">
+    <div className="user-list-scroll" {...swipeHandlers}>
       {page.users.map((u, i) => (
         <UserRow
           key={u.id}
@@ -112,6 +144,8 @@ export function UserListPanelWide(props: CommonProps) {
           selectedUserId={props.selectedUserId}
           onSelectUser={props.onSelectUser}
           isDraftGenerated={props.isDraftGenerated}
+          onPrevPage={props.onPrevPage}
+          onNextPage={props.onNextPage}
         />
       </div>
       <ActionButtons onAdd={props.onAdd} onRename={props.onRename} onDelete={props.onDelete} onRestore={props.onRestore} />
@@ -133,6 +167,8 @@ export function UserListPanelNarrow(props: CommonProps) {
             selectedUserId={props.selectedUserId}
             onSelectUser={props.onSelectUser}
             isDraftGenerated={props.isDraftGenerated}
+            onPrevPage={props.onPrevPage}
+            onNextPage={props.onNextPage}
           />
         </div>
         <div className="user-list-narrow-buttons">
