@@ -104,10 +104,10 @@ function emptyItemStatus(): Record<string, string> {
   return result;
 }
 
-// 対象年月の初期値。毎月10日以降は、前回選んでいた月に関わらず当月を優先する
-// (1〜9日の間は、これまで通り前回選んでいた月を復元する)。
+// 対象年月の初期値。毎月7日以降は、前回選んでいた月に関わらず当月を優先する
+// (1〜6日の間は、これまで通り前回選んでいた月を復元する)。
 function defaultYearMonth(): string {
-  if (new Date().getDate() >= 10) {
+  if (new Date().getDate() >= 7) {
     return currentYearMonth();
   }
   const last = (storage.loadConfig().last_year_month as string | undefined) ?? '';
@@ -418,9 +418,14 @@ export function HomePage({ onExit }: { onExit: () => void }) {
   async function openAddUserDialog() {
     const { cap: residentCap } = currentPlanCap();
     if (users.length >= residentCap) {
+      const wanted = users.length + 1;
+      const minTier = planTiers.find((t) => t.maxResidents >= wanted);
+      const planGuide = minTier
+        ? `登録したい人数(${wanted}人)に合わせて、${minTier.label}プラン以上へのお申し込みが必要です。`
+        : `登録したい人数(${wanted}人)に対応するプランがございません。お手数ですがお問い合わせください。`;
       await promptPlanUpgrade(
-        `${planPhrase()}では、これ以上利用者を登録できません。引き続き利用者を追加するには、いずれかのプランへのお申し込みが必要です。`,
-        users.length + 1,
+        `${planPhrase()}では、これ以上利用者を登録できません。${planGuide}`,
+        wanted,
       );
       return;
     }
@@ -935,6 +940,12 @@ export function HomePage({ onExit }: { onExit: () => void }) {
 
   return (
     <div className="home-page">
+      {statusText && (
+        <div className="status-toast">
+          {isGenerating && <span className="status-toast-spinner" />}
+          <span>{statusText}</span>
+        </div>
+      )}
       <div className="top-bar" ref={topBarRef}>
         <div className={`top-bar-inner${topBarStacked ? ' top-bar-stacked' : ''}`}>
           <div className="top-bar-group">
@@ -1096,7 +1107,6 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             <input type="checkbox" checked={draftGenerated} onChange={(e) => onDraftGeneratedToggle(e.target.checked)} />
             確認済み
           </label>
-          <span className="status-text">{statusText}</span>
         </div>
         <textarea
           className="draft-textarea"
