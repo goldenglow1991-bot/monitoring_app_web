@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import type { User } from '../types';
 
 // 一覧を左右にスワイプすると、あいうえお順の表示を前後に切り替えられる
@@ -199,6 +199,25 @@ export function UserSelectorMobile({
   onDelete: () => void;
   onRestore: () => void;
 }) {
+  // <details>はネイティブでは自分のsummaryを再クリックしないと閉じないため、
+  // 他の場所をタップしても開いたままになってしまう。外側タップ・メニュー内の
+  // 操作クリックの両方で明示的に閉じるようにする。
+  const detailsRef = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    const onPointerDown = (e: PointerEvent) => {
+      const el = detailsRef.current;
+      if (el && el.open && !el.contains(e.target as Node)) {
+        el.open = false;
+      }
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, []);
+  function closeMenuAnd(action: () => void) {
+    if (detailsRef.current) detailsRef.current.open = false;
+    action();
+  }
+
   return (
     <div className="user-selector-mobile">
       <select
@@ -217,12 +236,12 @@ export function UserSelectorMobile({
         ))}
       </select>
       <button className="icon-btn" title="利用者を追加" onClick={onAdd}>＋</button>
-      <details className="overflow-menu">
+      <details className="overflow-menu" ref={detailsRef}>
         <summary className="icon-btn" title="その他の操作">⋮</summary>
         <div className="overflow-menu-list">
-          <button onClick={onRename}>選択した利用者を編集</button>
-          <button onClick={onDelete}>選択した利用者を削除</button>
-          <button onClick={onRestore}>削除した利用者一覧</button>
+          <button onClick={() => closeMenuAnd(onRename)}>選択した利用者を編集</button>
+          <button onClick={() => closeMenuAnd(onDelete)}>選択した利用者を削除</button>
+          <button onClick={() => closeMenuAnd(onRestore)}>削除した利用者一覧</button>
         </div>
       </details>
     </div>

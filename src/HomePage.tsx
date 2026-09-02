@@ -920,7 +920,19 @@ export function HomePage({ onExit }: { onExit: () => void }) {
 
   // スマホ幅では、留意点・所見欄をスクロールしている間だけ上部バー(年月・
   // プラン選択等)を隠し、画面を広く使えるようにする。一番上まで戻るか、
-  // 上方向にスクロールしたら再び表示する。
+  // 上方向にスクロールしたら再び表示する。横向き(landscape)のスマホは
+  // 画面幅自体はタブレット並みに広くなり`mobile`判定に入らないため、
+  // 「縦の高さが小さく、かつタッチ操作の端末」も別途対象に含める。
+  const [phoneLandscape, setPhoneLandscape] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-height: 500px) and (pointer: coarse)');
+    const update = () => setPhoneLandscape(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+  const compactTopBar = mobile || phoneLandscape;
+
   const [topBarHidden, setTopBarHidden] = useState(false);
   const lastScrollTopRef = useRef(0);
   function handleMobileContentScroll(e: React.UIEvent<HTMLDivElement>) {
@@ -964,7 +976,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           <span>{statusText}</span>
         </div>
       )}
-      <div className={`top-bar${mobile && topBarHidden ? ' top-bar-hidden' : ''}`} ref={topBarRef}>
+      <div className={`top-bar${compactTopBar && topBarHidden ? ' top-bar-hidden' : ''}`} ref={topBarRef}>
         <div className={`top-bar-inner${topBarStacked ? ' top-bar-stacked' : ''}`}>
           <div className="top-bar-group">
             <button className="btn btn-filled btn-compact" onClick={saveAndExit}>保存して終了</button>
@@ -1015,7 +1027,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             <div className="user-list-narrow-container">
               <UserListPanelNarrow {...listPanelProps} />
             </div>
-            <div className="right-panel-scroll">
+            <div className="right-panel-scroll" onScroll={compactTopBar ? handleMobileContentScroll : undefined}>
               {renderRightPanel()}
             </div>
           </div>
@@ -1024,7 +1036,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             <div className="user-list-wide-container" style={{ width: sidebarWidth }}>
               <UserListPanelWide {...listPanelProps} />
             </div>
-            <div className="right-panel-scroll">
+            <div className="right-panel-scroll" onScroll={compactTopBar ? handleMobileContentScroll : undefined}>
               {renderRightPanel()}
             </div>
           </div>
