@@ -87,9 +87,11 @@ function PricingDialogView({
     <ModalShell width={480} onBackdropClick={() => close()}>
       <h2 className="modal-title">
         プランを選択
-        <span style={{ fontWeight: 400, fontSize: 14, marginLeft: 8, color: 'var(--text-muted)' }}>
-          現在: {currentTierLabel}
-        </span>
+        {!currentPlanKey && (
+          <span style={{ fontWeight: 700, fontSize: 14, marginLeft: 8, color: 'var(--teal-dark)' }}>
+            現在: {currentTierLabel}
+          </span>
+        )}
       </h2>
       <p className="modal-body">{reason}</p>
       {eligible.length === 0 && (
@@ -105,14 +107,18 @@ function PricingDialogView({
           return (
             <button
               key={tier.key}
-              className="btn btn-outlined btn-block"
+              className={`btn btn-outlined btn-block${isCurrent ? ' btn-current-plan' : ''}`}
               disabled={disabled || busyKey != null}
               onClick={() => selectPlan(tier.key)}
             >
-              {tier.label}: {tier.priceYen.toLocaleString()}円/月
-              {isCurrent ? '(現在のプラン)' : ''}
-              {!isCurrent && belowCurrentCount ? ' — 利用者を減らしてください' : ''}
-              {busyKey === tier.key ? '(処理中...)' : ''}
+              <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <span>
+                  {tier.label}: {tier.priceYen.toLocaleString()}円/月
+                  {!isCurrent && belowCurrentCount ? ' — 利用者を減らしてください' : ''}
+                  {busyKey === tier.key ? '(処理中...)' : ''}
+                </span>
+                {isCurrent && <span>ご利用中</span>}
+              </span>
             </button>
           );
         })}

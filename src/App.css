@@ -46,6 +46,11 @@
   text-align: center;
   padding: 8px 6px;
 }
+.btn-current-plan {
+  border-width: 3px;
+  padding: 6px 4px;
+  font-weight: 700;
+}
 
 .icon-btn, .icon-btn-small {
   background: transparent;
