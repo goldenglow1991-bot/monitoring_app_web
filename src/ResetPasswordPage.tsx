@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from './supabaseClient';
+import { translateAuthError } from './utils';
 
 // パスワード再設定メール内のリンクを開くと、SupabaseがPASSWORD_RECOVERY
 // イベントとともに一時的なセッションを発行する。その状態でこの画面を出し、
@@ -16,6 +17,10 @@ export function ResetPasswordPage({ onDone }: { onDone: () => void }) {
       setErrorText('新しいパスワードを入力してください。');
       return;
     }
+    if (!/^[A-Za-z0-9]{8,}$/.test(password)) {
+      setErrorText('パスワードは8文字以上の半角英数字で入力してください。');
+      return;
+    }
     if (password !== confirmPassword) {
       setErrorText('パスワードが一致しません。');
       return;
@@ -24,7 +29,7 @@ export function ResetPasswordPage({ onDone }: { onDone: () => void }) {
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) {
-        setErrorText(error.message);
+        setErrorText(translateAuthError(error.message));
       } else {
         onDone();
       }
@@ -49,6 +54,7 @@ export function ResetPasswordPage({ onDone }: { onDone: () => void }) {
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
             />
+            <p className="hint-muted">8文字以上の半角英数字で入力してください</p>
           </div>
           <div className="field">
             <label>新しいパスワード(確認)</label>

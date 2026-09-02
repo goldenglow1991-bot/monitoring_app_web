@@ -53,15 +53,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const stripe = new Stripe(stripeSecretKey);
   try {
     // planKey指定時は、プラン変更確認画面へ直接遷移するflow_dataを組み立てる。
-    // (このアプリ側で登録人数の上限チェックを済ませた後にだけ呼ばれる想定。
-    // Stripeの通常のCustomer Portalのプラン変更機能自体は、事業所側の設定で
-    // 無効化し、変更はこの経路からのみ行えるようにする。)
+    // (クライアント側で登録人数の上限チェックを済ませた後に呼ばれる想定だが、
+    // クライアントの改変によりそのチェックを回避されるおそれがあるため、
+    // 実際にStripeへ変更を反映する前にサーバー側でも必ず検証する。)
     let flowData: Stripe.BillingPortal.SessionCreateParams.FlowData | undefined;
     if (planKey) {
       const tier = planTiers.find((t) => t.key === planKey);
       const subscriptionId = config.stripe_subscription_id as string | null | undefined;
       if (!tier || !tier.stripePriceId || !subscriptionId) {
         res.status(400).json({ error: 'invalid_request' });
+        return;
+      }
+      const { count: residentCount, error: residentCountError } = await admin
+        .from('residents')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', uid)
+        .is('deleted_at', null);
+      if (residentCountError) {
+        res.status(500).json({ error: 'db_error', detail: residentCountError.message });
+        return;
+      }
+      if ((residentCount ?? 0) > tier.maxResidents) {
+        res.status(429).json({ error: 'resident_limit_exceeded' });
         return;
       }
       const subscription = await stripe.subscriptions.retrieve(subscriptionId);

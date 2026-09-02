@@ -249,3 +249,69 @@ grant execute on function reserve_free_generation(uuid, integer) to service_role
 grant execute on function release_free_generation(uuid) to service_role;
 grant execute on function reserve_monthly_usage(uuid, text, integer) to service_role;
 grant execute on function release_monthly_usage(uuid, text) to service_role;
+
+-- ---------- residentsの登録数を、加入中プラン(未加入なら最小プラン)の上限に制限 ----------
+-- api/generate-draft.tsは生成時にしか人数上限を検証しないため、利用者の追加・
+-- 復元だけを行い生成を一度も呼ばなければ、クライアント側のチェックを回避して
+-- (devtools等から直接residentsへinsert/updateして)上限を超えて登録できてしまう。
+-- そのため、実際に「現役」の利用者になる操作(新規insert、または削除済みからの
+-- 復元でdeleted_atがnullに戻る更新)そのものをDB側でも必ず検証する。
+--
+-- プランの上限人数(maxResidents)は src/stripePrices.ts の値と手動で一致させること。
+create or replace function residents_enforce_plan_cap()
+returns trigger as $$
+declare
+  v_status text;
+  v_plan text;
+  v_cap integer;
+  v_active_count integer;
+  v_should_check boolean;
+begin
+  -- サーバー関数(サービスロールキー使用。復元時のチェック等は呼び出し側で
+  -- 既に行っている)からの操作は対象外とする。
+  if auth.role() = 'service_role' then
+    return new;
+  end if;
+
+  if TG_OP = 'INSERT' then
+    v_should_check := new.deleted_at is null;
+  else
+    v_should_check := new.deleted_at is null and old.deleted_at is not null;
+  end if;
+  if not v_should_check then
+    return new;
+  end if;
+
+  select subscription_status, subscription_plan into v_status, v_plan
+    from facility_config where user_id = new.user_id;
+
+  if v_status is not null and v_status in ('active', 'trialing') then
+    v_cap := case v_plan
+      when 'tier1' then 20
+      when 'tier2' then 40
+      when 'tier3' then 70
+      when 'tier4' then 120
+      when 'tier5' then 150
+      else null
+    end;
+  end if;
+  if v_cap is null then
+    v_cap := 20; -- 無料枠、またはプラン特定不可時は最小プラン相当を上限とする
+  end if;
+
+  select count(*) into v_active_count
+    from residents
+    where user_id = new.user_id and deleted_at is null and id is distinct from new.id;
+
+  if v_active_count + 1 > v_cap then
+    raise exception 'resident_limit_exceeded' using errcode = 'P0001';
+  end if;
+
+  return new;
+end;
+$$ language plpgsql;
+
+drop trigger if exists residents_enforce_plan_cap on residents;
+create trigger residents_enforce_plan_cap
+  before insert or update on residents
+  for each row execute function residents_enforce_plan_cap();

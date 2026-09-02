@@ -296,16 +296,31 @@ const ruleConciseBody =
   '- 重要: 「○○様の状況をご報告いたします」のような書き出しの前置き文は一切書かず、' +
   '1行目から直接、運動や状態に関する具体的な内容で始めること\n';
 
+// facilityTypePresetsのkeyに対応する、AIへの立場設定(書き出し文)。
+// サインアップ時に選んだ施設種別を反映し、常にデイサービス職員視点で
+// 書かせてしまう(訪問系・施設系等で実態と食い違う)ことを防ぐ。
+const facilityRoleSentences: Record<string, string> = {
+  day_service: 'あなたは通所介護・通所リハビリ(デイサービス/デイケア)の機能訓練指導員が作成する、ケアマネージャー向け月次モニタリング報告書の下書き作成を手伝うアシスタントです。',
+  home_care: 'あなたは訪問介護のサービス提供責任者・訪問介護員が作成する、ケアマネージャー向け月次モニタリング報告書の下書き作成を手伝うアシスタントです。',
+  home_nursing: 'あなたは訪問看護師・訪問リハビリ職員が作成する、ケアマネージャー向け月次モニタリング報告書の下書き作成を手伝うアシスタントです。',
+  facility: 'あなたは介護施設(特養・老健・介護医療院・短期入所)の介護職員・生活相談員が作成する、ケアマネージャー向け月次モニタリング報告書の下書き作成を手伝うアシスタントです。',
+  group_home: 'あなたはグループホーム・認知症対応型通所介護の職員が作成する、ケアマネージャー向け月次モニタリング報告書の下書き作成を手伝うアシスタントです。',
+  residential: 'あなたは特定施設・小規模多機能型居宅介護の職員が作成する、ケアマネージャー向け月次モニタリング報告書の下書き作成を手伝うアシスタントです。',
+  care_manager: 'あなたは居宅介護支援事業所のケアマネージャーが作成する、利用者の居宅サービス計画に関する月次モニタリング報告書の下書き作成を手伝うアシスタントです。',
+};
+
 /// [toneKey]はtonePresetsのいずれかのkey(不明な値の場合は'polite'扱い)。
-export function systemPromptFor(toneKey: string): string {
+/// [facilityTypeKey]はfacilityTypePresetsのいずれかのkey。未設定・不明な値の
+/// 場合はデイサービス職員視点(従来通り)を既定値とする。
+export function systemPromptFor(toneKey: string, facilityTypeKey?: string): string {
   const body =
     toneKey === 'soft' ? ruleSoftBody :
     toneKey === 'bullet' ? ruleBulletBody :
     toneKey === 'concise' ? ruleConciseBody :
     rulePoliteBody;
+  const roleSentence = (facilityTypeKey && facilityRoleSentences[facilityTypeKey]) || facilityRoleSentences.day_service;
   return (
-    'あなたはデイサービスの機能訓練指導員が作成する、' +
-    'ケアマネージャー向け月次モニタリング報告書の下書き作成を手伝うアシスタントです。\n' +
+    roleSentence + '\n' +
     '以下の方針を必ず守ってください。\n' +
     body
   );

@@ -619,7 +619,10 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     setIsGenerating(true);
     setStatusText('生成中...');
 
-    const systemPrompt = systemPromptFor((config.tone_preset as string | undefined) ?? defaultTonePresetKey);
+    const systemPrompt = systemPromptFor(
+      (config.tone_preset as string | undefined) ?? defaultTonePresetKey,
+      storage.loadFacilityType(),
+    );
 
     let resultText: string | undefined;
     let errorMessage: string | undefined;
@@ -670,6 +673,8 @@ export function HomePage({ onExit }: { onExit: () => void }) {
       await showWarning('生成エラー', `${requestingName}さん(${requestingTarget})の文章生成に失敗しました:\n${errorMessage}`);
       return;
     }
+
+    storage.getMonthlyUsageCount().then(setMonthlyUsageCount).catch((e) => console.error('利用状況の取得に失敗しました', e));
 
     const stillShowing = selectedUserIdRef.current === requestingUserId && yearMonthRef.current === requestingTarget;
     if (stillShowing) {

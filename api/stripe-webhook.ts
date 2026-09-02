@@ -81,7 +81,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       case 'customer.subscription.updated':
       case 'customer.subscription.deleted': {
-        const sub = event.data.object as Stripe.Subscription;
+        // event.data.objectはこのイベントが発生した時点のスナップショットであり、
+        // Stripeはイベントの配信順序を保証していない。短時間に複数回の変更が
+        // あった場合、古いイベントが後から届いて新しい状態を上書きしないよう、
+        // 常にAPIから最新の状態を取り直してから反映する。
+        const subId = (event.data.object as Stripe.Subscription).id;
+        const sub = await stripe.subscriptions.retrieve(subId);
         await applySubscription(sub);
         break;
       }

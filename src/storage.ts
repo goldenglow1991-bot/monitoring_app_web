@@ -93,6 +93,10 @@ let residentsCache: User[] = [];
 let deletedResidentsCache: DeletedUser[] = [];
 const recordsCache = new Map<string, MonthlyRecord[]>();
 let configCache: AppConfig = {};
+// サインアップ時に選んだ施設種別(ユーザーメタデータ)。AIへの立場設定
+// (systemPromptFor)の切り替えに使う。手動でプリセットを選び直しても
+// ここは更新されない(あくまでサインアップ時点の値)。
+let facilityTypeCache: string | undefined;
 
 async function requireUserId(): Promise<string> {
   const { data, error } = await supabase.auth.getSession();
@@ -139,14 +143,16 @@ export async function applyInitialFacilityTypeFromSignup(): Promise<void> {
 
 // ログイン後、画面を表示する前に一度だけ呼ぶ。全データをキャッシュへ読み込む。
 export async function loadAll(): Promise<void> {
-  const [residentsRes, recordsRes, configRes] = await Promise.all([
+  const [residentsRes, recordsRes, configRes, userRes] = await Promise.all([
     supabase.from('residents').select('id, name, furigana, precautions, deleted_at').order('created_at', { ascending: true }),
     supabase.from('monthly_records').select('resident_id, year_month, notes, items, extra_notes, report, draft, draft_generated, updated_at'),
     supabase.from('facility_config').select('enabled_items, tone_preset, api_key, pin_hash, last_year_month, free_generations_used, subscription_plan, subscription_status').maybeSingle(),
+    supabase.auth.getUser(),
   ]);
   if (residentsRes.error) throw residentsRes.error;
   if (recordsRes.error) throw recordsRes.error;
   if (configRes.error) throw configRes.error;
+  facilityTypeCache = userRes.data.user?.user_metadata?.facility_type as string | undefined;
 
   const residentRows = (residentsRes.data ?? []) as ResidentRow[];
   residentsCache = residentRows.filter((r) => r.deleted_at == null).map(rowToUser);
@@ -174,6 +180,10 @@ export async function loadAll(): Promise<void> {
     : {};
 }
 
+export function loadFacilityType(): string | undefined {
+  return facilityTypeCache;
+}
+
 // 今月のAI生成回数(表示専用)。
 export async function getMonthlyUsageCount(): Promise<number> {
   const uid = await requireUserId();
@@ -196,7 +206,12 @@ async function callBillingApi(path: string, body: Record<string, unknown>): Prom
     body: JSON.stringify(body),
   });
   const decoded = await resp.json();
-  if (!resp.ok) throw new Error(decoded?.detail ?? decoded?.error ?? `リクエストに失敗しました(${resp.status})`);
+  if (!resp.ok) {
+    if (decoded?.error === 'resident_limit_exceeded') {
+      throw new Error('現在の登録人数が、変更先のプランの上限を超えているため変更できません。利用者を減らしてから、もう一度お試しください。');
+    }
+    throw new Error(decoded?.detail ?? decoded?.error ?? `リクエストに失敗しました(${resp.status})`);
+  }
   return decoded.url as string;
 }
 
@@ -214,6 +229,7 @@ export function clearCache(): void {
   deletedResidentsCache = [];
   recordsCache.clear();
   configCache = {};
+  facilityTypeCache = undefined;
 }
 
 // ---------- 利用者 ----------
@@ -353,5 +369,17 @@ export async function saveConfig(config: AppConfig): Promise<void> {
     last_year_month: config.last_year_month ?? null,
   });
   if (error) throw error;
-  configCache = config;
+  // DBに書き込むのはこの5フィールドのみなので、キャッシュもこの5フィールドだけを
+  // 更新する。configをそのままconfigCacheに代入すると、呼び出し元がReact stateの
+  // 古いスナップショットから作った(billing系フィールドを含む)configオブジェクトを
+  // 渡した場合に、Webhook等が別途更新した課金情報がキャッシュ上で古い値に
+  // 巻き戻ってしまう。
+  configCache = {
+    ...configCache,
+    enabled_items: config.enabled_items,
+    tone_preset: config.tone_preset,
+    api_key: config.api_key,
+    pin_hash: config.pin_hash,
+    last_year_month: config.last_year_month,
+  };
 }
