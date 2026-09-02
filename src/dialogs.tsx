@@ -67,7 +67,9 @@ function PricingDialogView({
   const [errorText, setErrorText] = useState<string | null>(null);
 
   const eligible = planTiers.filter((t) => t.maxResidents >= currentResidentCount);
-  const recommendedKey = eligible.find((t) => t.key !== currentPlanKey)?.key ?? eligible[0]?.key;
+  const currentTierLabel = currentPlanKey
+    ? planTiers.find((t) => t.key === currentPlanKey)?.label ?? currentPlanKey
+    : '無料お試し中';
 
   async function selectPlan(planKey: string) {
     setErrorText(null);
@@ -83,7 +85,12 @@ function PricingDialogView({
 
   return (
     <ModalShell width={480} onBackdropClick={() => close()}>
-      <h2 className="modal-title">プランを選択</h2>
+      <h2 className="modal-title">
+        プランを選択
+        <span style={{ fontWeight: 400, fontSize: 14, marginLeft: 8, color: 'var(--text-muted)' }}>
+          現在: {currentTierLabel}
+        </span>
+      </h2>
       <p className="modal-body">{reason}</p>
       {eligible.length === 0 && (
         <p className="hint-error">
@@ -98,12 +105,12 @@ function PricingDialogView({
           return (
             <button
               key={tier.key}
-              className={tier.key === recommendedKey ? 'btn btn-filled btn-block' : 'btn btn-outlined btn-block'}
+              className="btn btn-outlined btn-block"
               disabled={disabled || busyKey != null}
               onClick={() => selectPlan(tier.key)}
             >
               {tier.label}: {tier.priceYen.toLocaleString()}円/月
-              {isCurrent ? '(現在のプラン)' : tier.key === recommendedKey ? '(おすすめ)' : ''}
+              {isCurrent ? '(現在のプラン)' : ''}
               {!isCurrent && belowCurrentCount ? ' — 利用者を減らしてください' : ''}
               {busyKey === tier.key ? '(処理中...)' : ''}
             </button>
@@ -203,7 +210,7 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
         });
       } else {
         close();
-        await showPricingDialog(Math.max(loadUsers().length, config.expected_resident_count ?? 0));
+        await showPricingDialog(loadUsers().length);
       }
     } catch (e) {
       await showWarning('エラー', e instanceof Error ? e.message : String(e));

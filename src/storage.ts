@@ -33,7 +33,6 @@ export interface AppConfig {
   free_generations_used?: number;
   subscription_plan?: string;
   subscription_status?: string;
-  expected_resident_count?: number;
   [key: string]: unknown;
 }
 
@@ -66,7 +65,6 @@ interface ConfigRow {
   free_generations_used: number | null;
   subscription_plan: string | null;
   subscription_status: string | null;
-  expected_resident_count: number | null;
 }
 
 function rowToUser(row: ResidentRow): User {
@@ -114,15 +112,14 @@ export async function getAccessToken(): Promise<string> {
   return token;
 }
 
-// サインアップ時に入力した施設種別・登録予定利用者数(ユーザーメタデータ)を、
-// facility_configがまだ一度も作られていない(=初回ログイン)場合にだけ
-// 適用する。2回目以降のログインや、アプリ内で既に設定済みの場合は何もしない。
+// サインアップ時に入力した施設種別(ユーザーメタデータ)を、facility_configが
+// まだ一度も作られていない(=初回ログイン)場合にだけ適用する。2回目以降の
+// ログインや、アプリ内で既に設定済みの場合は何もしない。
 export async function applyInitialFacilityTypeFromSignup(): Promise<void> {
   const { data: userData, error: userErr } = await supabase.auth.getUser();
   if (userErr) throw userErr;
   const presetKey = userData.user?.user_metadata?.facility_type as string | undefined;
-  const expectedCountRaw = userData.user?.user_metadata?.expected_resident_count as string | undefined;
-  if (!presetKey && !expectedCountRaw) return;
+  if (!presetKey) return;
   const uid = userData.user!.id;
 
   const { data: existing, error: existingErr } = await supabase
@@ -133,18 +130,10 @@ export async function applyInitialFacilityTypeFromSignup(): Promise<void> {
   if (existingErr) throw existingErr;
   if (existing) return;
 
-  const insertRow: { user_id: string; enabled_items?: string[]; expected_resident_count?: number } = {
-    user_id: uid,
-  };
-  const preset = presetKey ? facilityTypePresets.find((p) => p.key === presetKey) : undefined;
-  if (preset) insertRow.enabled_items = preset.itemKeys;
-  const expectedCount = expectedCountRaw ? parseInt(expectedCountRaw, 10) : undefined;
-  if (expectedCount && Number.isFinite(expectedCount) && expectedCount > 0) {
-    insertRow.expected_resident_count = expectedCount;
-  }
-  if (!insertRow.enabled_items && !insertRow.expected_resident_count) return;
+  const preset = facilityTypePresets.find((p) => p.key === presetKey);
+  if (!preset) return;
 
-  const { error } = await supabase.from('facility_config').insert(insertRow);
+  const { error } = await supabase.from('facility_config').insert({ user_id: uid, enabled_items: preset.itemKeys });
   if (error) throw error;
 }
 
@@ -153,7 +142,7 @@ export async function loadAll(): Promise<void> {
   const [residentsRes, recordsRes, configRes] = await Promise.all([
     supabase.from('residents').select('id, name, furigana, precautions, deleted_at').order('created_at', { ascending: true }),
     supabase.from('monthly_records').select('resident_id, year_month, notes, items, extra_notes, report, draft, draft_generated, updated_at'),
-    supabase.from('facility_config').select('enabled_items, tone_preset, api_key, pin_hash, last_year_month, free_generations_used, subscription_plan, subscription_status, expected_resident_count').maybeSingle(),
+    supabase.from('facility_config').select('enabled_items, tone_preset, api_key, pin_hash, last_year_month, free_generations_used, subscription_plan, subscription_status').maybeSingle(),
   ]);
   if (residentsRes.error) throw residentsRes.error;
   if (recordsRes.error) throw recordsRes.error;
@@ -181,7 +170,6 @@ export async function loadAll(): Promise<void> {
         free_generations_used: configRow.free_generations_used ?? undefined,
         subscription_plan: configRow.subscription_plan ?? undefined,
         subscription_status: configRow.subscription_status ?? undefined,
-        expected_resident_count: configRow.expected_resident_count ?? undefined,
       }
     : {};
 }
