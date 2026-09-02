@@ -949,7 +949,9 @@ export function HomePage({ onExit }: { onExit: () => void }) {
   }
   const widthRatio = Math.min(1, Math.max(0, (contentWidth - narrowBreakpoint) / (comfortableBreakpoint - narrowBreakpoint)));
   const sidebarWidth = 190 + (220 - 190) * widthRatio;
-  const topBarStacked = topBarWidth > 0 && topBarWidth < 1000;
+  // 利用状況表示(usage-status)を2行化して横幅が縮んだ分、もう少し
+  // 詰まってから2段組みに切り替わるよう、しきい値も合わせて下げる。
+  const topBarStacked = topBarWidth > 0 && topBarWidth < 820;
   const labelWidth = Math.min(180, Math.max(100, itemListWidth * 0.25));
 
   const selectedUser = users.find((u) => u.id === selectedUserId) ?? null;
