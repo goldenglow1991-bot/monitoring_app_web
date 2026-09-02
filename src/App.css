@@ -595,7 +595,7 @@
   width: 100%;
   padding: 8px 12px;
   border: 1.5px solid var(--teal);
-  background: var(--teal-light);
+  background: #fff;
   border-radius: 8px;
   font-weight: 600;
 }
