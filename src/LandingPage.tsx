@@ -157,7 +157,7 @@ export function LandingPage({
           </div>
           <div className="lp-faq-item">
             <div className="lp-faq-q">個人でも利用できますか?</div>
-            <div className="lp-faq-a">はい。事業所単位はもちろん、個人でご利用いただくことも可能です。</div>
+            <div className="lp-faq-a">はい。事業所単位はもちろん、個人でご利用いただくことも可能です。ただし、業務で記録対象者の情報を入力する場合は、あらかじめ所属先の管理者等の許可を得たうえでご利用ください。</div>
           </div>
           <div className="lp-faq-item">
             <div className="lp-faq-q">料金はいくらですか?</div>
