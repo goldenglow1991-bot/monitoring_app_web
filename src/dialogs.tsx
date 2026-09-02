@@ -130,7 +130,6 @@ function PricingDialogView({
               ) : (
                 <>
                   {tier.label}: {tier.priceYen.toLocaleString()}円/月
-                  {belowCurrentCount ? ' — 利用者を減らしてください' : ''}
                   {busyKey === tier.key ? '(処理中...)' : ''}
                 </>
               )}
