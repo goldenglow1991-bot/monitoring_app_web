@@ -976,7 +976,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             title="過去の記録の追加・編集について"
             onClick={() => showWarning(
               '過去の記録の追加・編集',
-              '今表示している対象年月以外の、過去の月の記録をあとから追加・編集できます。過去3か月分の記録を入力しておくと、AIによる文章生成の精度が上がります。',
+              '過去3か月分の記録を入力しておくと、AIによる文章生成の精度が上がります。',
             )}
           >
             !
@@ -985,21 +985,9 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         <div className="right-panel-row">
           <span className="panel-label-strong">留意点(重要な既往歴や注意事項)</span>
           <button className="btn btn-filled" onClick={openEditPrecautionsDialog}>留意点を追加・編集</button>
-          <button
-            type="button"
-            className="usage-guide-btn"
-            aria-label="留意点の追加・編集について"
-            title="留意点の追加・編集について"
-            onClick={() => showWarning(
-              '留意点の追加・編集',
-              '既往歴や注意事項など、月をまたいで保持しておきたい情報を記録できます。ここに入力した内容は、対象年月を変更しても保持されます。',
-            )}
-          >
-            !
-          </button>
         </div>
         <div className="precautions-box">
-          {selectedUser.precautions !== '' ? selectedUser.precautions : <span className="text-muted">(留意点は未設定です)</span>}
+          {selectedUser.precautions !== '' ? selectedUser.precautions : <span className="text-muted">(留意点を追加してください（任意）)</span>}
         </div>
 
         <div className="section-heading">
@@ -1011,7 +999,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             title="今月の所見について"
             onClick={() => showWarning(
               '今月の所見',
-              '各項目は、プルダウンでの選択・自由記入欄への入力のどちらでも構いません。両方空欄のままでも文章は生成できるので、無理にすべて埋める必要はありません。項目左端の「☰」をドラッグすると並び順を入れ替えられ、生成される文章の順番もある程度調整できます。',
+              '・プルダウン・自由記入欄は、すべて埋める必要はありません\n・項目左端の「☰」をドラッグすると、順番を入れ替えられます',
             )}
           >
             !
@@ -1054,11 +1042,11 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         />
 
         <div className="generation-toolbar">
-          <span className="panel-label-strong">生成結果(内容を確認し、自由に編集してください)</span>
+          <span className="panel-label-strong">生成結果(生成後に編集可能)</span>
           <button className="btn btn-filled" disabled={isGenerating} onClick={handleGenerateDraft}>
             {isGenerating ? '生成中...' : '文章を生成'}
           </button>
-          <button className="btn btn-outlined" onClick={copyDraft}>まとめてコピー</button>
+          <button className="btn btn-outlined" onClick={copyDraft}>文章をコピー</button>
           <label className="checkbox-inline">
             <input type="checkbox" checked={draftGenerated} onChange={(e) => onDraftGeneratedToggle(e.target.checked)} />
             確認済み
