@@ -380,19 +380,27 @@ export function HomePage({ onExit }: { onExit: () => void }) {
   // 現在のプラン(未加入なら最小プラン)の登録人数の上限。実際の制限は
   // api/generate-draft側(サーバー)でも必ず検証しており、ここでの判定は
   // ユーザーへの早期案内のためのもの。
-  function currentPlanCap(): { cap: number; tierLabel: string } {
+  function currentPlanCap(): { cap: number; tierLabel: string; isSubscribedNow: boolean } {
     const isSubscribedNow = config.subscription_status === 'active' || config.subscription_status === 'trialing';
     const tier = isSubscribedNow ? planTiers.find((t) => t.key === config.subscription_plan) : undefined;
     const cap = tier?.maxResidents ?? planTiers[0].maxResidents;
-    return { cap, tierLabel: tier?.label ?? `〜${cap}人` };
+    return { cap, tierLabel: tier?.label ?? `〜${cap}人`, isSubscribedNow };
+  }
+
+  // 「現在のプラン(〜◯人)」/「無料お試し中(上限◯人)」のように、加入状況に
+  // 応じた案内文言を作る。未加入なのに「現在のプラン」と表示してしまう
+  // (実際には何のプランにも入っていない)誤解を避けるため。
+  function planPhrase(): string {
+    const { cap, tierLabel, isSubscribedNow } = currentPlanCap();
+    return isSubscribedNow ? `現在のプラン(${tierLabel})` : `無料お試し中(上限${cap}人)`;
   }
 
   async function openAddUserDialog() {
-    const { cap: residentCap, tierLabel } = currentPlanCap();
+    const { cap: residentCap } = currentPlanCap();
     if (users.length >= residentCap) {
       await showPricingDialog(
         users.length + 1,
-        `現在のプラン(${tierLabel})では、これ以上利用者を登録できません。引き続き利用者を追加するには、いずれかのプランへのお申し込みが必要です。`,
+        `${planPhrase()}では、これ以上利用者を登録できません。引き続き利用者を追加するには、いずれかのプランへのお申し込みが必要です。`,
       );
       return;
     }
@@ -465,11 +473,11 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     await showRestoreDialog({
       trash,
       onRestore: async (u: DeletedUser) => {
-        const { cap: residentCap, tierLabel } = currentPlanCap();
+        const { cap: residentCap } = currentPlanCap();
         if (storage.loadUsers().length >= residentCap) {
           await showPricingDialog(
             storage.loadUsers().length + 1,
-            `現在のプラン(${tierLabel})では、これ以上利用者を登録できません。復元するには、プランを変更するか、他の利用者を削除してください。`,
+            `${planPhrase()}では、これ以上利用者を登録できません。復元するには、プランを変更するか、他の利用者を削除してください。`,
           );
           return false;
         }
@@ -619,10 +627,9 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     }
 
     if (residentLimitExceeded) {
-      const { tierLabel } = currentPlanCap();
       await showPricingDialog(
         users.length,
-        `現在の登録人数(${users.length}人)が、ご利用中のプラン(${tierLabel})の上限を超えています。引き続きご利用いただくには、プランを変更するか、利用者を削除してください。`,
+        `現在の登録人数(${users.length}人)が、${planPhrase()}の上限を超えています。引き続きご利用いただくには、プランを変更するか、利用者を削除してください。`,
       );
       return;
     }
