@@ -201,7 +201,7 @@
 
 .auth-card {
   margin-top: 32px;
-  width: 320px;
+  width: min(320px, 100%);
   text-align: left;
   background: #fff;
   border: 1px solid var(--border-light);
@@ -826,4 +826,43 @@
   .lp-header { padding: 16px 20px; }
   .lp-screenshot-body { flex-direction: column; }
   .lp-screenshot-side { width: 100%; flex-direction: row; }
+}
+
+/* ---------- スマホ幅(アプリ本体) ----------
+   PC・タブレットでの利用を前提にしたpx固定のフォントサイズ・幅のままだと、
+   スマホでは文字だけが相対的に大きく、全体が見づらくなる。まずは全体の
+   基準フォントサイズを一段階下げ、はみ出しやすい固定幅の要素だけ個別に
+   調整する。 */
+@media (max-width: 480px) {
+  body, button, input, select, textarea { font-size: 14px; }
+
+  .start-page-inner { padding: 0 16px; }
+  .start-title { font-size: 19px; }
+  .start-subtitle { font-size: 12px; }
+  .start-button { padding: 14px 22px; font-size: 16px; margin-top: 28px; }
+  .start-back-btn { font-size: 26px; top: 12px; left: 12px; }
+  .start-menu-btn, .start-announce-btn { width: 40px; height: 40px; font-size: 17px; top: 12px; }
+  .start-menu { right: 12px; }
+  .start-announce-btn { right: 60px; }
+  .auth-card { padding: 14px; }
+
+  .top-bar { padding: 6px 10px; }
+  .usage-status { font-size: 12px; }
+  .usage-guide-btn { width: 20px; height: 20px; font-size: 12px; }
+
+  .right-panel { padding: 10px; }
+  .right-panel-user-name { font-size: 21px; }
+  .panel-label-strong, .section-heading { font-size: 15px; }
+  .empty-items-hint { font-size: 14px; }
+  .right-panel-empty { font-size: 16px; padding-top: 60px; }
+
+  .item-status-select { width: 96px; }
+  .item-free-input { min-width: 60px; }
+
+  .modal-card { padding: 14px 16px; }
+  .modal-title { font-size: 16px; }
+
+  .status-toast { font-size: 14px; padding: 14px 20px; max-width: 85vw; text-align: center; }
+
+  .user-row { font-size: 18px; }
 }
