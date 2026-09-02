@@ -241,7 +241,7 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
         });
       } else {
         close();
-        await showPricingDialog(loadUsers().length);
+        await showPricingDialog(loadUsers().length, 'ご利用人数に応じて、いずれかのプランをお選びください。');
       }
     } catch (e) {
       await showWarning('エラー', e instanceof Error ? e.message : String(e));

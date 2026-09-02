@@ -717,7 +717,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           onSelectPlan: (planKey) => storage.createPortalSession(planKey),
         });
       } else {
-        await showPricingDialog(users.length);
+        await showPricingDialog(users.length, 'ご利用人数に応じて、いずれかのプランをお選びください。');
       }
     } catch (e) {
       await showWarning('エラー', e instanceof Error ? e.message : String(e));
