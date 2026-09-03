@@ -887,7 +887,9 @@ function AddPastRecordDialogView({
   initialYear: string;
   initialMonth: string;
   existingReports: Record<string, string>;
-  onSave: (yearMonth: string, report: string) => Promise<void>;
+  onSave: (yearMonth: string, report: string) => Promise<
+    { saved: true; report: string } | { saved: false; refreshedReport?: string }
+  >;
   close: () => void;
 }) {
   const [year, setYear] = useState(initialYear);
@@ -913,10 +915,16 @@ function AddPastRecordDialogView({
   async function saveCurrent() {
     const report = body.trim();
     setIsSaving(true);
-    await onSave(key, report);
-    setLocalExisting((prev) => ({ ...prev, [key]: report }));
+    const result = await onSave(key, report);
+    if (result.saved) {
+      setLocalExisting((prev) => ({ ...prev, [key]: result.report }));
+      showCenteredToast('保存しました。');
+    } else if (result.refreshedReport != null) {
+      setBody(result.refreshedReport);
+      setLocalExisting((prev) => ({ ...prev, [key]: result.refreshedReport! }));
+      showCenteredToast('最新の内容に更新しました。');
+    }
     setIsSaving(false);
-    showCenteredToast('保存しました。');
   }
 
   async function handleBackdropClick() {
@@ -971,7 +979,9 @@ export function showAddPastRecordDialog(params: {
   initialYear: string;
   initialMonth: string;
   existingReports: Record<string, string>;
-  onSave: (yearMonth: string, report: string) => Promise<void>;
+  onSave: (yearMonth: string, report: string) => Promise<
+    { saved: true; report: string } | { saved: false; refreshedReport?: string }
+  >;
 }): Promise<void> {
   return openDialog<void>((close) => (
     <AddPastRecordDialogView {...params} close={() => close()} />

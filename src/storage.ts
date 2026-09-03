@@ -347,6 +347,27 @@ function replaceRecordInCache(residentId: string, record: MonthlyRecord): void {
   recordsCache.set(residentId, next);
 }
 
+// upsertMonthlyRecordがConflictErrorを投げた際、ページ全体を再読み込みしなくても
+// 済むよう、その「利用者×年月」1件だけをサーバーから読み直してキャッシュを
+// 更新する。呼び出し元は、返ってきた最新の内容を画面に反映する。
+export async function refetchRecord(residentId: string, yearMonth: string): Promise<MonthlyRecord | null> {
+  const { data, error } = await supabase
+    .from('monthly_records')
+    .select('resident_id, year_month, notes, items, extra_notes, report, draft, draft_generated, updated_at')
+    .eq('resident_id', residentId)
+    .eq('year_month', yearMonth)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) {
+    const list = recordsCache.get(residentId) ?? [];
+    recordsCache.set(residentId, list.filter((r) => r.yearMonth !== yearMonth));
+    return null;
+  }
+  const fresh = rowToRecord(data as RecordRow);
+  replaceRecordInCache(residentId, fresh);
+  return fresh;
+}
+
 export async function deleteRecords(residentId: string): Promise<void> {
   const { error } = await supabase.from('monthly_records').delete().eq('resident_id', residentId);
   if (error) throw error;

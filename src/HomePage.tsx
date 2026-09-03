@@ -301,7 +301,17 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         return false;
       }
       if (e instanceof ConflictError) {
-        await showWarning('保存できませんでした', 'この記録は別の端末で更新されています。一度画面を開き直してからもう一度お試しください。');
+        const shouldRefresh = await showConfirm(
+          '保存できませんでした',
+          'この内容は別の端末で更新されています。今入力中の内容はまだ保存されていません。\n\n' +
+          '必要であれば内容をコピーしてから「はい」を選んでください。最新の内容に置き換わります(今の入力内容は消えます)。\n' +
+          '「いいえ」を選ぶと、今の入力内容はそのまま残ります。',
+        );
+        if (shouldRefresh) {
+          await storage.refetchRecord(selectedUserId, target);
+          const user = users.find((u) => u.id === selectedUserId);
+          if (user) loadFormFor(user, target);
+        }
       } else {
         await showWarning('保存エラー', `保存に失敗しました: ${e instanceof Error ? e.message : String(e)}`);
       }
@@ -585,12 +595,23 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         });
         try {
           await storage.upsertMonthlyRecord(user.id, record);
+          return { saved: true as const, report };
         } catch (e) {
           if (e instanceof ConflictError) {
-            await showWarning('保存できませんでした', 'この記録は別の端末で更新されています。ダイアログを開き直してからもう一度お試しください。');
-          } else {
-            await showWarning('保存エラー', `保存に失敗しました: ${e instanceof Error ? e.message : String(e)}`);
+            const shouldRefresh = await showConfirm(
+              '保存できませんでした',
+              'この内容は別の端末で更新されています。今入力中の内容はまだ保存されていません。\n\n' +
+              '必要であれば内容をコピーしてから「はい」を選んでください。最新の内容に置き換わります(今の入力内容は消えます)。\n' +
+              '「いいえ」を選ぶと、今の入力内容はそのまま残ります。',
+            );
+            if (shouldRefresh) {
+              const fresh = await storage.refetchRecord(user.id, targetYearMonth);
+              return { saved: false as const, refreshedReport: fresh?.report ?? '' };
+            }
+            return { saved: false as const };
           }
+          await showWarning('保存エラー', `保存に失敗しました: ${e instanceof Error ? e.message : String(e)}`);
+          return { saved: false as const };
         }
       },
     });
