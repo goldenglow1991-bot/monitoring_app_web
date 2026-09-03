@@ -249,7 +249,7 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
         });
       } else {
         close();
-        await showPricingDialog(loadUsers().length, 'ご利用人数に応じて、いずれかのプランをお選びください。');
+        await showPricingDialog(loadUsers().length, '登録人数に応じて、いずれかのプランをお選びください。');
       }
     } catch (e) {
       await showWarning('エラー', e instanceof Error ? e.message : String(e));
@@ -787,6 +787,8 @@ function RestoreDialogView({
                 className="icon-btn"
                 title="復元する"
                 onClick={async () => {
+                  const ok = await showConfirm('復元', `「${user.name}」を復元しますか?`);
+                  if (!ok) return;
                   const restored = await onRestore(user);
                   if (!restored) return;
                   const next = trash.filter((x) => x.id !== user.id);
