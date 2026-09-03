@@ -938,17 +938,34 @@ export function HomePage({ onExit }: { onExit: () => void }) {
 
   const [topBarHidden, setTopBarHidden] = useState(false);
   const lastScrollTopRef = useRef(0);
+  const lastToggleAtRef = useRef(0);
+  // 勢いよくスクロールすると、慣性スクロール中の細かい値の揺れ(一瞬だけ
+  // 逆方向に動いたように見える等)により、切り替えのたびにアニメーションする
+  // 上部バーの高さが短時間に何度も伸び縮みし、下にある利用者一覧が
+  // つられてガクガクと上下に動いて見えることがあった。切り替え直後
+  // 一定時間は再度の切り替えを無視することで、これを防ぐ。
+  const TOP_BAR_TOGGLE_COOLDOWN_MS = 300;
   function handleMobileContentScroll(e: React.UIEvent<HTMLDivElement>) {
     const scrollTop = e.currentTarget.scrollTop;
     const delta = scrollTop - lastScrollTopRef.current;
-    if (scrollTop <= 8) {
-      setTopBarHidden(false);
-    } else if (delta > 4) {
-      setTopBarHidden(true);
-    } else if (delta < -4) {
-      setTopBarHidden(false);
-    }
     lastScrollTopRef.current = scrollTop;
+
+    if (scrollTop <= 8) {
+      if (topBarHidden) {
+        setTopBarHidden(false);
+        lastToggleAtRef.current = Date.now();
+      }
+      return;
+    }
+    const now = Date.now();
+    if (now - lastToggleAtRef.current < TOP_BAR_TOGGLE_COOLDOWN_MS) return;
+    if (delta > 4 && !topBarHidden) {
+      setTopBarHidden(true);
+      lastToggleAtRef.current = now;
+    } else if (delta < -4 && topBarHidden) {
+      setTopBarHidden(false);
+      lastToggleAtRef.current = now;
+    }
   }
   const widthRatio = Math.min(1, Math.max(0, (contentWidth - narrowBreakpoint) / (comfortableBreakpoint - narrowBreakpoint)));
   const sidebarWidth = 190 + (220 - 190) * widthRatio;

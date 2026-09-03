@@ -737,18 +737,8 @@ function TextEditDialogView({
 }) {
   const [text, setText] = useState(initialValue);
 
-  async function handleBackdropClick() {
-    if (text === initialValue) {
-      close(null);
-      return;
-    }
-    const answer = await showSaveConfirm();
-    if (answer == null) return;
-    close(answer ? text : null);
-  }
-
   return (
-    <ModalShell width={480} onBackdropClick={handleBackdropClick}>
+    <ModalShell width={480} onBackdropClick={() => close(text)}>
       <h2 className="modal-title">{title}</h2>
       <textarea
         autoFocus
@@ -757,10 +747,7 @@ function TextEditDialogView({
         onChange={(e) => setText(e.target.value)}
         className="modal-textarea"
       />
-      <div className="modal-actions">
-        <button className="btn btn-text" onClick={() => close(null)}>キャンセル</button>
-        <button className="btn btn-filled" onClick={() => close(text)}>保存</button>
-      </div>
+      <p className="hint-muted">外側をタップすると保存されます。</p>
     </ModalShell>
   );
 }

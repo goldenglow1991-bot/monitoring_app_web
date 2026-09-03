@@ -221,16 +221,19 @@ export function UserSelectorMobile({
     action();
   }
 
-  const selectedUser = users.find((u) => u.id === selectedUserId);
+  const selectedIndex = users.findIndex((u) => u.id === selectedUserId);
+  const selectedUser = selectedIndex >= 0 ? users[selectedIndex] : undefined;
 
   return (
     <div className="user-selector-mobile">
       <details className="user-select-dropdown" ref={selectDetailsRef}>
         <summary className="user-select-dropdown-summary">
-          {selectedUser ? `${isDraftGenerated(selectedUser.id) ? '✓ ' : ''}${selectedUser.name}` : '利用者を選択'}
+          {selectedUser
+            ? `${isDraftGenerated(selectedUser.id) ? '✓ ' : ''}${selectedIndex + 1}. ${selectedUser.name}`
+            : '利用者を選択'}
         </summary>
         <div className="user-select-dropdown-list">
-          {users.map((u) => (
+          {users.map((u, i) => (
             <button
               key={u.id}
               type="button"
@@ -240,7 +243,7 @@ export function UserSelectorMobile({
                 if (selectDetailsRef.current) selectDetailsRef.current.open = false;
               }}
             >
-              {isDraftGenerated(u.id) ? '✓ ' : ''}{u.name}
+              {isDraftGenerated(u.id) ? '✓ ' : ''}{i + 1}. {u.name}
             </button>
           ))}
         </div>

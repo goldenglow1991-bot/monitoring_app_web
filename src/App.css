@@ -920,3 +920,11 @@
 
   .user-row { font-size: 18px; }
 }
+
+/* ---------- 横向き(landscape)スマホ ----------
+   縦の高さが小さい分、利用者選択のドロップダウンの一覧が縦に少ししか
+   出ず選びづらいため、画面高さに対する割合を上げて縦に長く表示する。
+   (JS側の横向きスマホ検知(phoneLandscape)と同じ条件。) */
+@media (max-height: 500px) and (pointer: coarse) {
+  .user-select-dropdown-list { max-height: 70vh; }
+}
