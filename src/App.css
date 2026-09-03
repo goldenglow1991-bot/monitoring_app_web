@@ -920,7 +920,7 @@
 
   .user-row { font-size: 18px; }
 
-  .modal-overlay-top-aligned { align-items: flex-start; padding-top: 32px; }
+  .modal-overlay-top-aligned { align-items: flex-start; padding-top: 64px; }
 }
 
 /* ---------- 横向き(landscape)スマホ ----------
