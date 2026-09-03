@@ -723,6 +723,52 @@ export function showEditPrecautionsDialog(params: {
   ));
 }
 
+// スマホでは所見の自由記入欄が横に小さく、入力しづらいため、タップすると
+// この大きめのテキスト編集ダイアログを開いて入力してもらう(留意点の
+// 編集ダイアログと同様の作り)。
+function TextEditDialogView({
+  title,
+  initialValue,
+  close,
+}: {
+  title: string;
+  initialValue: string;
+  close: (value: string | null) => void;
+}) {
+  const [text, setText] = useState(initialValue);
+
+  async function handleBackdropClick() {
+    if (text === initialValue) {
+      close(null);
+      return;
+    }
+    const answer = await showSaveConfirm();
+    if (answer == null) return;
+    close(answer ? text : null);
+  }
+
+  return (
+    <ModalShell width={480} onBackdropClick={handleBackdropClick}>
+      <h2 className="modal-title">{title}</h2>
+      <textarea
+        autoFocus
+        rows={6}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        className="modal-textarea"
+      />
+      <div className="modal-actions">
+        <button className="btn btn-text" onClick={() => close(null)}>キャンセル</button>
+        <button className="btn btn-filled" onClick={() => close(text)}>保存</button>
+      </div>
+    </ModalShell>
+  );
+}
+
+export function showTextEditDialog(title: string, initialValue: string): Promise<string | null> {
+  return openDialog((close) => <TextEditDialogView title={title} initialValue={initialValue} close={close} />);
+}
+
 // ---- 削除した利用者一覧 ----
 
 function RestoreDialogView({

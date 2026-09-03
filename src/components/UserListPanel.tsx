@@ -202,41 +202,51 @@ export function UserSelectorMobile({
   // <details>はネイティブでは自分のsummaryを再クリックしないと閉じないため、
   // 他の場所をタップしても開いたままになってしまう。外側タップ・メニュー内の
   // 操作クリックの両方で明示的に閉じるようにする。
-  const detailsRef = useRef<HTMLDetailsElement>(null);
+  const selectDetailsRef = useRef<HTMLDetailsElement>(null);
+  const overflowDetailsRef = useRef<HTMLDetailsElement>(null);
   useEffect(() => {
     const onPointerDown = (e: PointerEvent) => {
-      const el = detailsRef.current;
-      if (el && el.open && !el.contains(e.target as Node)) {
-        el.open = false;
+      for (const ref of [selectDetailsRef, overflowDetailsRef]) {
+        const el = ref.current;
+        if (el && el.open && !el.contains(e.target as Node)) {
+          el.open = false;
+        }
       }
     };
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, []);
   function closeMenuAnd(action: () => void) {
-    if (detailsRef.current) detailsRef.current.open = false;
+    if (overflowDetailsRef.current) overflowDetailsRef.current.open = false;
     action();
   }
 
+  const selectedUser = users.find((u) => u.id === selectedUserId);
+
   return (
     <div className="user-selector-mobile">
-      <select
-        className="user-selector-mobile-select"
-        value={selectedUserId ?? ''}
-        onChange={(e) => {
-          const u = users.find((x) => x.id === e.target.value);
-          if (u) onSelectUser(u);
-        }}
-      >
-        <option value="" disabled>利用者を選択</option>
-        {users.map((u) => (
-          <option key={u.id} value={u.id}>
-            {isDraftGenerated(u.id) ? '✓ ' : ''}{u.name}
-          </option>
-        ))}
-      </select>
+      <details className="user-select-dropdown" ref={selectDetailsRef}>
+        <summary className="user-select-dropdown-summary">
+          {selectedUser ? `${isDraftGenerated(selectedUser.id) ? '✓ ' : ''}${selectedUser.name}` : '利用者を選択'}
+        </summary>
+        <div className="user-select-dropdown-list">
+          {users.map((u) => (
+            <button
+              key={u.id}
+              type="button"
+              className={`user-select-dropdown-item${u.id === selectedUserId ? ' user-select-dropdown-item-selected' : ''}`}
+              onClick={() => {
+                onSelectUser(u);
+                if (selectDetailsRef.current) selectDetailsRef.current.open = false;
+              }}
+            >
+              {isDraftGenerated(u.id) ? '✓ ' : ''}{u.name}
+            </button>
+          ))}
+        </div>
+      </details>
       <button className="icon-btn" title="利用者を追加" onClick={onAdd}>＋</button>
-      <details className="overflow-menu" ref={detailsRef}>
+      <details className="overflow-menu" ref={overflowDetailsRef}>
         <summary className="icon-btn" title="その他の操作">⋮</summary>
         <div className="overflow-menu-list">
           <button onClick={() => closeMenuAnd(onRename)}>選択した利用者を編集</button>

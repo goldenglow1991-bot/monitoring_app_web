@@ -919,11 +919,13 @@ export function HomePage({ onExit }: { onExit: () => void }) {
   const narrowBreakpoint = 640;
   const comfortableBreakpoint = 900;
 
-  // スマホ幅では、留意点・所見欄をスクロールしている間だけ上部バー(年月・
-  // プラン選択等)を隠し、画面を広く使えるようにする。一番上まで戻るか、
-  // 上方向にスクロールしたら再び表示する。横向き(landscape)のスマホは
-  // 画面幅自体はタブレット並みに広くなり`mobile`判定に入らないため、
-  // 「縦の高さが小さく、かつタッチ操作の端末」も別途対象に含める。
+  // 横向き(landscape)のスマホは画面幅自体はタブレット並みに広くなり`mobile`
+  // 判定(画面幅基準)に入らないため、「縦の高さが小さく、かつタッチ操作の
+  // 端末」を別途検知し、`mobile`と同様に扱う対象に含める。これにより、
+  // ・上部バー(年月・プラン選択等)をスクロールに合わせて隠す
+  // ・利用者選択をコンパクトな(＋ボタン/縦三点メニューの)UIにする
+  // ・所見欄のスクロールで上部バーの表示を切り替える
+  // といった「スマホ向けの画面」を縦横どちらでも同じように適用する。
   const [phoneLandscape, setPhoneLandscape] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia('(max-height: 500px) and (pointer: coarse)');
@@ -932,7 +934,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     mq.addEventListener('change', update);
     return () => mq.removeEventListener('change', update);
   }, []);
-  const compactTopBar = mobile || phoneLandscape;
+  const phoneLike = mobile || phoneLandscape;
 
   const [topBarHidden, setTopBarHidden] = useState(false);
   const lastScrollTopRef = useRef(0);
@@ -979,7 +981,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           <span>{statusText}</span>
         </div>
       )}
-      <div className={`top-bar${compactTopBar && topBarHidden ? ' top-bar-hidden' : ''}`} ref={topBarRef}>
+      <div className={`top-bar${phoneLike && topBarHidden ? ' top-bar-hidden' : ''}`} ref={topBarRef}>
         <div className={`top-bar-inner${topBarStacked ? ' top-bar-stacked' : ''}`}>
           <div className="top-bar-group">
             <button className="btn btn-filled btn-compact" onClick={saveAndExit}>保存して終了</button>
@@ -1023,7 +1025,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         </div>
       </div>
       <div className="content-area" ref={contentRef}>
-        {mobile ? (
+        {phoneLike ? (
           <div className="content-mobile">
             <UserSelectorMobile
               users={users}
@@ -1044,7 +1046,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             <div className="user-list-narrow-container">
               <UserListPanelNarrow {...listPanelProps} />
             </div>
-            <div className="right-panel-scroll" onScroll={compactTopBar ? handleMobileContentScroll : undefined}>
+            <div className="right-panel-scroll" onScroll={phoneLike ? handleMobileContentScroll : undefined}>
               {renderRightPanel()}
             </div>
           </div>
@@ -1053,7 +1055,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             <div className="user-list-wide-container" style={{ width: sidebarWidth }}>
               <UserListPanelWide {...listPanelProps} />
             </div>
-            <div className="right-panel-scroll" onScroll={compactTopBar ? handleMobileContentScroll : undefined}>
+            <div className="right-panel-scroll" onScroll={phoneLike ? handleMobileContentScroll : undefined}>
               {renderRightPanel()}
             </div>
           </div>
@@ -1121,6 +1123,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
                     labelWidth={labelWidth}
                     status={itemStatus[item.key] ?? UNSET}
                     free={itemFree[item.key] ?? ''}
+                    mobile={mobile}
                     onStatusChange={(key, value) => {
                       setItemStatus((prev) => ({ ...prev, [key]: value }));
                       markDirty();

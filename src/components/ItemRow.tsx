@@ -2,12 +2,14 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { CSSProperties } from 'react';
 import type { ItemDef } from '../items';
+import { showTextEditDialog } from '../dialogs';
 
 export function ItemRow({
   item,
   labelWidth,
   status,
   free,
+  mobile,
   onStatusChange,
   onFreeChange,
 }: {
@@ -15,6 +17,7 @@ export function ItemRow({
   labelWidth: number;
   status: string;
   free: string;
+  mobile?: boolean;
   onStatusChange: (key: string, value: string) => void;
   onFreeChange: (key: string, value: string) => void;
 }) {
@@ -24,6 +27,11 @@ export function ItemRow({
     transform: CSS.Transform.toString(transform),
     transition,
   };
+
+  async function openFreeTextEditor() {
+    const result = await showTextEditDialog(item.label, free);
+    if (result != null) onFreeChange(item.key, result);
+  }
 
   return (
     <div className={`item-row${isDragging ? ' item-row-dragging' : ''}`} ref={setNodeRef} style={style}>
@@ -38,11 +46,15 @@ export function ItemRow({
       >
         {item.options.map((o) => <option key={o} value={o}>{o}</option>)}
       </select>
-      <input
-        className="item-free-input"
-        value={free}
-        onChange={(e) => onFreeChange(item.key, e.target.value)}
-      />
+      {mobile ? (
+        <input className="item-free-input" value={free} readOnly onClick={openFreeTextEditor} />
+      ) : (
+        <input
+          className="item-free-input"
+          value={free}
+          onChange={(e) => onFreeChange(item.key, e.target.value)}
+        />
+      )}
     </div>
   );
 }
