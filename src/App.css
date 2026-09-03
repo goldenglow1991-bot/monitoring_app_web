@@ -635,6 +635,7 @@
   white-space: pre-wrap;
   color: #333;
 }
+.usage-guide-heading { font-weight: 700; margin-bottom: 2px; }
 .modal-actions {
   display: flex;
   justify-content: flex-end;
