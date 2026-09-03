@@ -275,23 +275,23 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
     setNewPasswordConfirm('');
   }
 
-  async function submitPasswordChange() {
+  async function submitPasswordChange(): Promise<boolean> {
     setPwError(null);
     if (currentPassword === '') {
       setPwError('現在のパスワードを入力してください。');
-      return;
+      return false;
     }
     if (!/^[A-Za-z0-9]{8,}$/.test(newPassword)) {
       setPwError('パスワードは8文字以上の半角英数字で入力してください。');
-      return;
+      return false;
     }
     if (newPassword !== newPasswordConfirm) {
       setPwError('パスワードが一致しません。');
-      return;
+      return false;
     }
     if (email == null) {
       setPwError('メールアドレスを取得できませんでした。時間をおいて再度お試しください。');
-      return;
+      return false;
     }
     setPwBusy(true);
     try {
@@ -300,25 +300,44 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
       const { error: reauthError } = await supabase.auth.signInWithPassword({ email, password: currentPassword });
       if (reauthError) {
         setPwError('現在のパスワードが正しくありません。');
-        return;
+        return false;
       }
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) {
         setPwError(translateAuthError(error.message));
-      } else {
-        setChangingPassword(false);
-        setCurrentPassword('');
-        setNewPassword('');
-        setNewPasswordConfirm('');
-        setPwSuccess(true);
+        return false;
       }
+      setChangingPassword(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setNewPasswordConfirm('');
+      setPwSuccess(true);
+      return true;
     } finally {
       setPwBusy(false);
     }
   }
 
+  async function handleBackdropClick() {
+    const hasUnsavedPasswordInput = changingPassword
+      && (currentPassword !== '' || newPassword !== '' || newPasswordConfirm !== '');
+    if (!hasUnsavedPasswordInput) {
+      close();
+      return;
+    }
+    const answer = await showSaveConfirm();
+    if (answer == null) return;
+    if (answer) {
+      const ok = await submitPasswordChange();
+      if (!ok) return;
+    } else {
+      cancelChangingPassword();
+    }
+    close();
+  }
+
   return (
-    <ModalShell width={360} onBackdropClick={() => close()}>
+    <ModalShell width={360} onBackdropClick={handleBackdropClick}>
       <h2 className="modal-title">アカウント</h2>
       <p className="modal-body">
         {isSubscribed
@@ -553,8 +572,22 @@ function AddUserDialogView({ close }: { close: (value: User | null) => void }) {
     close({ id: crypto.randomUUID(), name: trimmedName, furigana: hira, precautions: '' });
   }
 
+  async function handleBackdropClick() {
+    if (name.trim() === '' && furigana.trim() === '') {
+      close(null);
+      return;
+    }
+    const answer = await showSaveConfirm();
+    if (answer == null) return;
+    if (answer) {
+      await submit();
+    } else {
+      close(null);
+    }
+  }
+
   return (
-    <ModalShell width={360} onBackdropClick={() => close(null)}>
+    <ModalShell width={360} onBackdropClick={handleBackdropClick}>
       <h2 className="modal-title">利用者を追加</h2>
       <div className="field">
         <label>名前(漢字・ひらがな・カタカナ)</label>
@@ -600,8 +633,22 @@ function RenameUserDialogView({
     close({ name: newName, furigana: hira });
   }
 
+  async function handleBackdropClick() {
+    if (name === user.name && furigana === user.furigana) {
+      close(null);
+      return;
+    }
+    const answer = await showSaveConfirm();
+    if (answer == null) return;
+    if (answer) {
+      await submit();
+    } else {
+      close(null);
+    }
+  }
+
   return (
-    <ModalShell width={360} onBackdropClick={() => close(null)}>
+    <ModalShell width={360} onBackdropClick={handleBackdropClick}>
       <h2 className="modal-title">利用者名を編集</h2>
       <div className="field">
         <label>名前</label>
@@ -633,8 +680,19 @@ function EditPrecautionsDialogView({
   close: (value: string | null) => void;
 }) {
   const [text, setText] = useState(initialPrecautions);
+
+  async function handleBackdropClick() {
+    if (text.trim() === initialPrecautions) {
+      close(null);
+      return;
+    }
+    const answer = await showSaveConfirm();
+    if (answer == null) return;
+    close(answer ? text.trim() : null);
+  }
+
   return (
-    <ModalShell width={480} onBackdropClick={() => close(null)}>
+    <ModalShell width={480} onBackdropClick={handleBackdropClick}>
       <h2 className="modal-title">留意点の追加・編集 - {userName}</h2>
       <p className="modal-body">重要な既往歴や注意事項(月をまたいで保持されます):</p>
       <textarea
@@ -817,8 +875,30 @@ function AddPastRecordDialogView({
     setBody(localExisting[`${year}-${m}`] ?? '');
   }
 
+  const hasUnsavedChange = body.trim() !== (localExisting[key] ?? '');
+
+  async function saveCurrent() {
+    const report = body.trim();
+    setIsSaving(true);
+    await onSave(key, report);
+    setLocalExisting((prev) => ({ ...prev, [key]: report }));
+    setIsSaving(false);
+    showCenteredToast('保存しました。');
+  }
+
+  async function handleBackdropClick() {
+    if (!hasUnsavedChange) {
+      close();
+      return;
+    }
+    const answer = await showSaveConfirm();
+    if (answer == null) return;
+    if (answer) await saveCurrent();
+    close();
+  }
+
   return (
-    <ModalShell width={560} onBackdropClick={() => close()}>
+    <ModalShell width={560} onBackdropClick={handleBackdropClick}>
       <h2 className="modal-title">過去の記録の追加・編集 - {userName}</h2>
       <div className="row-inline">
         <span>対象年月:</span>
@@ -843,18 +923,7 @@ function AddPastRecordDialogView({
       />
       <div className="modal-actions">
         <button className="btn btn-text" onClick={() => close()}>閉じる</button>
-        <button
-          className="btn btn-filled"
-          disabled={isSaving}
-          onClick={async () => {
-            const report = body.trim();
-            setIsSaving(true);
-            await onSave(key, report);
-            setLocalExisting({ ...localExisting, [key]: report });
-            setIsSaving(false);
-            showCenteredToast('保存しました。');
-          }}
-        >
+        <button className="btn btn-filled" disabled={isSaving} onClick={saveCurrent}>
           {isSaving ? '保存中...' : '保存'}
         </button>
       </div>

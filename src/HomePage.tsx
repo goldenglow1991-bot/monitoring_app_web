@@ -317,7 +317,8 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     const target = yearMonth;
     const ok = await finalizeCurrentRecord();
     if (!ok) return;
-    await showWarning('保存完了', `${target} の記録として保存しました。`);
+    setStatusText(`${target} の記録として保存しました`);
+    setTimeout(() => setStatusText(''), 1000);
   }
 
   async function onDraftGeneratedToggle(value: boolean) {
@@ -1093,7 +1094,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         </div>
 
         <div className="section-heading">
-          <span>今月の所見(プルダウン選択+自由記入。左端の☰で並び替え可能)</span>
+          <span>今月の所見</span>
           <button
             type="button"
             className="usage-guide-btn"
@@ -1101,7 +1102,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             title="今月の所見について"
             onClick={() => showWarning(
               '今月の所見',
-              '・プルダウン・自由記入欄は、すべて埋める必要はありません\n・項目左端の「☰」をドラッグすると、順番を入れ替えられます',
+              '・プルダウン選択と自由記入欄は併用可能です\n・プルダウン・自由記入欄は、すべて埋める必要はありません\n・項目左端の「☰」をドラッグすると、順番を入れ替えられます',
             )}
           >
             !
@@ -1144,7 +1145,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         />
 
         <div className="generation-toolbar">
-          <span className="panel-label-strong">生成結果(生成後に編集可能)</span>
+          <span className="panel-label-strong">生成結果(編集可能)</span>
           <button className="btn btn-filled" disabled={isGenerating} onClick={handleGenerateDraft}>
             {isGenerating ? '生成中...' : '文章を生成'}
           </button>
