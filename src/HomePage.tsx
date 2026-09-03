@@ -728,7 +728,24 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         setConfigState((prev) => {
           const keys = Array.isArray(prev.enabled_items) ? [...prev.enabled_items] : [...defaultEnabledItemKeys];
           if (enabled) {
-            if (!keys.includes(key)) keys.push(key);
+            if (!keys.includes(key)) {
+              // 末尾に追加するのではなく、既に表示されている同じカテゴリーの
+              // 項目のうち一番下にあるものの直後に挿入する。ユーザーが並び替えた
+              // 順番はそのまま尊重しつつ、新しい項目が近くにまとまって見えるように
+              // するため。同じカテゴリーの項目が1つも表示されていない場合は、
+              // これまで通り末尾に追加する。
+              const categoryKey = itemCatalog.find((i) => i.key === key)?.categoryKey;
+              let insertAt = keys.length;
+              if (categoryKey != null) {
+                for (let i = keys.length - 1; i >= 0; i--) {
+                  if (itemCatalog.find((item) => item.key === keys[i])?.categoryKey === categoryKey) {
+                    insertAt = i + 1;
+                    break;
+                  }
+                }
+              }
+              keys.splice(insertAt, 0, key);
+            }
           } else {
             const i = keys.indexOf(key);
             if (i >= 0) keys.splice(i, 1);
