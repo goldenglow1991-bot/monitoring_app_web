@@ -919,6 +919,8 @@
   .status-toast { font-size: 14px; padding: 14px 20px; max-width: 85vw; text-align: center; }
 
   .user-row { font-size: 18px; }
+
+  .modal-overlay-top-aligned { align-items: flex-start; padding-top: 32px; }
 }
 
 /* ---------- 横向き(landscape)スマホ ----------

@@ -62,15 +62,24 @@ export function ModalShell({
   children,
   width = 420,
   onBackdropClick,
+  topAligned,
 }: {
   children: ReactNode;
   width?: number;
   onBackdropClick?: () => void;
+  // スマホ幅では、キーボードが開いた際に画面中央寄せだと入力欄が隠れて
+  // しまいやすいため、上寄りに表示したいダイアログ(留意点・所見の
+  // 自由記入欄など)向けのオプション。デスクトップ・タブレット幅では
+  // 見た目を変えない。
+  topAligned?: boolean;
 }) {
   return (
-    <div className="modal-overlay" onMouseDown={(e) => {
-      if (e.target === e.currentTarget) onBackdropClick?.();
-    }}>
+    <div
+      className={`modal-overlay${topAligned ? ' modal-overlay-top-aligned' : ''}`}
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onBackdropClick?.();
+      }}
+    >
       <div className="modal-card" style={{ width, maxWidth: '100%' }}>
         {children}
       </div>

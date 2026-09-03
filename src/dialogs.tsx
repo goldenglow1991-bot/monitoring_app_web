@@ -692,7 +692,7 @@ function EditPrecautionsDialogView({
   }
 
   return (
-    <ModalShell width={480} onBackdropClick={handleBackdropClick}>
+    <ModalShell width={480} onBackdropClick={handleBackdropClick} topAligned>
       <h2 className="modal-title">留意点の追加・編集 - {userName}</h2>
       <p className="modal-body">重要な既往歴や注意事項(月をまたいで保持されます):</p>
       <textarea
@@ -738,7 +738,7 @@ function TextEditDialogView({
   const [text, setText] = useState(initialValue);
 
   return (
-    <ModalShell width={480} onBackdropClick={() => close(text)}>
+    <ModalShell width={480} onBackdropClick={() => close(text)} topAligned>
       <h2 className="modal-title">{title}</h2>
       <textarea
         autoFocus
