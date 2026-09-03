@@ -1,7 +1,7 @@
 import { supabase } from './supabaseClient';
 import type { DeletedUser, ItemValue, MonthlyRecord, User } from './types';
 import { newMonthlyRecord } from './types';
-import { facilityTypePresets } from './items';
+import { facilityTypePresets, canonicalItemOrder } from './items';
 import { currentYearMonth } from './utils';
 
 // Supabase(residents / monthly_records / facility_config テーブル)を
@@ -137,7 +137,9 @@ export async function applyInitialFacilityTypeFromSignup(): Promise<void> {
   const preset = facilityTypePresets.find((p) => p.key === presetKey);
   if (!preset) return;
 
-  const { error } = await supabase.from('facility_config').insert({ user_id: uid, enabled_items: preset.itemKeys });
+  const { error } = await supabase
+    .from('facility_config')
+    .insert({ user_id: uid, enabled_items: canonicalItemOrder(preset.itemKeys) });
   if (error) throw error;
 }
 

@@ -156,9 +156,27 @@ export const itemCatalog: ItemDef[] = [
   ] },
 ];
 
+// モード選択画面のカテゴリー表示順(itemCategoriesの並び→カテゴリー内は
+// itemCatalogの登録順)に合わせてkeysを並べ替える。新規登録時の初期値や
+// 施設種別プリセットを適用した直後など、まだユーザーが並び替えていない
+// 状態の並び順をこれで統一する(ユーザーが一度でも並び替えた後の順序や、
+// 既に有効になっている項目に個別に追加する際の挿入位置には影響しない)。
+export function canonicalItemOrder(keys: string[]): string[] {
+  const categoryIndex = new Map(itemCategories.map((c, i) => [c.key, i] as const));
+  const itemIndex = new Map(itemCatalog.map((item, i) => [item.key, i] as const));
+  return [...keys].sort((a, b) => {
+    const itemA = itemCatalog.find((i) => i.key === a);
+    const itemB = itemCatalog.find((i) => i.key === b);
+    const catA = itemA ? categoryIndex.get(itemA.categoryKey) ?? 999 : 999;
+    const catB = itemB ? categoryIndex.get(itemB.categoryKey) ?? 999 : 999;
+    if (catA !== catB) return catA - catB;
+    return (itemIndex.get(a) ?? 999) - (itemIndex.get(b) ?? 999);
+  });
+}
+
 // 表示項目の設定(config.enabled_items)が未設定のときのデフォルト。
-// 既存10項目のみ、既存の並び順のまま。
-export const defaultEnabledItemKeys: string[] = [
+// 既存10項目のみ、モード選択画面のカテゴリー表示順に整列。
+export const defaultEnabledItemKeys: string[] = canonicalItemOrder([
   'machine_training_count',
   'machine_training_time',
   'parallel_bars',
@@ -169,7 +187,7 @@ export const defaultEnabledItemKeys: string[] = [
   'cognitive_function',
   'daily_life',
   'fall_injury',
-];
+]);
 
 export interface FacilityTypePreset {
   key: string;

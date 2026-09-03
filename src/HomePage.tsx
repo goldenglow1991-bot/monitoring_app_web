@@ -9,6 +9,7 @@ import {
   defaultEnabledItemKeys,
   defaultTonePresetKey,
   systemPromptFor,
+  canonicalItemOrder,
   type ItemDef,
 } from './items';
 import { compileNotes, pastRecordsText, buildUserPrompt } from './reportBuilder';
@@ -778,7 +779,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
       },
       onApplyPreset: (keys) => {
         setConfigState((prev) => {
-          const next = { ...prev, enabled_items: [...keys] };
+          const next = { ...prev, enabled_items: canonicalItemOrder(keys) };
           storage.saveConfig(next);
           return next;
         });
@@ -1159,7 +1160,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             title="今月の所見について"
             onClick={() => showWarning(
               '今月の所見',
-              '・プルダウン選択と自由記入欄は併用可能です\n・プルダウン・自由記入欄は、すべて埋める必要はありません\n・項目左端の「☰」をドラッグすると、順番を入れ替えられます',
+              '・プルダウン選択と自由記入欄は併用可能です\n・プルダウン・自由記入欄は、すべて埋める必要はありません\n・表示する項目自体は、上部の「モード選択」から自由に追加・削除できます\n・項目左端の「☰」をドラッグすると、順番を入れ替えられます',
             )}
           >
             !
