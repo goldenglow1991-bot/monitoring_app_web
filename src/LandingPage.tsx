@@ -43,7 +43,9 @@ export function LandingPage({
           <div className="lp-eyebrow">こんなお悩みはありませんか</div>
           <h2>「今月の記録、まだ書けていない…」</h2>
           <p className="lp-lead">
-            訪問先を回った後や、シフトを終えたあとにまとめて書く記録作成。毎月の言葉選びの負担、書き忘れへの不安。
+            訪問先を回った後や、シフトを終えたあとにまとめて書く記録作成。
+            <br />
+            毎月の言葉選びの負担、書き忘れへの不安。
             <br />
             介護の現場では、ケアそのものより記録の時間に追われてしまうことが少なくありません。
           </p>
@@ -96,7 +98,13 @@ export function LandingPage({
             </div>
             <div>
               <h3>項目を選ぶだけで、下書きが完成</h3>
-              <p>歩行・食事・バイタルなど、いつもの項目にプルダウンで選択するだけ。文章はAIが自然な言い回しで下書きにまとめます。あとは確認して整えるだけです。</p>
+              <p>
+                歩行・食事・バイタルなど、いつもの項目にプルダウンで選択するだけ。
+                <br />
+                文章はAIが自然な言い回しで下書きにまとめます。
+                <br />
+                あとは確認して整えるだけです。
+              </p>
             </div>
           </div>
           <div className="lp-feature-row">
@@ -105,7 +113,11 @@ export function LandingPage({
             </div>
             <div>
               <h3>利用者ごとの記録を一元管理</h3>
-              <p>過去の記録も月ごとに一覧で確認でき、書き忘れや記載漏れにも気づきやすくなります。留意点もあわせて残せます。</p>
+              <p>
+                過去の記録も月ごとに一覧で確認でき、書き忘れや記載漏れにも気づきやすくなります。
+                <br />
+                留意点もあわせて残せます。
+              </p>
             </div>
           </div>
           <div className="lp-feature-row">
@@ -114,7 +126,11 @@ export function LandingPage({
             </div>
             <div>
               <h3>事業所ごとに項目や言葉遣いを調整</h3>
-              <p>施設の種別に合わせて項目をカスタマイズでき、文章の口調も選べます。通信は暗号化され、事業所ごとにデータを分けて管理しています。</p>
+              <p>
+                施設の種別に合わせて項目をカスタマイズでき、文章の口調も選べます。
+                <br />
+                通信は暗号化され、事業所ごとにデータを分けて管理しています。
+              </p>
             </div>
           </div>
         </div>
@@ -155,15 +171,29 @@ export function LandingPage({
         <div className="lp-wrap lp-faq">
           <div className="lp-faq-item">
             <div className="lp-faq-q">パソコンやITが苦手でも使えますか?</div>
-            <div className="lp-faq-a">はい。プルダウンで項目を選んでいくだけの画面なので、普段パソコンをあまり使わない方でも操作いただけます。</div>
+            <div className="lp-faq-a">
+              はい。
+              <br />
+              プルダウンで項目を選んでいくだけの画面なので、普段パソコンをあまり使わない方でも操作いただけます。
+            </div>
           </div>
           <div className="lp-faq-item">
             <div className="lp-faq-q">個人でも利用できますか?</div>
-            <div className="lp-faq-a">はい。事業所単位はもちろん、個人でご利用いただくことも可能です。ただし、業務で記録対象者の情報を入力する場合は、あらかじめ所属先の管理者等の許可を得たうえでご利用ください。</div>
+            <div className="lp-faq-a">
+              はい。
+              <br />
+              事業所単位はもちろん、個人でご利用いただくことも可能です。
+              <br />
+              ただし、業務で記録対象者の情報を入力する場合は、あらかじめ所属先の管理者等の許可を得たうえでご利用ください。
+            </div>
           </div>
           <div className="lp-faq-item">
             <div className="lp-faq-q">料金はいくらですか?</div>
-            <div className="lp-faq-a">ご利用人数に応じたプランをご用意しています。詳しくはお問い合わせください。</div>
+            <div className="lp-faq-a">
+              ご利用人数に応じたプランをご用意しています。
+              <br />
+              詳しくはお問い合わせください。
+            </div>
           </div>
           <div className="lp-faq-item">
             <div className="lp-faq-q">記録データの安全性は大丈夫ですか?</div>
@@ -175,7 +205,11 @@ export function LandingPage({
       <div className="lp-section lp-cta">
         <div className="lp-wrap lp-center">
           <h2>まずは無料でお試しください</h2>
-          <p>はじめの10回の文章生成は無料です。導入のご相談も承っています。</p>
+          <p>
+            はじめの10回の文章生成は無料です。
+            <br />
+            導入のご相談も承っています。
+          </p>
           <button type="button" className="btn lp-cta-btn" onClick={onGetStarted}>無料で試してみる</button>
         </div>
       </div>
