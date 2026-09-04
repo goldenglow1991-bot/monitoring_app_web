@@ -251,7 +251,7 @@ export function UserSelectorMobile({
           ))}
         </div>
       </details>
-      <button className="btn btn-filled user-select-add-btn" onClick={onAdd}>利用者を追加</button>
+      <button className="icon-btn" title="利用者を追加" onClick={onAdd}>＋</button>
       <details className="overflow-menu" ref={overflowDetailsRef}>
         <summary className="icon-btn" title="その他の操作">⋮</summary>
         <div className="overflow-menu-list">
