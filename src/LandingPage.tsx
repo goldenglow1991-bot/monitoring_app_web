@@ -19,14 +19,16 @@ export function LandingPage({
 
       <div className="lp-section lp-hero">
         <div className="lp-wrap">
-          <div className="lp-eyebrow">介護施設向け モニタリング作成支援</div>
+          <div className="lp-eyebrow">訪問介護・デイサービスをはじめとした介護現場向け モニタリング作成支援</div>
           <h1 className="lp-hero-title">
-            モニタリングの下書きに、<br />もう時間をかけない。
+            モニタリング作成に、<br />もう時間をかけない。
           </h1>
           <p className="lp-hero-lead">
             選んだ所見から、AIが自然な文章の下書きを数秒で作成。
             <br />
             書類仕事の時間を減らし、本来のケアに向き合う時間を取り戻します。
+            <br />
+            スマホからでも、訪問先や休憩中のすきま時間にサッと入力できます。
           </p>
           <div className="lp-hero-actions">
             <button type="button" className="btn btn-filled" onClick={onGetStarted}>無料で試してみる</button>
