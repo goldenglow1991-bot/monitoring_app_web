@@ -4,7 +4,7 @@
   --teal-light: #e0f2f1;
   --border: #c8c8c8;
   --border-light: #ddd;
-  --text-muted: #777;
+  --text-muted: #555;
   --danger: #c62828;
   --warn: #e65100;
 }
@@ -798,7 +798,7 @@
   border-bottom: 1px solid var(--border-light);
   background: #fff;
 }
-.lp-logo { font-size: 24px; font-weight: 700; }
+.lp-logo { font-size: 22px; font-weight: 700; }
 .lp-header-actions { display: flex; align-items: center; gap: 8px; }
 .lp-section { padding: 96px 40px; }
 .lp-wrap { max-width: 880px; margin: 0 auto; }
@@ -811,28 +811,28 @@
 .lp-eyebrow {
   color: var(--teal);
   font-weight: 700;
-  font-size: 18px;
+  font-size: 16px;
   letter-spacing: 0.04em;
 }
-.lp h2 { font-size: 37px; line-height: 1.5; margin: 12px 0 20px 0; }
-.lp-lead { color: var(--text-muted); font-size: 21px; max-width: 680px; margin: 0 auto; }
+.lp h2 { font-size: 33px; line-height: 1.5; margin: 12px 0 20px 0; }
+.lp-lead { color: var(--text-muted); font-size: 19px; max-width: 640px; margin: 0 auto; }
 
 .lp-hero { text-align: center; padding-top: 120px; padding-bottom: 120px; }
-.lp-hero-title { font-size: 54px; line-height: 1.5; margin: 20px 0; font-weight: 700; }
+.lp-hero-title { font-size: 48px; line-height: 1.55; margin: 20px 0; font-weight: 700; }
 .lp-hero-lead {
-  font-size: 22px;
+  font-size: 20px;
   color: var(--text-muted);
-  max-width: 680px;
+  max-width: 640px;
   margin: 0 auto 40px auto;
 }
 .lp-hero-actions { display: flex; gap: 16px; justify-content: center; }
-.lp-hero-note { margin-top: 16px; font-size: 16px; color: var(--text-muted); }
+.lp-hero-note { margin-top: 16px; font-size: 15px; color: var(--text-muted); }
 
-.lp-empathy-bridge { margin: 28px 0 0 0; font-weight: 700; font-size: 19px; color: var(--teal-dark); }
+.lp-empathy-bridge { margin: 28px 0 0 0; font-weight: 700; color: var(--teal-dark); }
 
 .lp-steps { display: flex; gap: 40px; justify-content: center; text-align: center; }
 .lp-step { flex: 1; }
-.lp-step-label { font-size: 16px; font-weight: 700; color: var(--teal); margin-bottom: 12px; }
+.lp-step-label { font-size: 15px; font-weight: 700; color: var(--teal); margin-bottom: 12px; }
 .lp-step-icon {
   width: 64px;
   height: 64px;
@@ -843,8 +843,8 @@
   align-items: center;
   justify-content: center;
 }
-.lp-step-title { font-weight: 700; font-size: 20px; margin-bottom: 8px; }
-.lp-step-desc { color: var(--text-muted); font-size: 18px; }
+.lp-step-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; }
+.lp-step-desc { color: var(--text-muted); font-size: 17px; }
 
 .lp-features { display: flex; flex-direction: column; gap: 56px; }
 .lp-feature-row { display: flex; gap: 28px; align-items: flex-start; }
@@ -858,8 +858,8 @@
   align-items: center;
   justify-content: center;
 }
-.lp-feature-row h3 { margin: 0 0 8px 0; font-size: 23px; }
-.lp-feature-row p { margin: 0; color: var(--text-muted); font-size: 19px; }
+.lp-feature-row h3 { margin: 0 0 8px 0; font-size: 21px; }
+.lp-feature-row p { margin: 0; color: var(--text-muted); font-size: 17px; }
 
 .lp-screenshot-mock {
   max-width: 760px;
@@ -890,23 +890,23 @@
   overflow: hidden;
 }
 .lp-faq-item { background: #fff; padding: 24px; }
-.lp-faq-q { font-weight: 700; font-size: 20px; margin-bottom: 8px; }
-.lp-faq-a { color: var(--text-muted); font-size: 19px; }
+.lp-faq-q { font-weight: 700; font-size: 18px; margin-bottom: 8px; }
+.lp-faq-a { color: var(--text-muted); font-size: 17px; }
 
 .lp-cta { background: var(--teal-dark); text-align: center; }
 .lp-cta h2 { color: #fff; }
-.lp-cta p { color: #cfe8e4; font-size: 20px; margin: 0 0 32px 0; }
+.lp-cta p { color: #cfe8e4; font-size: 18px; margin: 0 0 32px 0; }
 .lp-cta-btn { background: #fff; color: var(--teal-dark); }
 
 .lp-footer {
   padding: 40px;
   text-align: center;
   color: var(--text-muted);
-  font-size: 15px;
+  font-size: 14px;
   background: #fafafa;
 }
 .lp-footer-logo { font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
-.lp-footer-link { display: inline-block; margin-top: 8px; font-size: 15px; }
+.lp-footer-link { display: inline-block; margin-top: 8px; font-size: 14px; }
 
 @media (max-width: 720px) {
   .lp-section { padding: 64px 20px; }
@@ -917,13 +917,11 @@
   .lp-screenshot-side { width: 100%; flex-direction: row; }
 
   /* 文字サイズはPC・タブレット幅のみ拡大し、スマホ幅は元のサイズに戻す。 */
-  .lp-logo { font-size: 22px; }
   .lp-eyebrow { font-size: 14px; }
   .lp h2 { font-size: 30px; }
   .lp-lead { font-size: 17px; }
   .lp-hero-lead { font-size: 18px; }
   .lp-hero-note { font-size: 13px; }
-  .lp-empathy-bridge { font-size: 16px; }
   .lp-step-label { font-size: 13px; }
   .lp-step-title { font-size: 16px; }
   .lp-step-desc { font-size: 15px; }
