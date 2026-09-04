@@ -1083,16 +1083,18 @@ export function HomePage({ onExit }: { onExit: () => void }) {
       <div className="content-area" ref={contentRef}>
         {phoneLike ? (
           <div className="content-mobile">
-            <UserSelectorMobile
-              users={users}
-              selectedUserId={selectedUserId}
-              onSelectUser={selectUser}
-              isDraftGenerated={(userId) => userDraftGenerated(userId, yearMonth)}
-              onAdd={openAddUserDialog}
-              onRename={renameUser}
-              onDelete={deleteUser}
-              onRestore={openRestoreDialog}
-            />
+            <div className={`user-selector-mobile-wrap${phoneLandscape && topBarHidden ? ' user-selector-mobile-hidden' : ''}`}>
+              <UserSelectorMobile
+                users={users}
+                selectedUserId={selectedUserId}
+                onSelectUser={selectUser}
+                isDraftGenerated={(userId) => userDraftGenerated(userId, yearMonth)}
+                onAdd={openAddUserDialog}
+                onRename={renameUser}
+                onDelete={deleteUser}
+                onRestore={openRestoreDialog}
+              />
+            </div>
             <div className="right-panel-scroll" onScroll={handleMobileContentScroll}>
               {renderRightPanel()}
             </div>
@@ -1160,7 +1162,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             title="今月の所見について"
             onClick={() => showWarning(
               '今月の所見',
-              '・プルダウン選択と自由記入欄は併用可能ですが、すべてを埋める必要はありません\n・表示する項目は、上部の「モード選択」から自由に追加・削除できます\n・項目左端の「☰」をドラッグすると、順番を入れ替えられます',
+              '・プルダウン選択と自由記入欄は併用可能ですが、すべてを埋める必要はありません\n\n・表示する項目は、上部の「モード選択」から自由に追加・削除できます\n\n・項目左端の「☰」をドラッグすると、順番を入れ替えられます',
             )}
           >
             !

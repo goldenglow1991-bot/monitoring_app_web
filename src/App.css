@@ -254,6 +254,12 @@
   padding-bottom: 0;
   border-bottom-color: transparent;
 }
+.user-selector-mobile-wrap {
+  overflow: hidden;
+  max-height: 80px;
+  transition: max-height 0.25s ease;
+}
+.user-selector-mobile-hidden { max-height: 0; }
 .top-bar-inner {
   display: flex;
   justify-content: space-between;
