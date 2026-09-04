@@ -103,7 +103,10 @@ function UserListContent({
   const flat = page.label === 'あいうえお順';
   const swipeHandlers = useSwipeNav(onPrevPage, onNextPage);
   return (
-    <div className="user-list-scroll" {...swipeHandlers}>
+    // key=page.labelで、ページが切り替わるたびにこの要素を再マウントさせ、
+    // CSSのフェードインアニメーションを毎回発火させる(スワイプ・ボタンの
+    // どちらで切り替えても、瞬時の切り替わりではなく滑らかに見えるように)。
+    <div className="user-list-scroll" key={page.label} {...swipeHandlers}>
       {page.users.map((u, i) => (
         <UserRow
           key={u.id}
