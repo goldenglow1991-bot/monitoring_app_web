@@ -1129,7 +1129,9 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         <div className="right-panel-header">
           <span className="right-panel-user-name">利用者: {selectedUser.name}</span>
           <button className="btn btn-outlined btn-pill" onClick={openHistoryDialog}>過去の記録</button>
-          <button className="btn btn-outlined btn-pill" onClick={openAddPastRecordDialog}>過去の記録の追加・編集</button>
+          <button className="btn btn-outlined btn-pill" onClick={openAddPastRecordDialog}>
+            {mobile ? '追加・編集' : '過去の記録の追加・編集'}
+          </button>
           <button
             type="button"
             className="usage-guide-btn"

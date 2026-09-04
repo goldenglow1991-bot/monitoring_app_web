@@ -401,10 +401,17 @@
   gap: 4px;
   padding: 8px 12px;
 }
+.user-select-add-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 6px;
+  text-align: center;
+}
 .user-select-dropdown {
   position: relative;
   flex: 1;
   min-width: 0;
+  max-width: 40%;
 }
 .user-select-dropdown summary {
   list-style: none;
