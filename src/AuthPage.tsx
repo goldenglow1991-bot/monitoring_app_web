@@ -266,7 +266,7 @@ export function AuthPage({
                   {showLoginQr && (
                     <div className="auth-mobile-qr-canvas-wrap">
                       <canvas ref={qrCanvasRef} />
-                      <p className="hint-muted">スマホのカメラで読み取ると、この画面をスマホで開けます</p>
+                      <p className="hint-muted">スマホのカメラで読み取ると、このログイン画面をスマホで開けます</p>
                     </div>
                   )}
                 </div>
