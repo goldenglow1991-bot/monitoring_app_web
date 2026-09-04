@@ -1083,7 +1083,20 @@ export function HomePage({ onExit }: { onExit: () => void }) {
       <div className="content-area" ref={contentRef}>
         {phoneLike ? (
           <div className="content-mobile">
-            <div className={`user-selector-mobile-wrap${phoneLandscape && topBarHidden ? ' user-selector-mobile-hidden' : ''}`}>
+            {phoneLandscape ? (
+              <div className={`user-selector-mobile-wrap${topBarHidden ? ' user-selector-mobile-hidden' : ''}`}>
+                <UserSelectorMobile
+                  users={users}
+                  selectedUserId={selectedUserId}
+                  onSelectUser={selectUser}
+                  isDraftGenerated={(userId) => userDraftGenerated(userId, yearMonth)}
+                  onAdd={openAddUserDialog}
+                  onRename={renameUser}
+                  onDelete={deleteUser}
+                  onRestore={openRestoreDialog}
+                />
+              </div>
+            ) : (
               <UserSelectorMobile
                 users={users}
                 selectedUserId={selectedUserId}
@@ -1094,7 +1107,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
                 onDelete={deleteUser}
                 onRestore={openRestoreDialog}
               />
-            </div>
+            )}
             <div className="right-panel-scroll" onScroll={handleMobileContentScroll}>
               {renderRightPanel()}
             </div>

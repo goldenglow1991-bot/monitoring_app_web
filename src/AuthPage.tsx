@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import QRCode from 'qrcode';
 import { supabase } from './supabaseClient';
 import { facilityTypePresets } from './items';
 import { showTermsDialog, showPrivacyDialog } from './dialogs';
@@ -29,12 +30,26 @@ export function AuthPage({
   // 無効化する。
   const [screenJustSwitched, setScreenJustSwitched] = useState(false);
 
+  // パソコン・タブレットで表示中、この画面自体のURLをQRコードにして
+  // スマホでも同じログイン画面を開けるようにする(PCで入力するのが
+  // 面倒な場合などに、スマホ側でログインし直せるようにするため)。
+  const [showLoginQr, setShowLoginQr] = useState(false);
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    if (!showLoginQr || !qrCanvasRef.current) return;
+    const url = `${window.location.origin}${window.location.pathname}?screen=auth`;
+    QRCode.toCanvas(qrCanvasRef.current, url, { width: 180 }).catch((e) => {
+      console.error('QRコードの生成に失敗しました', e);
+    });
+  }, [showLoginQr]);
+
   function switchMode(next: Mode) {
     setMode(next);
     setErrorText(null);
     setInfoText(null);
     setResetSentTo(null);
     setScreenJustSwitched(true);
+    setShowLoginQr(false);
     setTimeout(() => setScreenJustSwitched(false), 400);
   }
 
@@ -238,6 +253,24 @@ export function AuthPage({
                   {busy ? '処理中...' : mode === 'login' ? 'ログイン' : '登録する'}
                 </button>
               </form>
+
+              {mode === 'login' && (
+                <div className="auth-mobile-qr-block">
+                  <button
+                    type="button"
+                    className="btn btn-outlined auth-mobile-qr-btn"
+                    onClick={() => setShowLoginQr((v) => !v)}
+                  >
+                    スマホでログイン
+                  </button>
+                  {showLoginQr && (
+                    <div className="auth-mobile-qr-canvas-wrap">
+                      <canvas ref={qrCanvasRef} />
+                      <p className="hint-muted">スマホのカメラで読み取ると、この画面をスマホで開けます</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>
