@@ -1127,7 +1127,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     return (
       <div className="right-panel">
         <div className="right-panel-header">
-          <span className="right-panel-user-name">{selectedUser.name}</span>
+          <span className="right-panel-user-name">利用者: {selectedUser.name}</span>
           <button className="btn btn-outlined btn-pill" onClick={openHistoryDialog}>過去の記録</button>
           <button className="btn btn-outlined btn-pill" onClick={openAddPastRecordDialog}>過去の記録の追加・編集</button>
           <button
@@ -1160,7 +1160,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             title="今月の所見について"
             onClick={() => showWarning(
               '今月の所見',
-              '・プルダウン選択と自由記入欄は併用可能です\n・プルダウン・自由記入欄は、すべて埋める必要はありません\n・表示する項目自体は、上部の「モード選択」から自由に追加・削除できます\n・項目左端の「☰」をドラッグすると、順番を入れ替えられます',
+              '・プルダウン選択と自由記入欄は併用可能ですが、すべてを埋める必要はありません\n・表示する項目は、上部の「モード選択」から自由に追加・削除できます\n・項目左端の「☰」をドラッグすると、順番を入れ替えられます',
             )}
           >
             !
