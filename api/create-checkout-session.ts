@@ -34,9 +34,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const uid = userData.user.id;
   const email = userData.user.email ?? undefined;
 
-  const { planKey, origin } = (req.body ?? {}) as { planKey?: string; origin?: string };
+  const { planKey, origin, interval } = (req.body ?? {}) as { planKey?: string; origin?: string; interval?: string };
   const tier = planTiers.find((t) => t.key === planKey);
-  if (!tier || !tier.stripePriceId || !origin) {
+  const priceId = interval === 'year' ? tier?.annualStripePriceId : tier?.stripePriceId;
+  if (!tier || !priceId || !origin) {
     res.status(400).json({ error: 'invalid_request' });
     return;
   }
@@ -71,7 +72,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       customer: customerId,
-      line_items: [{ price: tier.stripePriceId, quantity: 1 }],
+      line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${origin}/?checkout=success`,
       cancel_url: `${origin}/?checkout=cancel`,
       metadata: { supabase_user_id: uid, plan_key: tier.key },

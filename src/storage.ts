@@ -33,6 +33,7 @@ export interface AppConfig {
   free_generations_used?: number;
   subscription_plan?: string;
   subscription_status?: string;
+  subscription_interval?: string;
   [key: string]: unknown;
 }
 
@@ -65,6 +66,7 @@ interface ConfigRow {
   free_generations_used: number | null;
   subscription_plan: string | null;
   subscription_status: string | null;
+  subscription_interval: string | null;
 }
 
 function rowToUser(row: ResidentRow): User {
@@ -148,7 +150,7 @@ export async function loadAll(): Promise<void> {
   const [residentsRes, recordsRes, configRes, userRes] = await Promise.all([
     supabase.from('residents').select('id, name, furigana, precautions, deleted_at').order('created_at', { ascending: true }),
     supabase.from('monthly_records').select('resident_id, year_month, notes, items, extra_notes, report, draft, draft_generated, updated_at'),
-    supabase.from('facility_config').select('enabled_items, tone_preset, api_key, pin_hash, last_year_month, free_generations_used, subscription_plan, subscription_status').maybeSingle(),
+    supabase.from('facility_config').select('enabled_items, tone_preset, api_key, pin_hash, last_year_month, free_generations_used, subscription_plan, subscription_status, subscription_interval').maybeSingle(),
     supabase.auth.getUser(),
   ]);
   if (residentsRes.error) throw residentsRes.error;
@@ -178,6 +180,7 @@ export async function loadAll(): Promise<void> {
         free_generations_used: configRow.free_generations_used ?? undefined,
         subscription_plan: configRow.subscription_plan ?? undefined,
         subscription_status: configRow.subscription_status ?? undefined,
+        subscription_interval: configRow.subscription_interval ?? undefined,
       }
     : {};
 }
@@ -217,12 +220,12 @@ async function callBillingApi(path: string, body: Record<string, unknown>): Prom
   return decoded.url as string;
 }
 
-export function createCheckoutSession(planKey: string): Promise<string> {
-  return callBillingApi('/api/create-checkout-session', { planKey, origin: window.location.origin });
+export function createCheckoutSession(planKey: string, interval: 'month' | 'year' = 'month'): Promise<string> {
+  return callBillingApi('/api/create-checkout-session', { planKey, interval, origin: window.location.origin });
 }
 
-export function createPortalSession(planKey?: string): Promise<string> {
-  return callBillingApi('/api/create-portal-session', { origin: window.location.origin, planKey });
+export function createPortalSession(planKey?: string, interval: 'month' | 'year' = 'month'): Promise<string> {
+  return callBillingApi('/api/create-portal-session', { origin: window.location.origin, planKey, interval });
 }
 
 // キャッシュだけを空に戻す(ログアウト時)。

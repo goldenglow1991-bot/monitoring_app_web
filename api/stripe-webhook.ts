@@ -22,7 +22,7 @@ function readRawBody(req: VercelRequest): Promise<Buffer> {
 
 function planKeyForPriceId(priceId: string | undefined): string | null {
   if (!priceId) return null;
-  return planTiers.find((t) => t.stripePriceId === priceId)?.key ?? null;
+  return planTiers.find((t) => t.stripePriceId === priceId || t.annualStripePriceId === priceId)?.key ?? null;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -57,13 +57,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   async function applySubscription(sub: Stripe.Subscription) {
     const uid = sub.metadata?.supabase_user_id;
     if (!uid) return;
-    const priceId = sub.items.data[0]?.price?.id;
+    const price = sub.items.data[0]?.price;
     const { error } = await admin
       .from('facility_config')
       .update({
         stripe_subscription_id: sub.id,
         subscription_status: sub.status,
-        subscription_plan: planKeyForPriceId(priceId),
+        subscription_plan: planKeyForPriceId(price?.id),
+        subscription_interval: price?.recurring?.interval ?? null,
       })
       .eq('user_id', uid);
     if (error) throw error;

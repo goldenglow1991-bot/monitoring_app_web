@@ -33,7 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   const uid = userData.user.id;
 
-  const { origin, planKey } = (req.body ?? {}) as { origin?: string; planKey?: string };
+  const { origin, planKey, interval } = (req.body ?? {}) as { origin?: string; planKey?: string; interval?: string };
   if (!origin) {
     res.status(400).json({ error: 'invalid_request' });
     return;
@@ -59,8 +59,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let flowData: Stripe.BillingPortal.SessionCreateParams.FlowData | undefined;
     if (planKey) {
       const tier = planTiers.find((t) => t.key === planKey);
+      const priceId = interval === 'year' ? tier?.annualStripePriceId : tier?.stripePriceId;
       const subscriptionId = config.stripe_subscription_id as string | null | undefined;
-      if (!tier || !tier.stripePriceId || !subscriptionId) {
+      if (!tier || !priceId || !subscriptionId) {
         res.status(400).json({ error: 'invalid_request' });
         return;
       }
@@ -87,7 +88,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         type: 'subscription_update_confirm',
         subscription_update_confirm: {
           subscription: subscriptionId,
-          items: [{ id: item.id, price: tier.stripePriceId, quantity: 1 }],
+          items: [{ id: item.id, price: priceId, quantity: 1 }],
         },
       };
     }

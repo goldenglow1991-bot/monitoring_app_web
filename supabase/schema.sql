@@ -64,6 +64,8 @@ alter table facility_config add column if not exists stripe_customer_id text;
 alter table facility_config add column if not exists stripe_subscription_id text;
 alter table facility_config add column if not exists subscription_plan text;
 alter table facility_config add column if not exists subscription_status text;
+-- 'month' | 'year'。年間プラン(15%オフ)対応のため、契約中の請求間隔を保持する。
+alter table facility_config add column if not exists subscription_interval text;
 
 -- サインアップ時に(任意で)申告してもらう、登録予定の利用者数。
 -- プラン選択画面のおすすめプラン算出に使う(実際の登録人数の下限は下回らない)。
@@ -147,12 +149,14 @@ begin
     if TG_OP = 'UPDATE' then
       new.subscription_status := old.subscription_status;
       new.subscription_plan := old.subscription_plan;
+      new.subscription_interval := old.subscription_interval;
       new.stripe_customer_id := old.stripe_customer_id;
       new.stripe_subscription_id := old.stripe_subscription_id;
       new.free_generations_used := old.free_generations_used;
     elsif TG_OP = 'INSERT' then
       new.subscription_status := null;
       new.subscription_plan := null;
+      new.subscription_interval := null;
       new.stripe_customer_id := null;
       new.stripe_subscription_id := null;
       new.free_generations_used := 0;
@@ -290,7 +294,7 @@ begin
       when 'tier1' then 20
       when 'tier2' then 40
       when 'tier3' then 70
-      when 'tier4' then 120
+      when 'tier4' then 110
       when 'tier5' then 150
       else null
     end;

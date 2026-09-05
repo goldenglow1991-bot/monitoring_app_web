@@ -420,9 +420,10 @@ export function HomePage({ onExit }: { onExit: () => void }) {
       await showPlanChangeDialog({
         currentResidentCount: residentCountForDisplay,
         currentPlanKey: config.subscription_plan as string | undefined,
+        currentInterval: config.subscription_interval as string | undefined,
         reason,
         onOpenGeneralPortal: () => storage.createPortalSession(),
-        onSelectPlan: (planKey) => storage.createPortalSession(planKey),
+        onSelectPlan: (planKey, interval) => storage.createPortalSession(planKey, interval),
       });
     } else {
       await showPricingDialog(residentCountForDisplay, reason);
@@ -832,8 +833,9 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         await showPlanChangeDialog({
           currentResidentCount: users.length,
           currentPlanKey: config.subscription_plan as string | undefined,
+          currentInterval: config.subscription_interval as string | undefined,
           onOpenGeneralPortal: () => storage.createPortalSession(),
-          onSelectPlan: (planKey) => storage.createPortalSession(planKey),
+          onSelectPlan: (planKey, interval) => storage.createPortalSession(planKey, interval),
         });
       } else {
         await showPricingDialog(users.length, '登録人数に応じて、いずれかのプランをお選びください。');

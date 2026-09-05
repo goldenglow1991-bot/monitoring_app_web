@@ -7,7 +7,7 @@ import { termsText } from './termsContent';
 import { privacyText } from './privacyContent';
 import { tokushohoText } from './tokushohoContent';
 import { announcements } from './announcementsContent';
-import { planTiers, freeGenerationLimit } from './stripePrices';
+import { planTiers, freeGenerationLimit, annualPriceFor, annualOriginalPriceFor } from './stripePrices';
 import { createCheckoutSession, createPortalSession, loadConfig, loadUsers } from './storage';
 import { supabase } from './supabaseClient';
 
@@ -53,6 +53,8 @@ function PricingDialogView({
   currentResidentCount,
   reason,
   currentPlanKey,
+  currentInterval,
+  annual,
   selectPlan: selectPlanUrl,
   footerExtra,
   close,
@@ -60,7 +62,9 @@ function PricingDialogView({
   currentResidentCount: number;
   reason: string;
   currentPlanKey?: string;
-  selectPlan: (planKey: string) => Promise<string>;
+  currentInterval?: string;
+  annual?: boolean;
+  selectPlan: (planKey: string, interval: 'month' | 'year') => Promise<string>;
   footerExtra?: ReactNode;
   close: (value: void) => void;
 }) {
@@ -87,7 +91,7 @@ function PricingDialogView({
     setErrorText(null);
     setBusyKey(planKey);
     try {
-      const url = await selectPlanUrl(planKey);
+      const url = await selectPlanUrl(planKey, annual ? 'year' : 'month');
       window.location.href = url;
     } catch (e) {
       setErrorText(e instanceof Error ? e.message : String(e));
@@ -98,7 +102,7 @@ function PricingDialogView({
   return (
     <ModalShell width={480} onBackdropClick={() => close()}>
       <h2 className="modal-title">
-        プランを選択
+        {annual ? '年間プランを選択(15%オフ)' : 'プランを選択'}
         {!currentPlanKey && (
           <span style={{ fontWeight: 700, fontSize: 14, marginLeft: 8, color: 'var(--teal-dark)' }}>
             現在: {currentTierLabel}
@@ -113,9 +117,10 @@ function PricingDialogView({
       )}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {planTiers.map((tier) => {
-          const isCurrent = tier.key === currentPlanKey;
+          const isCurrent = tier.key === currentPlanKey && (currentInterval ?? 'month') === (annual ? 'year' : 'month');
           const belowCurrentCount = tier.maxResidents < currentResidentCount;
-          const disabled = isCurrent || belowCurrentCount;
+          const notReady = !!annual && !tier.annualStripePriceId;
+          const disabled = isCurrent || belowCurrentCount || notReady;
           return (
             <button
               key={tier.key}
@@ -125,12 +130,25 @@ function PricingDialogView({
             >
               {isCurrent ? (
                 <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                  <span>{tier.label}: {tier.priceYen.toLocaleString()}円/月</span>
+                  <span>
+                    {tier.label}: {annual
+                      ? `${annualPriceFor(tier).toLocaleString()}円/年`
+                      : `${tier.priceYen.toLocaleString()}円/月`}
+                  </span>
                   <span>ご利用中</span>
                 </span>
+              ) : notReady ? (
+                <>{tier.label}: 準備中</>
               ) : (
                 <>
-                  {tier.label}: {tier.priceYen.toLocaleString()}円/月
+                  {tier.label}:{' '}
+                  {annual ? (
+                    <>
+                      <s>{annualOriginalPriceFor(tier).toLocaleString()}円</s> → {annualPriceFor(tier).toLocaleString()}円/年
+                    </>
+                  ) : (
+                    `${tier.priceYen.toLocaleString()}円/月`
+                  )}
                   {busyKey === tier.key ? '(処理中...)' : ''}
                 </>
               )}
@@ -138,6 +156,23 @@ function PricingDialogView({
           );
         })}
       </div>
+      {!annual && (
+        <button
+          type="button"
+          className="btn btn-filled btn-block annual-plan-cta"
+          onClick={() => {
+            close();
+            showAnnualPricingDialog({
+              currentResidentCount,
+              currentPlanKey,
+              currentInterval,
+              selectPlan: selectPlanUrl,
+            });
+          }}
+        >
+          15%オフ年間プラン →
+        </button>
+      )}
       {currentPlanKey && (
         <p className="hint-muted">
           プランを変更すると、その時点で日割り計算が行われます。上位プランへの変更は差額をその場で請求、下位プランへの変更は差額を次回請求から差し引きます。
@@ -161,7 +196,29 @@ export function showPricingDialog(
     <PricingDialogView
       currentResidentCount={currentResidentCount}
       reason={reason}
-      selectPlan={(planKey) => createCheckoutSession(planKey)}
+      selectPlan={(planKey, interval) => createCheckoutSession(planKey, interval)}
+      close={close}
+    />
+  ));
+}
+
+// 「15%オフ年間プラン」ボタンから開く、年間プラン専用の選択画面。
+// 月額版と同じPricingDialogViewをannual=trueで再利用することで、
+// 登録人数によるグレーアウトや請求に関する注釈などのロジックを共通化する。
+export function showAnnualPricingDialog(params: {
+  currentResidentCount: number;
+  currentPlanKey?: string;
+  currentInterval?: string;
+  selectPlan: (planKey: string, interval: 'month' | 'year') => Promise<string>;
+}): Promise<void> {
+  return openDialog<void>((close) => (
+    <PricingDialogView
+      currentResidentCount={params.currentResidentCount}
+      currentPlanKey={params.currentPlanKey}
+      currentInterval={params.currentInterval}
+      reason="年間プランなら、月払いの15%オフでご利用いただけます。"
+      annual
+      selectPlan={params.selectPlan}
       close={close}
     />
   ));
@@ -174,14 +231,16 @@ export function showPricingDialog(
 export function showPlanChangeDialog(params: {
   currentResidentCount: number;
   currentPlanKey?: string;
+  currentInterval?: string;
   reason?: string;
   onOpenGeneralPortal: () => Promise<string>;
-  onSelectPlan: (planKey: string) => Promise<string>;
+  onSelectPlan: (planKey: string, interval: 'month' | 'year') => Promise<string>;
 }): Promise<void> {
   return openDialog<void>((close) => (
     <PricingDialogView
       currentResidentCount={params.currentResidentCount}
       currentPlanKey={params.currentPlanKey}
+      currentInterval={params.currentInterval}
       reason={params.reason ?? 'ご利用中のプランを変更できます。現在の登録人数を下回るプランは選択できません。'}
       selectPlan={params.onSelectPlan}
       footerExtra={
@@ -244,8 +303,9 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
         await showPlanChangeDialog({
           currentResidentCount: loadUsers().length,
           currentPlanKey: config.subscription_plan as string | undefined,
+          currentInterval: config.subscription_interval as string | undefined,
           onOpenGeneralPortal: () => createPortalSession(),
-          onSelectPlan: (planKey) => createPortalSession(planKey),
+          onSelectPlan: (planKey, interval) => createPortalSession(planKey, interval),
         });
       } else {
         close();
