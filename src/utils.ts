@@ -30,6 +30,14 @@ export function currentYearMonth(): string {
   return `${now.getFullYear()}-${month}`;
 }
 
+// 'YYYY-MM'形式の年月から、その前月の'YYYY-MM'を返す(1月なら前年の12月)。
+export function previousYearMonth(yearMonth: string): string {
+  const [y, m] = yearMonth.split('-').map(Number);
+  const prevMonth = m === 1 ? 12 : m - 1;
+  const prevYear = m === 1 ? y - 1 : y;
+  return `${prevYear}-${String(prevMonth).padStart(2, '0')}`;
+}
+
 // ひらがなと(全角)カタカナはUnicode上0x60ずれた同じ並びを持つ。
 // 長音記号「ー」や中点「・」などひらがなに対応がない文字はそのまま残す。
 export function katakanaToHiragana(text: string): string {

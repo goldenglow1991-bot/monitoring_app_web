@@ -15,7 +15,7 @@ import {
 import { compileNotes, pastRecordsText, buildUserPrompt } from './reportBuilder';
 import { generateDraft, AnthropicError, QuotaExceededError, ResidentLimitExceededError, MonthlyLimitExceededError } from './anthropicClient';
 import { planTiers, freeGenerationLimit } from './stripePrices';
-import { currentYearMonth, furiganaSortKey, sortUsers } from './utils';
+import { currentYearMonth, previousYearMonth, furiganaSortKey, sortUsers } from './utils';
 import {
   showWarning,
   showConfirm,
@@ -26,6 +26,7 @@ import {
   showEditPrecautionsDialog,
   showHistoryDialog,
   showAddPastRecordDialog,
+  showCopyLastMonthDialog,
   showItemVisibilityDialog,
   showPricingDialog,
   showPlanChangeDialog,
@@ -618,6 +619,34 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     });
   }
 
+  async function copyLastMonthItems() {
+    if (selectedUserId == null) {
+      await showWarning('未選択', '利用者を選択してください。');
+      return;
+    }
+    const prevYearMonth = previousYearMonth(yearMonth);
+    const prevRecord = storage.loadRecords(selectedUserId).find((r) => r.yearMonth === prevYearMonth);
+    if (!prevRecord || Object.keys(prevRecord.items).length === 0) {
+      await showWarning('前月の記録なし', `${prevYearMonth}の所見が見つかりませんでした。`);
+      return;
+    }
+    const scope = await showCopyLastMonthDialog();
+    if (scope == null) return;
+    if (scope === 'all') {
+      loadItemsIntoForm(prevRecord.items);
+    } else {
+      setItemStatus((prev) => {
+        const next = { ...prev };
+        for (const item of itemCatalog) {
+          const value = prevRecord.items[item.key];
+          next[item.key] = value && value.status !== '' ? value.status : UNSET;
+        }
+        return next;
+      });
+    }
+    markDirty();
+  }
+
   // ---------- generation ----------
 
   async function handleGenerateDraft() {
@@ -1144,7 +1173,11 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         <div className="right-panel-header">
           <span className="right-panel-user-name">利用者: {selectedUser.name}</span>
           <button className="btn btn-outlined btn-pill" onClick={openHistoryDialog}>過去の記録</button>
-          <button className="btn btn-outlined btn-pill" onClick={openAddPastRecordDialog}>過去の記録の追加・編集</button>
+          {mobile ? (
+            <button className="icon-btn" title="過去の記録の追加・編集" onClick={openAddPastRecordDialog}>＋</button>
+          ) : (
+            <button className="btn btn-outlined btn-pill" onClick={openAddPastRecordDialog}>過去の記録の追加・編集</button>
+          )}
           <button
             type="button"
             className="usage-guide-btn"
@@ -1175,10 +1208,17 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             title="今月の所見について"
             onClick={() => showWarning(
               '今月の所見',
-              '・プルダウン選択と自由記入欄は併用可能ですが、すべてを埋める必要はありません\n\n・表示する項目は、上部の「モード選択」から自由に追加・削除できます\n\n・項目左端の「☰」をドラッグすると、順番を入れ替えられます',
+              '・プルダウン選択と自由記入欄は併用可能ですが、すべてを埋める必要はありません\n\n・表示する項目は、上部の「モード選択」から自由に追加・削除できます\n\n・項目左端の「☰」をドラッグすると、順番を入れ替えられます(パソコン・タブレットのみの機能です)',
             )}
           >
             !
+          </button>
+          <button
+            type="button"
+            className="btn btn-outlined btn-pill copy-last-month-btn"
+            onClick={copyLastMonthItems}
+          >
+            前月の所見をコピー
           </button>
         </div>
         <div className="item-list" ref={itemListRef}>
@@ -1195,6 +1235,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
                     status={itemStatus[item.key] ?? UNSET}
                     free={itemFree[item.key] ?? ''}
                     mobile={mobile}
+                    hideDragHandle={phoneLike}
                     onStatusChange={(key, value) => {
                       setItemStatus((prev) => ({ ...prev, [key]: value }));
                       markDirty();

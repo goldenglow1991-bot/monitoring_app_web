@@ -10,6 +10,7 @@ export function ItemRow({
   status,
   free,
   mobile,
+  hideDragHandle,
   onStatusChange,
   onFreeChange,
 }: {
@@ -18,6 +19,7 @@ export function ItemRow({
   status: string;
   free: string;
   mobile?: boolean;
+  hideDragHandle?: boolean;
   onStatusChange: (key: string, value: string) => void;
   onFreeChange: (key: string, value: string) => void;
 }) {
@@ -35,9 +37,11 @@ export function ItemRow({
 
   return (
     <div className={`item-row${isDragging ? ' item-row-dragging' : ''}`} ref={setNodeRef} style={style}>
-      <span className="drag-handle" {...attributes} {...listeners} title="ドラッグで並び替え">
-        ☰
-      </span>
+      {!hideDragHandle && (
+        <span className="drag-handle" {...attributes} {...listeners} title="ドラッグで並び替え">
+          ☰
+        </span>
+      )}
       <span className="item-label" style={{ width: labelWidth }}>{item.label}</span>
       <select
         className="item-status-select"

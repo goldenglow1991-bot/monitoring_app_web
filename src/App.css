@@ -538,6 +538,7 @@
   margin-top: 16px;
   margin-bottom: 8px;
 }
+.copy-last-month-btn { margin-left: auto; }
 .item-list { display: flex; flex-direction: column; }
 .empty-items-hint {
   color: var(--teal-dark);

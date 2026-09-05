@@ -986,6 +986,50 @@ export function showAddPastRecordDialog(params: {
   ));
 }
 
+// ---- 前月の所見をコピー ----
+
+function CopyLastMonthDialogView({
+  close,
+}: {
+  close: (value: 'pulldown' | 'all' | null) => void;
+}) {
+  const [scope, setScope] = useState<'pulldown' | 'all'>('pulldown');
+  return (
+    <ModalShell width={440} onBackdropClick={() => close(null)}>
+      <h2 className="modal-title">前月の所見をコピー</h2>
+      <label className="checkbox-row">
+        <input
+          type="radio"
+          name="copy-last-month-scope"
+          checked={scope === 'pulldown'}
+          onChange={() => setScope('pulldown')}
+        />
+        <span>プルダウンの選択のみコピーする</span>
+      </label>
+      <label className="checkbox-row">
+        <input
+          type="radio"
+          name="copy-last-month-scope"
+          checked={scope === 'all'}
+          onChange={() => setScope('all')}
+        />
+        <span>プルダウン+自由記入欄、前月のすべてをコピーする</span>
+      </label>
+      <p className="hint-warn">
+        そのままの内容で生成すると、前月と似た文章になってしまいます。今月の実際の様子としっかり照らし合わせ、内容を編集してから生成してください。
+      </p>
+      <div className="modal-actions">
+        <button className="btn btn-text" onClick={() => close(null)}>キャンセル</button>
+        <button className="btn btn-filled" onClick={() => close(scope)}>OK</button>
+      </div>
+    </ModalShell>
+  );
+}
+
+export function showCopyLastMonthDialog(): Promise<'pulldown' | 'all' | null> {
+  return openDialog<'pulldown' | 'all' | null>((close) => <CopyLastMonthDialogView close={close} />);
+}
+
 // ---- モード選択(言葉遣い・施設種別・所見の項目) ----
 
 // 現在チェックが入っている項目の集合(順序は問わない)が、いずれかの施設種別
