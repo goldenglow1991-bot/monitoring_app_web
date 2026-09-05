@@ -687,6 +687,28 @@
   color: #333;
 }
 .usage-guide-heading { font-weight: 700; margin-bottom: 2px; }
+.usage-guide-entry { border-bottom: 1px solid var(--border-light); }
+.usage-guide-entry:last-of-type { border-bottom: none; }
+.usage-guide-heading-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 10px 4px;
+  cursor: pointer;
+}
+.usage-guide-heading-btn:hover { background: var(--teal-light); }
+.usage-guide-heading-btn .usage-guide-heading { margin-bottom: 0; }
+.usage-guide-toggle-icon {
+  color: var(--teal);
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
 .modal-actions {
   display: flex;
   justify-content: flex-end;

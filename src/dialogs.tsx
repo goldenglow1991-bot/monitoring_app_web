@@ -564,21 +564,37 @@ export function showAnnouncementsDialog(): Promise<void> {
   ));
 }
 
-export function showUsageGuideDialog(): Promise<void> {
-  return openDialog<void>((close) => (
+function UsageGuideDialogView({ close }: { close: () => void }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  return (
     <ModalShell width={560} onBackdropClick={() => close()}>
       <h2 className="modal-title">使いかた</h2>
-      {usageGuideSections.map((section, i) => (
-        <div key={i}>
-          <p className="modal-body usage-guide-heading">{section.heading}</p>
-          <p className="modal-body">{section.body}</p>
-        </div>
-      ))}
+      {usageGuideSections.map((section, i) => {
+        const isOpen = openIndex === i;
+        return (
+          <div key={i} className="usage-guide-entry">
+            <button
+              type="button"
+              className="usage-guide-heading-btn"
+              aria-expanded={isOpen}
+              onClick={() => setOpenIndex(isOpen ? null : i)}
+            >
+              <span className="modal-body usage-guide-heading">{section.heading}</span>
+              <span className="usage-guide-toggle-icon">{isOpen ? '−' : '+'}</span>
+            </button>
+            {isOpen && <p className="modal-body">{section.body}</p>}
+          </div>
+        );
+      })}
       <div className="modal-actions">
         <button className="btn btn-text" onClick={() => close()}>閉じる</button>
       </div>
     </ModalShell>
-  ));
+  );
+}
+
+export function showUsageGuideDialog(): Promise<void> {
+  return openDialog<void>((close) => <UsageGuideDialogView close={() => close()} />);
 }
 
 export function showTokushohoDialog(): Promise<void> {
