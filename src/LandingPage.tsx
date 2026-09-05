@@ -109,19 +109,6 @@ export function LandingPage({
           </div>
           <div className="lp-feature-row">
             <div className="lp-feature-icon">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00796b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4" /><path d="M8 2v4" /><path d="M3 10h18" /></svg>
-            </div>
-            <div>
-              <h3>利用者ごとの記録を一元管理</h3>
-              <p>
-                過去の記録も月ごとに一覧で確認でき、書き忘れや記載漏れにも気づきやすくなります。
-                <br />
-                留意点もあわせて残せます。
-              </p>
-            </div>
-          </div>
-          <div className="lp-feature-row">
-            <div className="lp-feature-icon">
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00796b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /></svg>
             </div>
             <div>
