@@ -55,6 +55,7 @@ function PricingDialogView({
   currentPlanKey,
   currentInterval,
   annual,
+  onBack,
   selectPlan: selectPlanUrl,
   footerExtra,
   close,
@@ -64,6 +65,7 @@ function PricingDialogView({
   currentPlanKey?: string;
   currentInterval?: string;
   annual?: boolean;
+  onBack?: () => void;
   selectPlan: (planKey: string, interval: 'month' | 'year') => Promise<string>;
   footerExtra?: ReactNode;
   close: (value: void) => void;
@@ -167,10 +169,22 @@ function PricingDialogView({
               currentPlanKey,
               currentInterval,
               selectPlan: selectPlanUrl,
+              onBack: () =>
+                openDialog<void>((close2) => (
+                  <PricingDialogView
+                    currentResidentCount={currentResidentCount}
+                    reason={reason}
+                    currentPlanKey={currentPlanKey}
+                    currentInterval={currentInterval}
+                    selectPlan={selectPlanUrl}
+                    footerExtra={footerExtra}
+                    close={close2}
+                  />
+                )),
             });
           }}
         >
-          15%オフ年間プラン →
+          お得な年間プラン(15%OFF) →
         </button>
       )}
       {currentPlanKey && (
@@ -182,6 +196,19 @@ function PricingDialogView({
       {errorText && <p className="hint-error">{errorText}</p>}
       {footerExtra}
       <div className="modal-actions">
+        {annual && onBack && (
+          <button
+            type="button"
+            className="btn btn-text"
+            style={{ marginRight: 'auto' }}
+            onClick={() => {
+              close();
+              onBack();
+            }}
+          >
+            ← 戻る
+          </button>
+        )}
         <button className="btn btn-text" onClick={() => close()}>閉じる</button>
       </div>
     </ModalShell>
@@ -209,6 +236,7 @@ export function showAnnualPricingDialog(params: {
   currentResidentCount: number;
   currentPlanKey?: string;
   currentInterval?: string;
+  onBack?: () => void;
   selectPlan: (planKey: string, interval: 'month' | 'year') => Promise<string>;
 }): Promise<void> {
   return openDialog<void>((close) => (
@@ -218,6 +246,7 @@ export function showAnnualPricingDialog(params: {
       currentInterval={params.currentInterval}
       reason="年間プランなら、月払いの15%オフでご利用いただけます。"
       annual
+      onBack={params.onBack}
       selectPlan={params.selectPlan}
       close={close}
     />

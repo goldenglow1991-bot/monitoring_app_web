@@ -436,8 +436,8 @@ export function HomePage({ onExit }: { onExit: () => void }) {
       const wanted = users.length + 1;
       const minTier = planTiers.find((t) => t.maxResidents >= wanted);
       const planGuide = minTier
-        ? `登録したい人数(${wanted}人)に合わせて、${minTier.label}プラン以上へのお申し込みが必要です。`
-        : `登録したい人数(${wanted}人)に対応するプランがございません。お手数ですがお問い合わせください。`;
+        ? `登録したい人数に合わせて、${minTier.label}プラン以上へのお申し込みが必要です。`
+        : `登録したい人数に対応するプランがございません。お手数ですがお問い合わせください。`;
       await promptPlanUpgrade(
         `${planPhrase()}では、これ以上利用者を登録できません。${planGuide}`,
         wanted,
