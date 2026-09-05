@@ -533,6 +533,9 @@ export function HomePage({ onExit }: { onExit: () => void }) {
       onDeletePermanently: async (u: DeletedUser) => {
         await storage.permanentlyDeleteUser(u);
       },
+      onDeleteAllPermanently: async () => {
+        await storage.permanentlyDeleteAllUsers();
+      },
     });
   }
 

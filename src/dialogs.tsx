@@ -847,17 +847,39 @@ function RestoreDialogView({
   trash: initialTrash,
   onRestore,
   onDeletePermanently,
+  onDeleteAllPermanently,
   close,
 }: {
   trash: DeletedUser[];
   onRestore: (u: DeletedUser) => Promise<boolean>;
   onDeletePermanently: (u: DeletedUser) => Promise<void>;
+  onDeleteAllPermanently: () => Promise<void>;
   close: () => void;
 }) {
   const [trash, setTrash] = useState(initialTrash);
   return (
     <ModalShell width={440} onBackdropClick={() => close()}>
       <h2 className="modal-title">削除した利用者一覧</h2>
+      {trash.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+          <button
+            type="button"
+            className="btn btn-text"
+            style={{ color: 'var(--danger)' }}
+            onClick={async () => {
+              const ok = await showConfirm(
+                '一括削除',
+                `削除済みの利用者(${trash.length}人)をすべて完全に削除します。\n過去の記録データも含めて元に戻せなくなります。よろしいですか?`,
+              );
+              if (!ok) return;
+              await onDeleteAllPermanently();
+              setTrash([]);
+            }}
+          >
+            一括削除
+          </button>
+        </div>
+      )}
       <div className="modal-list">
         {trash.length === 0 ? (
           <p className="modal-body">削除された利用者はいません。</p>
@@ -913,6 +935,7 @@ export async function showRestoreDialog(params: {
   trash: DeletedUser[];
   onRestore: (u: DeletedUser) => Promise<boolean>;
   onDeletePermanently: (u: DeletedUser) => Promise<void>;
+  onDeleteAllPermanently: () => Promise<void>;
 }): Promise<void> {
   if (params.trash.length === 0) {
     await showWarning('復元', '削除された利用者はいません。');
@@ -923,6 +946,7 @@ export async function showRestoreDialog(params: {
       trash={params.trash}
       onRestore={params.onRestore}
       onDeletePermanently={params.onDeletePermanently}
+      onDeleteAllPermanently={params.onDeleteAllPermanently}
       close={() => close()}
     />
   ));

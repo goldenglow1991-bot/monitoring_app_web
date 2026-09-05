@@ -292,6 +292,14 @@ export async function permanentlyDeleteUser(user: DeletedUser): Promise<void> {
   recordsCache.delete(user.id);
 }
 
+export async function permanentlyDeleteAllUsers(): Promise<void> {
+  // RLS(residents_owner)により、自分がdeleted_atを付けた行のみが対象になる。
+  const { error } = await supabase.from('residents').delete().not('deleted_at', 'is', null);
+  if (error) throw error;
+  for (const u of deletedResidentsCache) recordsCache.delete(u.id);
+  deletedResidentsCache = [];
+}
+
 // ---------- 月次記録 ----------
 export function loadRecords(residentId: string): MonthlyRecord[] {
   return recordsCache.get(residentId) ?? [];
