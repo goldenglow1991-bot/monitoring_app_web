@@ -238,7 +238,7 @@ export const facilityTypePresets: FacilityTypePreset[] = [
   ] },
   { key: 'home_nursing', label: '訪問看護・訪問リハビリ', itemKeys: [
     'vitals', 'medical_treatment', 'medication_management', 'skin_condition',
-    'sleep_condition', 'meal_intake_amount', 'weight_change', 'choking_sign',
+    'sleep_condition', 'meal_form', 'meal_intake_amount', 'weight_change', 'choking_sign',
     'hydration', 'fall_injury', 'cognitive_function', 'orientation',
     'communication', 'home_environment_burden', 'pain', 'balance_stability',
   ] },
@@ -253,7 +253,7 @@ export const facilityTypePresets: FacilityTypePreset[] = [
   { key: 'group_home', label: 'グループホーム・認知症対応型通所', itemKeys: [
     'cognitive_function', 'orientation', 'bpsd', 'judgment', 'communication',
     'facial_expression', 'social_interaction', 'motivation_activity',
-    'emotional_stability', 'anxiety_depression', 'memory', 'meal_intake_amount',
+    'emotional_stability', 'anxiety_depression', 'memory', 'toileting', 'meal_intake_amount',
     'hydration', 'sleep_condition', 'fall_injury', 'recreation_participation',
     'role_purpose',
   ] },
