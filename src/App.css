@@ -7,6 +7,8 @@
   --text-muted: #555;
   --danger: #c62828;
   --warn: #e65100;
+  --accent-orange: #ef6c00;
+  --accent-orange-dark: #c25600;
 }
 
 /* ---------- buttons ---------- */
@@ -62,6 +64,10 @@
   margin-top: 12px;
   font-size: 15px;
   font-weight: 700;
+  background: var(--accent-orange);
+}
+.annual-plan-cta:hover {
+  background: var(--accent-orange-dark);
 }
 
 /* Unicode矢印(→←)はフォントによって細く見えづらいため、太さを補強する */
