@@ -161,7 +161,7 @@ function PricingDialogView({
       {!annual && (
         <button
           type="button"
-          className="btn btn-filled btn-block annual-plan-cta wiggle-btn"
+          className="btn btn-filled btn-block annual-plan-cta"
           onClick={() => {
             close();
             showAnnualPricingDialog({

@@ -70,18 +70,6 @@
   -webkit-text-stroke: 0.5px currentColor;
 }
 
-/* 目に留まりやすいよう、数秒おきに軽くぴくぴく揺れるアニメーション */
-@keyframes gentle-wiggle {
-  0%, 90%, 100% { transform: translateX(0); }
-  91% { transform: translateX(-3px); }
-  93% { transform: translateX(3px); }
-  95% { transform: translateX(-2px); }
-  97% { transform: translateX(2px); }
-}
-.wiggle-btn {
-  animation: gentle-wiggle 2.8s ease-in-out infinite;
-}
-
 .icon-btn, .icon-btn-small {
   background: transparent;
   border: none;
