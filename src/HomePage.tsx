@@ -1110,7 +1110,9 @@ export function HomePage({ onExit }: { onExit: () => void }) {
                 </>
               )}
             </span>
-            <button className="btn btn-outlined" onClick={openBilling}>{isSubscribed ? 'プラン管理' : 'プラン選択'}</button>
+            {!(isSubscribed && phoneLike) && (
+              <button className="btn btn-outlined" onClick={openBilling}>{isSubscribed ? 'プラン管理' : 'プラン選択'}</button>
+            )}
             <button className="btn btn-outlined" onClick={openModeSelectDialog}>モード選択</button>
             <button className="btn btn-outlined" onClick={exportAllUsersDraftText}>今月分を出力</button>
             <button className="usage-guide-btn" onClick={() => showUsageGuideDialog()} aria-label="使いかた" title="使いかた">?</button>
