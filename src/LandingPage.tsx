@@ -19,16 +19,16 @@ export function LandingPage({
 
       <div className="lp-section lp-hero">
         <div className="lp-wrap">
-          <div className="lp-eyebrow">訪問介護・デイサービスをはじめとした介護現場向け モニタリング作成支援</div>
+          <div className="lp-eyebrow">介護現場向け AIモニタリング作成支援</div>
           <h1 className="lp-hero-title">
             モニタリング作成に、<br />もう時間をかけない。
           </h1>
           <p className="lp-hero-lead">
-            選んだ所見から、AIが自然な文章の下書きを数秒で作成。
+            選んだ所見から、AIが自然な文章を数秒で作成。
             <br />
-            書類仕事の時間を減らし、本来のケアに向き合う時間を取り戻します。
+            簡単な操作で、書類仕事の時間を減らし、本来のケアに向き合う時間を取り戻します。
             <br />
-            スマホからでも、訪問先や休憩中のすきま時間にサッと入力できます。
+            スマホからでも、すきま時間にサッと入力できます。
           </p>
           <div className="lp-hero-actions">
             <button type="button" className="btn btn-filled" onClick={onGetStarted}>無料で試してみる</button>
@@ -43,7 +43,7 @@ export function LandingPage({
           <div className="lp-eyebrow">こんなお悩みはありませんか</div>
           <h2>「今月の記録、まだ書けていない…」</h2>
           <p className="lp-lead">
-            訪問先を回った後や、シフトを終えたあとにまとめて書く記録作成。
+            シフトを終えたあとにまとめて書く記録作成。
             <br />
             毎月の言葉選びの負担、書き忘れへの不安。
             <br />
@@ -126,10 +126,19 @@ export function LandingPage({
             </div>
             <div>
               <h3>事業所ごとに項目や言葉遣いを調整</h3>
+              <p>施設の種別に合わせて項目をカスタマイズでき、文章の口調も選べます。</p>
+            </div>
+          </div>
+          <div className="lp-feature-row">
+            <div className="lp-feature-icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00796b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /><path d="M12 18h.01" /></svg>
+            </div>
+            <div>
+              <h3>スマホからでも、いつでもどこでも入力</h3>
               <p>
-                施設の種別に合わせて項目をカスタマイズでき、文章の口調も選べます。
+                パソコンだけでなくスマホからも同じようにログイン・入力できます。
                 <br />
-                通信は暗号化され、事業所ごとにデータを分けて管理しています。
+                訪問の合間や休憩中など、ちょっとしたすきま時間にサッと記録を済ませられます。
               </p>
             </div>
           </div>
