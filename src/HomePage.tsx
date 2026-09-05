@@ -645,6 +645,8 @@ export function HomePage({ onExit }: { onExit: () => void }) {
       });
     }
     markDirty();
+    setStatusText('コピーしました');
+    setTimeout(() => setStatusText(''), 1500);
   }
 
   // ---------- generation ----------
