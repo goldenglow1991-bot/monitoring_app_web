@@ -15,7 +15,6 @@ export const itemCategories: ItemCategory[] = [
   { key: 'cognitive', label: '認知機能' },
   { key: 'mental', label: '精神・心理面' },
   { key: 'condition', label: '体調・健康管理' },
-  { key: 'social', label: '社会参加・活動' },
   { key: 'other', label: '生活支援・福祉用具' },
 ];
 
@@ -42,9 +41,6 @@ export const itemCatalog: ItemDef[] = [
   { key: 'gait_training', label: '歩行訓練', categoryKey: 'exercise', options: [
     UNSET, '実施(自立で歩行)', '実施(見守りで歩行)', '実施(一部介助で歩行)', '実施なし',
   ] },
-  { key: 'rehab_motivation', label: 'リハビリへの参加意欲', categoryKey: 'exercise', options: [
-    UNSET, '意欲的に取り組めている', '概ね取り組めている', '声かけが必要', '消極的・拒否あり',
-  ] },
   { key: 'exercise_condition', label: '運動時の様子', categoryKey: 'exercise', options: [
     UNSET, '疲労少なく取り組めている', 'やや疲労感がみられる', '痛みの訴えがある', '呼吸苦・体調不良の訴えがある',
   ] },
@@ -70,6 +66,9 @@ export const itemCatalog: ItemDef[] = [
   ] },
 
   // 食事・嚥下機能
+  { key: 'meal_form', label: '食事形態', categoryKey: 'swallowing', options: [
+    UNSET, '常食', '一口大', '刻み食', 'とろみ食', 'ミキサー食',
+  ] },
   { key: 'meal_independence', label: '食事の自立度', categoryKey: 'swallowing', options: [
     UNSET, '自立', '見守り', '一部介助', '全介助',
   ] },
@@ -84,12 +83,6 @@ export const itemCatalog: ItemDef[] = [
   ] },
   { key: 'oral_condition', label: '口腔内の状態', categoryKey: 'swallowing', options: [
     UNSET, '良好', '乾燥がみられる', '口内炎・傷がある', '義歯が合っていない様子', '口腔ケアへの介助が必要',
-  ] },
-  { key: 'weight_change', label: '体重の変化', categoryKey: 'swallowing', options: [
-    UNSET, '増加', '維持', '軽度の減少', '著明な減少', '未測定',
-  ] },
-  { key: 'meal_form', label: '食事形態', categoryKey: 'swallowing', options: [
-    UNSET, '常食', '一口大', '刻み食', 'とろみ食', 'ミキサー食',
   ] },
 
   // 会話
@@ -139,9 +132,6 @@ export const itemCatalog: ItemDef[] = [
     UNSET, '良好', '最高血圧が高い', '最高血圧が低い', '最低血圧が高い', '最低血圧が低い',
     '脈拍が高い', '脈拍が低い',
   ] },
-  { key: 'fall_injury', label: '転倒やけが', categoryKey: 'condition', options: [
-    UNSET, 'なし', '軽微な転倒あり(けがなし)', '転倒・けがあり', 'ヒヤリハットあり',
-  ] },
   { key: 'sleep_condition', label: '睡眠状況', categoryKey: 'condition', options: [
     UNSET, '良好', '中途覚醒がみられる', '不眠傾向', '昼夜逆転がみられる',
   ] },
@@ -158,15 +148,10 @@ export const itemCatalog: ItemDef[] = [
     UNSET, 'なし', '軽度の訴えあり', '中等度の訴えあり', '強い訴えあり(対応が必要)',
   ] },
 
-  // 社会参加・活動
-  { key: 'recreation_participation', label: 'レクリエーション・行事への参加', categoryKey: 'social', options: [
-    UNSET, '積極的に参加', '声かけで参加', '見学が多い', '参加を拒否する傾向',
-  ] },
-  { key: 'role_purpose', label: '役割保持・生きがい活動', categoryKey: 'social', options: [
-    UNSET, 'あり(継続できている)', 'あり(やや消極的)', '特になし', '本人の希望を聴取中',
-  ] },
-
   // 生活支援・福祉用具
+  { key: 'fall_injury', label: '転倒やけが', categoryKey: 'other', options: [
+    UNSET, 'なし', '軽微な転倒あり(けがなし)', '転倒・けがあり', 'ヒヤリハットあり',
+  ] },
   { key: 'mobility_aid', label: '杖・歩行器・装具等の使用状況', categoryKey: 'other', options: [
     UNSET, '使用なし', '杖を使用', '歩行器を使用', '車椅子を使用', '装具を使用',
   ] },
@@ -227,8 +212,8 @@ export const facilityTypePresets: FacilityTypePreset[] = [
   { key: 'day_service', label: '通所介護・通所リハビリ(デイサービス/デイケア)', itemKeys: [
     'exercise_type', 'exercise_time', 'gait_training', 'gait',
     'vitals', 'communication', 'cognitive_function',
-    'fall_injury', 'rehab_motivation', 'balance_stability',
-    'recreation_participation', 'motivation_activity', 'facial_expression',
+    'fall_injury', 'balance_stability',
+    'motivation_activity', 'facial_expression',
     'social_interaction', 'meal_intake_amount',
   ] },
   { key: 'home_care', label: '訪問介護', itemKeys: [
@@ -238,29 +223,27 @@ export const facilityTypePresets: FacilityTypePreset[] = [
   ] },
   { key: 'home_nursing', label: '訪問看護・訪問リハビリ', itemKeys: [
     'vitals', 'medical_treatment', 'medication_management', 'skin_condition',
-    'sleep_condition', 'meal_form', 'meal_intake_amount', 'weight_change', 'choking_sign',
+    'sleep_condition', 'meal_form', 'meal_intake_amount', 'choking_sign',
     'hydration', 'fall_injury', 'cognitive_function', 'orientation',
     'communication', 'home_environment_burden', 'pain', 'balance_stability',
   ] },
   { key: 'facility', label: '施設系(特養・老健・介護医療院・短期入所)', itemKeys: [
     'transfer_movement', 'dressing', 'toileting', 'bathing', 'meal_form',
-    'choking_sign', 'hydration', 'meal_intake_amount', 'weight_change', 'vitals',
+    'choking_sign', 'hydration', 'meal_intake_amount', 'vitals',
     'fall_injury', 'skin_condition', 'sleep_condition', 'medication_management',
     'medical_treatment', 'cognitive_function', 'orientation', 'bpsd', 'judgment',
-    'communication', 'emotional_stability', 'anxiety_depression',
-    'recreation_participation', 'role_purpose', 'pain',
+    'communication', 'emotional_stability', 'anxiety_depression', 'pain',
   ] },
   { key: 'group_home', label: 'グループホーム・認知症対応型通所', itemKeys: [
     'cognitive_function', 'orientation', 'bpsd', 'judgment', 'communication',
     'facial_expression', 'social_interaction', 'motivation_activity',
     'emotional_stability', 'anxiety_depression', 'memory', 'toileting', 'meal_intake_amount',
-    'hydration', 'sleep_condition', 'fall_injury', 'recreation_participation',
-    'role_purpose',
+    'hydration', 'sleep_condition', 'fall_injury',
   ] },
   { key: 'residential', label: '特定施設・小規模多機能型(入居・複合型)', itemKeys: [
     'transfer_movement', 'toileting', 'bathing', 'meal_intake_amount', 'hydration',
     'vitals', 'fall_injury', 'medication_management', 'cognitive_function',
-    'orientation', 'communication', 'emotional_stability', 'recreation_participation',
+    'orientation', 'communication', 'emotional_stability',
     'mobility_aid', 'sleep_condition',
   ] },
   { key: 'care_manager', label: '居宅介護支援(ケアマネ)・福祉用具貸与など', itemKeys: [
