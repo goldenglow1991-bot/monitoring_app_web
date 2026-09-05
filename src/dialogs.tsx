@@ -146,7 +146,7 @@ function PricingDialogView({
                   {tier.label}:{' '}
                   {annual ? (
                     <>
-                      <s>{annualOriginalPriceFor(tier).toLocaleString()}円</s> → {annualPriceFor(tier).toLocaleString()}円/年
+                      <s>{annualOriginalPriceFor(tier).toLocaleString()}円</s> <span className="arrow-icon">→</span> {annualPriceFor(tier).toLocaleString()}円/年
                     </>
                   ) : (
                     `${tier.priceYen.toLocaleString()}円/月`
@@ -184,7 +184,7 @@ function PricingDialogView({
             });
           }}
         >
-          お得な年間プラン(15%OFF) →
+          お得な年間プラン(15%OFF) <span className="arrow-icon">→</span>
         </button>
       )}
       {currentPlanKey && (
@@ -206,7 +206,7 @@ function PricingDialogView({
               onBack();
             }}
           >
-            ← 戻る
+            <span className="arrow-icon">←</span> 戻る
           </button>
         )}
         <button className="btn btn-text" onClick={() => close()}>閉じる</button>

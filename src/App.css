@@ -64,6 +64,12 @@
   font-weight: 700;
 }
 
+/* Unicode矢印(→←)はフォントによって細く見えづらいため、太さを補強する */
+.arrow-icon {
+  font-weight: 900;
+  -webkit-text-stroke: 0.5px currentColor;
+}
+
 .icon-btn, .icon-btn-small {
   background: transparent;
   border: none;

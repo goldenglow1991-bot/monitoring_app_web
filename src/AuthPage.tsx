@@ -126,7 +126,7 @@ export function AuthPage({
     <div className="start-page">
       {onBack && (
         <button type="button" className="icon-btn start-back-btn" onClick={onBack} aria-label="トップに戻る">
-          ←
+          <span className="arrow-icon">←</span>
         </button>
       )}
       <div className="start-page-inner">
