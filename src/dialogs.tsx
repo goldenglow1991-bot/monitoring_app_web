@@ -1015,12 +1015,9 @@ function CopyLastMonthDialogView({
         />
         <span>プルダウン+自由記入欄、前月のすべてをコピーする</span>
       </label>
-      <p className="hint-warn">
-        そのままの内容で生成すると、前月と似た文章になってしまいます。今月の実際の様子としっかり照らし合わせ、内容を編集してから生成してください。
-      </p>
       <div className="modal-actions">
         <button className="btn btn-text" onClick={() => close(null)}>キャンセル</button>
-        <button className="btn btn-filled" onClick={() => close(scope)}>OK</button>
+        <button className="btn btn-filled" onClick={() => close(scope)}>コピー</button>
       </div>
     </ModalShell>
   );
@@ -1028,6 +1025,33 @@ function CopyLastMonthDialogView({
 
 export function showCopyLastMonthDialog(): Promise<'pulldown' | 'all' | null> {
   return openDialog<'pulldown' | 'all' | null>((close) => <CopyLastMonthDialogView close={close} />);
+}
+
+// 汎用: メッセージを表示し、キャンセル/OKで確認を取る。showConfirmと似ているが、
+// ボタンの表記が「いいえ/はい」ではなく「キャンセル/OK」になる。
+function WarningConfirmDialogView({
+  title,
+  message,
+  close,
+}: {
+  title: string;
+  message: string;
+  close: (value: boolean) => void;
+}) {
+  return (
+    <ModalShell width={420} onBackdropClick={() => close(false)}>
+      <h2 className="modal-title">{title}</h2>
+      <p className="modal-body">{message}</p>
+      <div className="modal-actions">
+        <button className="btn btn-text" onClick={() => close(false)}>キャンセル</button>
+        <button className="btn btn-filled" onClick={() => close(true)}>OK</button>
+      </div>
+    </ModalShell>
+  );
+}
+
+export function showWarningConfirm(title: string, message: string): Promise<boolean> {
+  return openDialog<boolean>((close) => <WarningConfirmDialogView title={title} message={message} close={close} />);
 }
 
 // ---- モード選択(言葉遣い・施設種別・所見の項目) ----

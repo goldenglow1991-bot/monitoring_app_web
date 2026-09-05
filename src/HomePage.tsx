@@ -27,6 +27,7 @@ import {
   showHistoryDialog,
   showAddPastRecordDialog,
   showCopyLastMonthDialog,
+  showWarningConfirm,
   showItemVisibilityDialog,
   showPricingDialog,
   showPlanChangeDialog,
@@ -632,6 +633,11 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     }
     const scope = await showCopyLastMonthDialog();
     if (scope == null) return;
+    const confirmed = await showWarningConfirm(
+      '前月の所見をコピー',
+      'そのままの内容で生成すると、前月と似た文章になってしまいます。今月の実際の様子としっかり照らし合わせ、内容を編集してから生成してください。',
+    );
+    if (!confirmed) return;
     if (scope === 'all') {
       loadItemsIntoForm(prevRecord.items);
     } else {
