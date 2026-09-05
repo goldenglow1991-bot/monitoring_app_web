@@ -1174,7 +1174,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           <span className="right-panel-user-name">利用者: {selectedUser.name}</span>
           <button className="btn btn-outlined btn-pill" onClick={openHistoryDialog}>過去の記録</button>
           {mobile ? (
-            <button className="icon-btn" title="過去の記録の追加・編集" onClick={openAddPastRecordDialog}>＋</button>
+            <button className="icon-btn past-record-add-btn" title="過去の記録の追加・編集" onClick={openAddPastRecordDialog}>＋</button>
           ) : (
             <button className="btn btn-outlined btn-pill" onClick={openAddPastRecordDialog}>過去の記録の追加・編集</button>
           )}
@@ -1203,6 +1203,13 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           <span>今月の所見</span>
           <button
             type="button"
+            className="btn btn-outlined btn-pill"
+            onClick={copyLastMonthItems}
+          >
+            前月の所見をコピー
+          </button>
+          <button
+            type="button"
             className="usage-guide-btn"
             aria-label="今月の所見について"
             title="今月の所見について"
@@ -1212,13 +1219,6 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             )}
           >
             !
-          </button>
-          <button
-            type="button"
-            className="btn btn-outlined btn-pill copy-last-month-btn"
-            onClick={copyLastMonthItems}
-          >
-            前月の所見をコピー
           </button>
         </div>
         <div className="item-list" ref={itemListRef}>
