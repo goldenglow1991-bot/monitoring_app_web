@@ -709,6 +709,18 @@
   flex-shrink: 0;
   margin-left: 8px;
 }
+.usage-guide-body-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.28s ease, opacity 0.2s ease;
+}
+.usage-guide-body-wrap.usage-guide-body-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.usage-guide-body-inner { overflow: hidden; }
+.usage-guide-body-inner .modal-body { margin: 0 4px 10px; }
 .modal-actions {
   display: flex;
   justify-content: flex-end;

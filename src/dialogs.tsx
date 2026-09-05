@@ -582,7 +582,11 @@ function UsageGuideDialogView({ close }: { close: () => void }) {
               <span className="modal-body usage-guide-heading">{section.heading}</span>
               <span className="usage-guide-toggle-icon">{isOpen ? '−' : '+'}</span>
             </button>
-            {isOpen && <p className="modal-body">{section.body}</p>}
+            <div className={`usage-guide-body-wrap${isOpen ? ' usage-guide-body-open' : ''}`}>
+              <div className="usage-guide-body-inner">
+                <p className="modal-body">{section.body}</p>
+              </div>
+            </div>
           </div>
         );
       })}
