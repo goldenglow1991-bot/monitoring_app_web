@@ -1173,9 +1173,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         <div className="right-panel-header">
           <span className="right-panel-user-name">利用者: {selectedUser.name}</span>
           <button className="btn btn-outlined btn-pill" onClick={openHistoryDialog}>過去の記録</button>
-          {mobile ? (
-            <button className="icon-btn past-record-add-btn" title="過去の記録の追加・編集" onClick={openAddPastRecordDialog}>＋</button>
-          ) : (
+          {!phoneLike && (
             <button className="btn btn-outlined btn-pill" onClick={openAddPastRecordDialog}>過去の記録の追加・編集</button>
           )}
           <button
@@ -1185,7 +1183,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             title="過去の記録の追加・編集について"
             onClick={() => showWarning(
               '過去の記録の追加・編集',
-              '過去3か月分の記録を入力しておくと、AIによる文章生成の精度が上がります。',
+              '過去3か月分の記録を入力しておくと、AIによる文章生成の精度が上がります。\n\nこの機能はタブレットやパソコンからご利用ください(スマホでは使えません)。',
             )}
           >
             !
