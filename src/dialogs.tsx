@@ -347,6 +347,18 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
     }
   }
 
+  async function openCancelPortal() {
+    setBusy(true);
+    try {
+      const url = await createPortalSession();
+      window.location.href = url;
+    } catch (e) {
+      await showWarning('エラー', e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function startChangingPassword() {
     setChangingPassword(true);
     setPwSuccess(false);
@@ -433,9 +445,20 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
           ? `ご利用中のプラン: ${planTiers.find((t) => t.key === config.subscription_plan)?.label ?? config.subscription_plan}`
           : `無料枠 残り${Math.max(0, freeGenerationLimit - ((config.free_generations_used as number | undefined) ?? 0))}回`}
       </p>
-      <button type="button" className="inline-link" style={{ display: 'block', marginBottom: 12 }} disabled={busy} onClick={openBilling}>
+      <button
+        type="button"
+        className="inline-link"
+        style={{ display: 'block', marginBottom: isSubscribed ? 4 : 12 }}
+        disabled={busy}
+        onClick={openBilling}
+      >
         {isSubscribed ? 'プラン管理' : 'プランを見る'}
       </button>
+      {isSubscribed && (
+        <button type="button" className="inline-link" style={{ display: 'block', marginBottom: 12 }} disabled={busy} onClick={openCancelPortal}>
+          解約はこちら
+        </button>
+      )}
       <p className="modal-body">{email ?? '読み込み中...'}</p>
 
       {changingPassword ? (
