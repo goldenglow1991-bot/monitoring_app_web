@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import QRCode from 'qrcode';
 import { supabase } from './supabaseClient';
 import { showUsageGuideDialog, showAccountDialog, showAnnouncementsDialog, hasUnreadAnnouncements } from './dialogs';
 
@@ -6,6 +7,18 @@ export function StartPage({ onStart }: { onStart: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [hasUnread, setHasUnread] = useState(() => hasUnreadAnnouncements());
+
+  // パソコン・タブレットで表示中、ログイン画面のURLをQRコードにして
+  // スマホでも同じログイン画面を開けるようにする(AuthPageと同じ仕組み)。
+  const [showLoginQr, setShowLoginQr] = useState(false);
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    if (!showLoginQr || !qrCanvasRef.current) return;
+    const url = `${window.location.origin}${window.location.pathname}?screen=auth`;
+    QRCode.toCanvas(qrCanvasRef.current, url, { width: 180 }).catch((e) => {
+      console.error('QRコードの生成に失敗しました', e);
+    });
+  }, [showLoginQr]);
 
   async function openAnnouncements() {
     await showAnnouncementsDialog();
@@ -59,6 +72,21 @@ export function StartPage({ onStart }: { onStart: () => void }) {
         <button className="btn btn-filled start-button" onClick={onStart}>
           ▶ 入力を開始する
         </button>
+        <div className="auth-mobile-qr-block">
+          <button
+            type="button"
+            className="btn btn-outlined auth-mobile-qr-btn"
+            onClick={() => setShowLoginQr((v) => !v)}
+          >
+            スマホでログイン
+          </button>
+          {showLoginQr && (
+            <div className="auth-mobile-qr-canvas-wrap">
+              <canvas ref={qrCanvasRef} />
+              <p className="hint-muted">スマホのカメラで読み取ると、このログイン画面をスマホで開けます</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
