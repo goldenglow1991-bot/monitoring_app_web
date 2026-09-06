@@ -136,9 +136,9 @@
 .start-page-home .start-title { font-size: 33px; }
 .start-page-home .start-subtitle { font-size: 21px; }
 .start-yomi {
-  font-size: 13px;
+  font-size: 17px;
   color: var(--text-muted);
-  margin-top: 4px;
+  margin-top: 8px;
 }
 .start-button {
   margin-top: 40px;
