@@ -1033,7 +1033,10 @@
    基準フォントサイズを一段階下げ、はみ出しやすい固定幅の要素だけ個別に
    調整する。 */
 @media (max-width: 480px) {
-  body, button, input, select, textarea { font-size: 14px; }
+  body, button { font-size: 14px; }
+  /* iOSのSafariは16px未満の入力欄をタップすると自動でズームしてしまうため、
+     入力系要素だけは16px以上を保つ。 */
+  input, select, textarea { font-size: 16px; }
 
   .start-page-inner { padding: 0 16px; }
   .start-title { font-size: 19px; }
