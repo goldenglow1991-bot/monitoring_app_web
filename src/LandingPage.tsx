@@ -15,7 +15,6 @@ export function LandingPage({
             <div className="lp-logo-yomi">アシスト</div>
             <div className="lp-logo-main">Assist</div>
           </div>
-          <div className="lp-logo-tagline">かんたんモニタリング作成AI</div>
         </div>
         <div className="lp-header-actions">
           <button type="button" className="btn btn-text" onClick={onLogin}>ログイン</button>
