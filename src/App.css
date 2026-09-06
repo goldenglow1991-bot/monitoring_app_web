@@ -864,7 +864,7 @@
 @media (min-width: 721px) {
   .lp-logo-yomi { font-size: 17px; }
   .lp-logo-main { font-size: 33px; }
-  .lp-logo-tagline { font-size: 36px; }
+  .lp-logo-tagline { font-size: 18px; }
 }
 .lp-header-actions { display: flex; align-items: center; gap: 8px; }
 .lp-section { padding: 96px 40px; }
