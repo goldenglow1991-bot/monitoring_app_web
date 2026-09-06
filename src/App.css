@@ -894,6 +894,17 @@
 .lp-hero-note { margin-top: 16px; font-size: 15px; color: var(--teal); font-weight: 700; }
 
 .lp-empathy-bridge { margin: 28px 0 0 0; font-weight: 700; color: var(--teal-dark); font-size: 26px; }
+.lp-testimonial {
+  margin: 32px auto 0;
+  max-width: 560px;
+  background: #fff;
+  border-left: 4px solid var(--teal);
+  border-radius: 8px;
+  padding: 20px 24px;
+  text-align: left;
+}
+.lp-testimonial-quote { font-size: 17px; font-weight: 700; margin: 0; }
+.lp-testimonial-source { margin-top: 8px; font-size: 13px; color: var(--text-muted); }
 
 .lp-steps { display: flex; gap: 40px; justify-content: center; text-align: center; }
 .lp-step { flex: 1; }
