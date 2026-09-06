@@ -31,7 +31,10 @@ export function StartPage({ onStart }: { onStart: () => void }) {
         title="お知らせ"
         onClick={openAnnouncements}
       >
-        <span className="start-announce-icon">🔔</span>
+        <svg className="start-announce-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <path d="M2 6l10 7 10-7" />
+        </svg>
         {hasUnread && <span className="start-announce-badge" />}
       </button>
       <div className="start-menu" ref={menuRef}>
