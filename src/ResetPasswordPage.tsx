@@ -41,7 +41,7 @@ export function ResetPasswordPage({ onDone }: { onDone: () => void }) {
   return (
     <div className="start-page">
       <div className="start-page-inner">
-        <div className="start-title">assist</div>
+        <div className="start-title">Assist</div>
         <div className="start-subtitle">パスワードの再設定</div>
 
         <div className="auth-card">

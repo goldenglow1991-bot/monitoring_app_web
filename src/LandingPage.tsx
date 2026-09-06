@@ -59,7 +59,7 @@ export function LandingPage({
             <br />
             介護の現場では、ケアそのものより記録の時間に追われてしまうことが少なくありません。
           </p>
-          <p className="lp-empathy-bridge">その負担を、assistが一緒に軽くします。</p>
+          <p className="lp-empathy-bridge">その負担を、Assistが一緒に軽くします。</p>
           <div className="lp-testimonial">
             <p className="lp-testimonial-quote">「1人あたり15〜20分かかっていた記録が、5分もかからずにできるようになりました。」</p>
             <p className="lp-testimonial-quote">「所見を見ながらの記入なので、利用者さんの様子も思い出しやすいです。」</p>
@@ -103,7 +103,7 @@ export function LandingPage({
 
       <div className="lp-section">
         <div className="lp-wrap lp-center" style={{ marginBottom: 64 }}>
-          <div className="lp-eyebrow">assistでできること</div>
+          <div className="lp-eyebrow">Assistでできること</div>
           <h2>記録の負担を、そのぶんケアの時間に</h2>
         </div>
         <div className="lp-wrap lp-features">
@@ -289,7 +289,7 @@ export function LandingPage({
       </div>
 
       <div className="lp-footer">
-        <div className="lp-footer-logo">assist</div>
+        <div className="lp-footer-logo">Assist</div>
         <div>Golden Glow ｜ お問い合わせ: info@kaigoassist.jp</div>
         <button type="button" className="btn btn-text lp-footer-link" onClick={() => showTokushohoDialog()}>
           特定商取引法に基づく表記
