@@ -138,7 +138,7 @@
 .start-page-home .start-subtitle { font-size: 21px; }
 .start-yomi {
   font-size: 17px;
-  color: var(--text-muted);
+  color: var(--teal);
   margin-top: 8px;
 }
 .start-button {
@@ -859,7 +859,7 @@
 }
 .lp-logo { display: flex; align-items: center; gap: 12px; }
 .lp-logo-brand { line-height: 1; text-align: center; }
-.lp-logo-yomi { font-size: 11px; color: var(--text-muted); }
+.lp-logo-yomi { font-size: 11px; color: var(--teal); }
 .lp-logo-main { font-size: 22px; font-weight: 700; margin-top: -2px; color: var(--teal); }
 @media (min-width: 721px) {
   .lp-logo-yomi { font-size: 14px; }
