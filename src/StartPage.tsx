@@ -53,8 +53,8 @@ export function StartPage({ onStart }: { onStart: () => void }) {
         </div>
       </div>
       <div className="start-page-inner">
+        <div className="start-subtitle">かんたんモニタリング作成AI</div>
         <div className="start-title">assist</div>
-        <div className="start-subtitle">モニタリング作成支援アプリ</div>
         <button className="btn btn-filled start-button" onClick={onStart}>
           ▶ 入力を開始する
         </button>
