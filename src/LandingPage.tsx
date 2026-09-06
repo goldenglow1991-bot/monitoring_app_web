@@ -58,7 +58,8 @@ export function LandingPage({
           <p className="lp-empathy-bridge">その負担を、assistが一緒に軽くします。</p>
           <div className="lp-testimonial">
             <p className="lp-testimonial-quote">
-              「1人あたり15〜20分かかっていた記録が、5分もかからずにできるようになりました。」
+              「1人あたり15〜20分かかっていた記録が、5分もかからずにできるようになりました。
+              所見を見ながらの記入なので、利用者さんの様子も思い出しやすいです。」
             </p>
             <div className="lp-testimonial-source">実際に試験導入したデイサービス職員の声</div>
           </div>
