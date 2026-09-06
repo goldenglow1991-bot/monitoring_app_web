@@ -104,11 +104,14 @@ export default function App() {
         }
         return newSession;
       });
-      if (!newSession) {
+      if (_event === 'SIGNED_OUT') {
+        // 明示的なサインアウト時のみリセットする。初回読み込み時にも
+        // newSessionがnullの状態でこのコールバックが呼ばれるが、その時は
+        // #screen=authによる意図的な表示を消してしまわないよう何もしない。
         setPage('start');
         setShowAuth(false);
         window.history.replaceState({}, '', '/');
-      } else {
+      } else if (newSession) {
         // ログイン成功後はURLからscreen=authを消しておく(履歴には残さない)。
         window.history.replaceState({}, '', '/');
       }
