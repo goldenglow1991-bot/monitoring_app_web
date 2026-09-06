@@ -123,15 +123,15 @@ export function AuthPage({
   }
 
   return (
-    <div className="start-page">
+    <div className="start-page start-page-home">
       {onBack && (
         <button type="button" className="icon-btn start-back-btn" onClick={onBack} aria-label="トップに戻る">
           <span className="arrow-icon">←</span>
         </button>
       )}
       <div className="start-page-inner">
-        <div className="start-title">assist</div>
-        <div className="start-subtitle">モニタリング作成支援アプリ</div>
+        <div className="start-yomi">アシスト</div>
+        <div className="start-title">Assist</div>
 
         <div className="auth-card">
           {mode === 'forgot' ? (
