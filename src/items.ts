@@ -216,13 +216,14 @@ export const facilityTypePresets: FacilityTypePreset[] = [
   { key: 'home_care', label: '訪問介護', itemKeys: [
     'transfer_movement', 'gait', 'toileting', 'bathing', 'adl_other',
     'meal_independence', 'meal_intake_amount', 'hydration', 'communication',
-    'cognitive_function', 'motivation_activity', 'vitals', 'home_environment_burden',
+    'cognitive_function', 'motivation_activity', 'vitals', 'pain',
+    'fall_injury', 'home_environment_burden',
   ] },
   { key: 'home_nursing', label: '訪問看護・訪問リハビリ', itemKeys: [
     'exercise_type_1', 'exercise_type_2', 'exercise_time', 'transfer_movement',
-    'balance_stability', 'bathing', 'adl_other', 'meal_intake_amount', 'hydration',
-    'oral_condition', 'cognitive_function', 'vitals', 'medication_management',
-    'medical_treatment', 'skin_condition', 'pain',
+    'balance_stability', 'bathing', 'adl_other', 'meal_intake_amount', 'choking_sign',
+    'hydration', 'oral_condition', 'cognitive_function', 'vitals', 'medication_management',
+    'medical_treatment', 'skin_condition', 'pain', 'fall_injury',
   ] },
   { key: 'facility', label: '施設系(特養・老健・介護医療院・短期入所)', itemKeys: [
     'transfer_movement', 'balance_stability', 'toileting', 'bathing', 'adl_other',
@@ -236,12 +237,13 @@ export const facilityTypePresets: FacilityTypePreset[] = [
     'facial_expression', 'social_interaction', 'cognitive_function', 'orientation',
     'memory', 'bpsd', 'judgment', 'mental_state', 'motivation_activity',
     'anxiety_depression', 'vitals', 'sleep_condition', 'medication_management',
+    'pain', 'fall_injury',
   ] },
   { key: 'residential', label: '特定施設・小規模多機能型(入居・複合型)', itemKeys: [
     'transfer_movement', 'balance_stability', 'toileting', 'bathing', 'adl_other',
     'meal_form', 'meal_independence', 'meal_intake_amount', 'choking_sign',
     'hydration', 'oral_condition', 'communication', 'cognitive_function',
-    'mental_state', 'vitals', 'sleep_condition',
+    'mental_state', 'vitals', 'sleep_condition', 'pain', 'fall_injury',
   ] },
   { key: 'care_manager', label: '居宅介護支援(ケアマネ)・福祉用具貸与など', itemKeys: [
     'outing', 'communication', 'home_environment_burden', 'fall_injury',
