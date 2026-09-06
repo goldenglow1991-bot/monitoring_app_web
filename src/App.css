@@ -127,6 +127,7 @@
 .start-title {
   font-size: 22px;
   font-weight: bold;
+  color: var(--teal);
 }
 .start-subtitle {
   font-size: 14px;
@@ -859,7 +860,7 @@
 .lp-logo { display: flex; align-items: center; gap: 12px; }
 .lp-logo-brand { line-height: 1; text-align: center; }
 .lp-logo-yomi { font-size: 11px; color: var(--text-muted); }
-.lp-logo-main { font-size: 22px; font-weight: 700; margin-top: -2px; }
+.lp-logo-main { font-size: 22px; font-weight: 700; margin-top: -2px; color: var(--teal); }
 @media (min-width: 721px) {
   .lp-logo-yomi { font-size: 14px; }
   .lp-logo-main { font-size: 26px; }

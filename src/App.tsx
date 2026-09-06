@@ -182,7 +182,7 @@ export default function App() {
     return (
       <div className="start-page">
         <div className="start-page-inner">
-          <div className="start-title">assist</div>
+          <div className="start-title">Assist</div>
           {loadErrorText ? (
             <p className="hint-error">データの読み込みに失敗しました: {loadErrorText}</p>
           ) : (
