@@ -220,12 +220,12 @@ export const facilityTypePresets: FacilityTypePreset[] = [
     'mental_state', 'vitals', 'sleep_condition', 'medical_treatment', 'fall_injury',
   ] },
   { key: 'group_home', label: 'グループホーム・認知症対応型通所', itemKeys: [
-    'transfer_movement', 'toileting', 'bathing', 'adl_other',
+    'transfer_movement', 'bathing', 'adl_other',
     'meal_form', 'meal_independence', 'meal_intake_amount', 'communication',
     'facial_expression', 'cognitive_function', 'orientation',
-    'memory', 'bpsd', 'mental_state', 'motivation_activity',
-    'anxiety_depression', 'vitals', 'sleep_condition', 'medication_management',
-    'pain', 'fall_injury',
+    'memory', 'bpsd', 'mental_state',
+    'anxiety_depression', 'vitals', 'sleep_condition',
+    'fall_injury',
   ] },
   { key: 'residential', label: '特定施設・小規模多機能型(入居・複合型)', itemKeys: [
     'transfer_movement', 'toileting', 'bathing', 'adl_other',
