@@ -29,17 +29,17 @@ export interface ItemDef {
 // key(保存キー)は既存データとの互換性のため変更しないこと。
 export const itemCatalog: ItemDef[] = [
   // 運動
-  { key: 'exercise_type', label: '運動の種類', categoryKey: 'exercise', options: [
-    UNSET, '有酸素運動', '筋力トレーニング', 'バランス訓練', 'ストレッチ・体操', '複数種目を組み合わせて実施', '実施なし',
+  { key: 'exercise_type_1', label: '運動の種類1', categoryKey: 'exercise', options: [
+    UNSET, '有酸素運動', '筋力トレーニング', 'バランス訓練', '歩行訓練', 'ストレッチ・体操', '実施なし',
   ] },
-  { key: 'exercise_count', label: '運動の数', categoryKey: 'exercise', options: [
-    UNSET, '1種類', '2種類', '3種類', '4種類', '5種類以上',
+  { key: 'exercise_type_2', label: '運動の種類2', categoryKey: 'exercise', options: [
+    UNSET, '有酸素運動', '筋力トレーニング', 'バランス訓練', '歩行訓練', 'ストレッチ・体操', '実施なし',
+  ] },
+  { key: 'exercise_type_3', label: '運動の種類3', categoryKey: 'exercise', options: [
+    UNSET, '有酸素運動', '筋力トレーニング', 'バランス訓練', '歩行訓練', 'ストレッチ・体操', '実施なし',
   ] },
   { key: 'exercise_time', label: '運動の時間', categoryKey: 'exercise', options: [
     UNSET, '10分未満', '10〜20分程度', '20〜30分程度', '30〜40分程度', '40分以上',
-  ] },
-  { key: 'gait_training', label: '歩行訓練', categoryKey: 'exercise', options: [
-    UNSET, '実施(自立で歩行)', '実施(見守りで歩行)', '実施(一部介助で歩行)', '実施なし',
   ] },
   { key: 'exercise_condition', label: '運動時の様子', categoryKey: 'exercise', options: [
     UNSET, '疲労少なく取り組めている', 'やや疲労感がみられる', '痛みの訴えがある', '呼吸苦・体調不良の訴えがある',
@@ -55,14 +55,14 @@ export const itemCatalog: ItemDef[] = [
   { key: 'balance_stability', label: '立位・バランス能力', categoryKey: 'adl', options: [
     UNSET, '安定', 'やや不安定', '不安定', '測定・実施できず',
   ] },
-  { key: 'dressing', label: '更衣', categoryKey: 'adl', options: [
-    UNSET, '自立', '見守り', '一部介助', '全介助',
-  ] },
   { key: 'toileting', label: 'トイレ動作', categoryKey: 'adl', options: [
     UNSET, '自立(問題なし)', '声かけ・誘導が必要', '一部介助', '全介助(おむつ使用)', '失禁がみられる',
   ] },
   { key: 'bathing', label: '入浴・清潔維持', categoryKey: 'adl', options: [
     UNSET, '自立', '見守り', '一部介助', '全介助', '拒否がみられる',
+  ] },
+  { key: 'adl_other', label: 'その他日常生活動作', categoryKey: 'adl', options: [
+    UNSET, '安定', '概ね安定', 'やや不安定', '不安定',
   ] },
 
   // 食事・嚥下機能
@@ -187,9 +187,8 @@ export function canonicalItemOrder(keys: string[]): string[] {
 // 表示項目の設定(config.enabled_items)が未設定のときのデフォルト。
 // 既存10項目のみ、モード選択画面のカテゴリー表示順に整列。
 export const defaultEnabledItemKeys: string[] = canonicalItemOrder([
-  'exercise_type',
+  'exercise_type_1',
   'exercise_time',
-  'gait_training',
   'gait',
   'vitals',
   'communication',
@@ -210,14 +209,14 @@ export interface FacilityTypePreset {
 // 過不足があれば個別にチェックを調整することを前提にしている。
 export const facilityTypePresets: FacilityTypePreset[] = [
   { key: 'day_service', label: '通所介護・通所リハビリ(デイサービス/デイケア)', itemKeys: [
-    'exercise_type', 'exercise_time', 'gait_training', 'gait',
+    'exercise_type_1', 'exercise_time', 'gait',
     'vitals', 'communication', 'cognitive_function',
     'fall_injury', 'balance_stability',
     'motivation_activity', 'facial_expression',
     'social_interaction', 'meal_intake_amount',
   ] },
   { key: 'home_care', label: '訪問介護', itemKeys: [
-    'outing', 'transfer_movement', 'dressing', 'toileting', 'bathing',
+    'outing', 'transfer_movement', 'toileting', 'bathing',
     'communication', 'vitals', 'fall_injury', 'home_environment_burden',
     'medication_management', 'meal_intake_amount',
   ] },
@@ -228,7 +227,7 @@ export const facilityTypePresets: FacilityTypePreset[] = [
     'communication', 'home_environment_burden', 'pain', 'balance_stability',
   ] },
   { key: 'facility', label: '施設系(特養・老健・介護医療院・短期入所)', itemKeys: [
-    'transfer_movement', 'dressing', 'toileting', 'bathing', 'meal_form',
+    'transfer_movement', 'toileting', 'bathing', 'meal_form',
     'choking_sign', 'hydration', 'meal_intake_amount', 'vitals',
     'fall_injury', 'skin_condition', 'sleep_condition', 'medication_management',
     'medical_treatment', 'cognitive_function', 'orientation', 'bpsd', 'judgment',
