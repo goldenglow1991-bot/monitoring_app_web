@@ -893,7 +893,7 @@
 .lp-hero-actions { display: flex; gap: 16px; justify-content: center; }
 .lp-hero-note { margin-top: 16px; font-size: 15px; color: var(--teal); font-weight: 700; }
 
-.lp-empathy-bridge { margin: 28px 0 0 0; font-weight: 700; color: var(--teal-dark); }
+.lp-empathy-bridge { margin: 28px 0 0 0; font-weight: 700; color: var(--teal-dark); font-size: 26px; }
 
 .lp-steps { display: flex; gap: 40px; justify-content: center; text-align: center; }
 .lp-step { flex: 1; }
@@ -999,6 +999,7 @@
   .lp-eyebrow { font-size: 14px; }
   .lp h2 { font-size: 30px; }
   .lp-lead { font-size: 17px; }
+  .lp-empathy-bridge { font-size: 21px; }
   .lp-hero-lead { font-size: 18px; }
   .lp-hero-note { font-size: 13px; }
   .lp-step-label { font-size: 13px; }
