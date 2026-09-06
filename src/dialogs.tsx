@@ -433,6 +433,9 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
           ? `ご利用中のプラン: ${planTiers.find((t) => t.key === config.subscription_plan)?.label ?? config.subscription_plan}`
           : `無料枠 残り${Math.max(0, freeGenerationLimit - ((config.free_generations_used as number | undefined) ?? 0))}回`}
       </p>
+      <button type="button" className="inline-link" disabled={busy} onClick={openBilling}>
+        {isSubscribed ? 'プラン管理' : 'プランを見る'}
+      </button>
       <p className="modal-body">{email ?? '読み込み中...'}</p>
 
       {changingPassword ? (
@@ -478,9 +481,6 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
           <button type="button" className="inline-link" onClick={startChangingPassword}>パスワードを変更</button>
           {pwSuccess && <p className="hint-muted">パスワードを変更しました。</p>}
           <div className="modal-actions">
-            <button className="btn btn-outlined" disabled={busy} onClick={openBilling}>
-              {isSubscribed ? 'プラン管理' : 'プランを見る'}
-            </button>
             <button className="btn btn-text" onClick={() => close()}>閉じる</button>
           </div>
         </>
