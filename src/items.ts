@@ -117,11 +117,11 @@ export const itemCatalog: ItemDef[] = [
   ] },
 
   // 精神・心理面
+  { key: 'mental_state', label: '精神状態', categoryKey: 'mental', options: [
+    UNSET, '安定', 'やや不安定', '不安定', '興奮・混乱がみられる',
+  ] },
   { key: 'motivation_activity', label: '意欲・活動性', categoryKey: 'mental', options: [
     UNSET, '意欲的', 'やや低下', '低下', '無気力な様子がみられる',
-  ] },
-  { key: 'emotional_stability', label: '情緒の安定度', categoryKey: 'mental', options: [
-    UNSET, '安定', 'やや不安定', '不安定', '興奮・混乱がみられる',
   ] },
   { key: 'anxiety_depression', label: '不安・抑うつ傾向', categoryKey: 'mental', options: [
     UNSET, 'なし', '時々みられる', '頻繁にみられる', '強い不安・抑うつ症状あり',
@@ -231,18 +231,18 @@ export const facilityTypePresets: FacilityTypePreset[] = [
     'choking_sign', 'hydration', 'meal_intake_amount', 'vitals',
     'fall_injury', 'skin_condition', 'sleep_condition', 'medication_management',
     'medical_treatment', 'cognitive_function', 'orientation', 'bpsd', 'judgment',
-    'communication', 'emotional_stability', 'anxiety_depression', 'pain',
+    'communication', 'mental_state', 'anxiety_depression', 'pain',
   ] },
   { key: 'group_home', label: 'グループホーム・認知症対応型通所', itemKeys: [
     'cognitive_function', 'orientation', 'bpsd', 'judgment', 'communication',
     'facial_expression', 'social_interaction', 'motivation_activity',
-    'emotional_stability', 'anxiety_depression', 'memory', 'toileting', 'meal_intake_amount',
+    'mental_state', 'anxiety_depression', 'memory', 'toileting', 'meal_intake_amount',
     'hydration', 'sleep_condition', 'fall_injury',
   ] },
   { key: 'residential', label: '特定施設・小規模多機能型(入居・複合型)', itemKeys: [
     'transfer_movement', 'toileting', 'bathing', 'meal_intake_amount', 'hydration',
     'vitals', 'fall_injury', 'medication_management', 'cognitive_function',
-    'orientation', 'communication', 'emotional_stability',
+    'orientation', 'communication', 'mental_state',
     'mobility_aid', 'sleep_condition',
   ] },
   { key: 'care_manager', label: '居宅介護支援(ケアマネ)・福祉用具貸与など', itemKeys: [
