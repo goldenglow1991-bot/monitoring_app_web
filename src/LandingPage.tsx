@@ -11,6 +11,7 @@ export function LandingPage({
     <div className="lp">
       <div className="lp-header">
         <div className="lp-logo">
+          <div className="lp-logo-tagline">かんたんモニタリング作成AI</div>
           <div className="lp-logo-yomi">アシスト</div>
           <div className="lp-logo-main">Assist</div>
         </div>
