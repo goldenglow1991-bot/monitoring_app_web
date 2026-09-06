@@ -135,6 +135,11 @@
 }
 .start-page-home .start-title { font-size: 33px; }
 .start-page-home .start-subtitle { font-size: 21px; }
+.start-yomi {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
 .start-button {
   margin-top: 40px;
   padding: 20px 32px;

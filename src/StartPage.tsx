@@ -55,6 +55,7 @@ export function StartPage({ onStart }: { onStart: () => void }) {
       <div className="start-page-inner">
         <div className="start-subtitle">かんたんモニタリング作成AI</div>
         <div className="start-title">Assist</div>
+        <div className="start-yomi">〜アシスト〜</div>
         <button className="btn btn-filled start-button" onClick={onStart}>
           ▶ 入力を開始する
         </button>
