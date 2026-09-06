@@ -133,6 +133,8 @@
   color: var(--text-muted);
   margin-top: 8px;
 }
+.start-page-home .start-title { font-size: 44px; }
+.start-page-home .start-subtitle { font-size: 28px; }
 .start-button {
   margin-top: 40px;
   padding: 20px 32px;
@@ -996,6 +998,8 @@
   .start-page-inner { padding: 0 16px; }
   .start-title { font-size: 19px; }
   .start-subtitle { font-size: 12px; }
+  .start-page-home .start-title { font-size: 38px; }
+  .start-page-home .start-subtitle { font-size: 24px; }
   .start-button { padding: 14px 22px; font-size: 16px; margin-top: 28px; }
   .start-back-btn { font-size: 26px; top: 12px; left: 12px; }
   .start-menu-btn, .start-announce-btn { width: 40px; height: 40px; font-size: 17px; }
