@@ -173,7 +173,7 @@ export function canonicalItemOrder(keys: string[]): string[] {
 }
 
 // 表示項目の設定(config.enabled_items)が未設定のときのデフォルト。
-// 既存10項目のみ、モード選択画面のカテゴリー表示順に整列。
+// 以下の9項目のみ、モード選択画面のカテゴリー表示順に整列。
 export const defaultEnabledItemKeys: string[] = canonicalItemOrder([
   'exercise_type_1',
   'exercise_time',
