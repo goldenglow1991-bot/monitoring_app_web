@@ -971,6 +971,7 @@
 .lp-footer-link { display: inline-block; margin-top: 8px; font-size: 14px; }
 
 @media (max-width: 720px) {
+  .lp-logo-tagline { display: none; }
   .lp-section { padding: 64px 20px; }
   .lp-hero-title { font-size: 32px; }
   .lp-steps { flex-direction: column; gap: 40px; }
