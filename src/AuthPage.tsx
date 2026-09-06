@@ -37,7 +37,7 @@ export function AuthPage({
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     if (!showLoginQr || !qrCanvasRef.current) return;
-    const url = `${window.location.origin}${window.location.pathname}?screen=auth`;
+    const url = `${window.location.origin}${window.location.pathname}#screen=auth`;
     QRCode.toCanvas(qrCanvasRef.current, url, { width: 180 }).catch((e) => {
       console.error('QRコードの生成に失敗しました', e);
     });

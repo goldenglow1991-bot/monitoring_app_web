@@ -19,7 +19,10 @@ export default function App() {
   const [loadErrorText, setLoadErrorText] = useState<string | null>(null);
   const [passwordRecovery, setPasswordRecovery] = useState(false);
   const [showAuth, setShowAuth] = useState(
-    () => new URLSearchParams(window.location.search).get('screen') === 'auth',
+    // クエリパラメータ(?screen=auth)は、ドメインのリダイレクト設定等の
+    // 都合で失われることがあるため、サーバーに送られずリダイレクトの
+    // 影響も受けないハッシュ(#screen=auth)を使う。
+    () => window.location.hash === '#screen=auth',
   );
   const [authInitialMode, setAuthInitialMode] = useState<'login' | 'signup'>('login');
 
@@ -73,7 +76,7 @@ export default function App() {
   // LPに戻れるようにするため、URLの変更(popstate)に合わせて画面を切り替える。
   useEffect(() => {
     const onPopState = () => {
-      setShowAuth(new URLSearchParams(window.location.search).get('screen') === 'auth');
+      setShowAuth(window.location.hash === '#screen=auth');
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
@@ -82,7 +85,7 @@ export default function App() {
   function goToAuth(mode: 'login' | 'signup') {
     setAuthInitialMode(mode);
     setShowAuth(true);
-    window.history.pushState({}, '', '/?screen=auth');
+    window.history.pushState({}, '', '/#screen=auth');
   }
 
   useEffect(() => {

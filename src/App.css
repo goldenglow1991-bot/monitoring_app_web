@@ -860,7 +860,7 @@
   border-bottom: 1px solid var(--border-light);
   background: #fff;
 }
-.lp-logo { display: flex; align-items: center; gap: 12px; }
+.lp-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; cursor: pointer; }
 .lp-logo-brand { line-height: 1; text-align: center; }
 .lp-logo-yomi { font-size: 11px; color: var(--teal); }
 .lp-logo-main { font-size: 22px; font-weight: 700; margin-top: -2px; color: var(--teal); }

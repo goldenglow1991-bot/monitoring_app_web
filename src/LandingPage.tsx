@@ -11,12 +11,16 @@ export function LandingPage({
   return (
     <div className="lp">
       <div className="lp-header">
-        <div className="lp-logo">
+        <a
+          href="#"
+          className="lp-logo"
+          onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+        >
           <div className="lp-logo-brand">
             <div className="lp-logo-yomi">アシスト</div>
             <div className="lp-logo-main">Assist</div>
           </div>
-        </div>
+        </a>
         <div className="lp-header-actions">
           <button type="button" className="btn btn-text" onClick={onLogin}>ログイン</button>
           <button type="button" className="btn btn-filled" onClick={onGetStarted}>無料で試してみる</button>
