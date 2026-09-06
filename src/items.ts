@@ -92,12 +92,6 @@ export const itemCatalog: ItemDef[] = [
   { key: 'facial_expression', label: '表情・感情表出', categoryKey: 'communication', options: [
     UNSET, '穏やか・明るい', 'やや乏しい', '硬い表情が多い', '感情の起伏が激しい',
   ] },
-  { key: 'social_interaction', label: '他利用者・スタッフとの交流', categoryKey: 'communication', options: [
-    UNSET, '積極的', '声かけには応じる', '受け身がち', '交流を避ける傾向',
-  ] },
-  { key: 'speech_clarity', label: '発話明瞭度', categoryKey: 'communication', options: [
-    UNSET, '明瞭', 'やや不明瞭', '不明瞭', '発語がみられない',
-  ] },
 
   // 認知機能
   { key: 'cognitive_function', label: '認知機能', categoryKey: 'cognitive', options: [
@@ -111,9 +105,6 @@ export const itemCatalog: ItemDef[] = [
   ] },
   { key: 'bpsd', label: '周辺症状', categoryKey: 'cognitive', options: [
     UNSET, 'なし', '時々みられる(徘徊・不穏等)', '頻繁にみられる', '対応に苦慮するレベル',
-  ] },
-  { key: 'judgment', label: '判断力・意思決定', categoryKey: 'cognitive', options: [
-    UNSET, '良好', 'やや低下', '低下', '判断が困難',
   ] },
 
   // 精神・心理面
@@ -157,9 +148,6 @@ export const itemCatalog: ItemDef[] = [
   ] },
   { key: 'outing', label: '外出の有無', categoryKey: 'other', options: [
     UNSET, '積極的に外出している', '声かけで外出する', '外出の機会は少ない', '外出はほとんどない',
-  ] },
-  { key: 'community_activity', label: '地域活動・交流状況', categoryKey: 'other', options: [
-    UNSET, '積極的に参加', 'たまに参加', '参加はほとんどない', '該当なし',
   ] },
   { key: 'home_environment_burden', label: '居宅環境・介護者(家族)の負担感', categoryKey: 'other', options: [
     UNSET, '特に問題なし', '軽度の負担感あり', '中等度の負担感あり', '強い負担感・支援が必要',
@@ -246,8 +234,9 @@ export const facilityTypePresets: FacilityTypePreset[] = [
     'mental_state', 'vitals', 'sleep_condition', 'pain', 'fall_injury',
   ] },
   { key: 'care_manager', label: '居宅介護支援(ケアマネ)・福祉用具貸与など', itemKeys: [
-    'outing', 'communication', 'home_environment_burden', 'fall_injury',
-    'cognitive_function', 'vitals',
+    'mobility_aid', 'gait', 'adl_other', 'outing', 'communication',
+    'home_environment_burden', 'fall_injury', 'cognitive_function',
+    'vitals', 'medication_management',
   ] },
 ];
 
