@@ -10,7 +10,10 @@ export function LandingPage({
   return (
     <div className="lp">
       <div className="lp-header">
-        <div className="lp-logo">assist</div>
+        <div className="lp-logo">
+          <div className="lp-logo-yomi">アシスト</div>
+          <div className="lp-logo-main">Assist</div>
+        </div>
         <div className="lp-header-actions">
           <button type="button" className="btn btn-text" onClick={onLogin}>ログイン</button>
           <button type="button" className="btn btn-filled" onClick={onGetStarted}>無料で試してみる</button>
