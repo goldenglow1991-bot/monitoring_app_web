@@ -23,7 +23,7 @@ export function StartPage({ onStart }: { onStart: () => void }) {
   }, [menuOpen]);
 
   return (
-    <div className="start-page start-page-home">
+    <div className="start-page start-page-home start-page-top">
       <button
         type="button"
         className="start-announce-btn"
@@ -53,7 +53,7 @@ export function StartPage({ onStart }: { onStart: () => void }) {
         </div>
       </div>
       <div className="start-page-inner">
-        <div className="start-subtitle">かんたんモニタリング作成AI</div>
+        <div className="start-subtitle">モニタリング作成AI</div>
         <div className="start-yomi">アシスト</div>
         <div className="start-title">Assist</div>
         <button className="btn btn-filled start-button" onClick={onStart}>

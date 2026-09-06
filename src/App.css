@@ -1040,6 +1040,7 @@
   .start-subtitle { font-size: 12px; }
   .start-page-home .start-title { font-size: 33px; margin-top: 0; }
   .start-page-home .start-subtitle { font-size: 18px; }
+  .start-page-top .start-yomi { font-size: 14px; }
   .start-button { padding: 14px 22px; font-size: 16px; margin-top: 28px; }
   .start-back-btn { font-size: 26px; top: 12px; left: 12px; }
   .start-menu-btn, .start-announce-btn { width: 40px; height: 40px; font-size: 17px; }
