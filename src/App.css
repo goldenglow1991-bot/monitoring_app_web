@@ -176,6 +176,7 @@
   justify-content: center;
 }
 .start-announce-btn:hover { background: var(--teal-dark); }
+.start-announce-icon { filter: grayscale(1) brightness(0) invert(1); }
 .start-announce-badge {
   position: absolute;
   top: 4px;
