@@ -1149,7 +1149,7 @@ function CopyLastMonthDialogView({
           checked={scope === 'all'}
           onChange={() => setScope('all')}
         />
-        <span>プルダウン+自由記入欄、前月のすべてをコピーする</span>
+        <span>前月所見をすべてコピーする</span>
       </label>
       <div className="modal-actions">
         <button className="btn btn-text" onClick={() => close(null)}>キャンセル</button>
@@ -1177,7 +1177,7 @@ function WarningConfirmDialogView({
   return (
     <ModalShell width={420} onBackdropClick={() => close(false)}>
       <h2 className="modal-title">{title}</h2>
-      <p className="modal-body">{message}</p>
+      <p className="modal-body" style={{ color: 'var(--danger)' }}>{message}</p>
       <div className="modal-actions">
         <button className="btn btn-text" onClick={() => close(false)}>キャンセル</button>
         <button className="btn btn-filled" onClick={() => close(true)}>OK</button>
