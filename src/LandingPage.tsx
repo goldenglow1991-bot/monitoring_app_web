@@ -1,4 +1,5 @@
 import { showTokushohoDialog } from './dialogs';
+import { planTiers, freeGenerationLimit, annualDiscountRate, annualPriceFor } from './stripePrices';
 
 export function LandingPage({
   onGetStarted,
@@ -200,6 +201,31 @@ export function LandingPage({
         </div>
       </div>
 
+      <div className="lp-section lp-panel" id="pricing">
+        <div className="lp-wrap lp-center" style={{ marginBottom: 40 }}>
+          <div className="lp-eyebrow">料金プラン</div>
+          <h2>まずは10回、無料でお試しを</h2>
+          <p className="lp-lead">
+            {freeGenerationLimit}回目までは無料でご利用いただけます。
+            <br />
+            それ以降は、登録人数に応じたプランへのお申し込みが必要です。
+            <br />
+            年払いなら、月払いの{Math.round(annualDiscountRate * 100)}%オフでご利用いただけます。
+          </p>
+        </div>
+        <div className="lp-wrap lp-pricing-grid">
+          {planTiers.map((tier) => (
+            <div className="lp-pricing-card" key={tier.key}>
+              <div className="lp-pricing-tier">{tier.label}</div>
+              <div className="lp-pricing-price">
+                {tier.priceYen.toLocaleString()}<span>円/月</span>
+              </div>
+              <div className="lp-pricing-annual">年払い {annualPriceFor(tier).toLocaleString()}円/年</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="lp-section" id="faq">
         <div className="lp-wrap lp-center" style={{ marginBottom: 48 }}>
           <div className="lp-eyebrow">よくあるご質問</div>
@@ -227,9 +253,11 @@ export function LandingPage({
           <div className="lp-faq-item">
             <div className="lp-faq-q">料金はいくらですか?</div>
             <div className="lp-faq-a">
-              ご利用人数に応じたプランをご用意しています。
+              はじめの{freeGenerationLimit}回は無料でお試しいただけます。
               <br />
-              詳しくはお問い合わせください。
+              それ以降は月額{planTiers[0].priceYen.toLocaleString()}円〜、登録人数に応じたプランをご用意しています。
+              <br />
+              詳しくは<a href="#pricing" className="inline-link">料金プラン</a>をご覧ください。
             </div>
           </div>
           <div className="lp-faq-item">
