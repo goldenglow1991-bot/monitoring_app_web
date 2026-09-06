@@ -16,11 +16,11 @@ export interface PlanTier {
 }
 
 export const planTiers: PlanTier[] = [
-  { key: 'tier1', label: '〜20人', maxResidents: 20, priceYen: 980, stripePriceId: 'price_1UA2jYJT7jCdXWW2nbohoA4K', annualStripePriceId: 'price_1UCIsFJT7jCdXWW2NT7BQ479' },
-  { key: 'tier2', label: '〜40人', maxResidents: 40, priceYen: 1980, stripePriceId: 'price_1UA2kCJT7jCdXWW2AAsbwJXi', annualStripePriceId: 'price_1UCIv7JT7jCdXWW289x1Xrod' },
-  { key: 'tier3', label: '〜70人', maxResidents: 70, priceYen: 2980, stripePriceId: 'price_1UA2mKJT7jCdXWW2w2AiDrjs', annualStripePriceId: 'price_1UCIvfJT7jCdXWW203YVBqQf' },
-  { key: 'tier4', label: '〜110人', maxResidents: 110, priceYen: 3980, stripePriceId: 'price_1UA2maJT7jCdXWW2rh6JPYGI', annualStripePriceId: 'price_1UCIwAJT7jCdXWW2tqKcJBQp' },
-  { key: 'tier5', label: '〜150人', maxResidents: 150, priceYen: 4980, stripePriceId: 'price_1UA2moJT7jCdXWW2OR6bNBfT', annualStripePriceId: 'price_1UCIwfJT7jCdXWW2hAQRSfMa' },
+  { key: 'tier1', label: '〜20人', maxResidents: 20, priceYen: 980, stripePriceId: 'price_1UCeaFJTYmeJezLxSuX4r9p8', annualStripePriceId: 'price_1UCee0JTYmeJezLx6XTxMheG' },
+  { key: 'tier2', label: '〜40人', maxResidents: 40, priceYen: 1980, stripePriceId: 'price_1UCeb3JTYmeJezLx1trya7Ul', annualStripePriceId: 'price_1UCeeRJTYmeJezLxYIsAQ0OP' },
+  { key: 'tier3', label: '〜70人', maxResidents: 70, priceYen: 2980, stripePriceId: 'price_1UCebnJTYmeJezLx1g3HtzYU', annualStripePriceId: 'price_1UCeesJTYmeJezLxjtXUSsea' },
+  { key: 'tier4', label: '〜110人', maxResidents: 110, priceYen: 3980, stripePriceId: 'price_1UCec6JTYmeJezLxm2TJDPNT', annualStripePriceId: 'price_1UCefGJTYmeJezLxZnqrIdI0' },
+  { key: 'tier5', label: '〜150人', maxResidents: 150, priceYen: 4980, stripePriceId: 'price_1UCecOJTYmeJezLxMxxIaq8J', annualStripePriceId: 'price_1UCefoJTYmeJezLxnDJCHiZz' },
 ];
 
 export const freeGenerationLimit = 10;
