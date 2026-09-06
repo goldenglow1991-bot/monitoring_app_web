@@ -62,6 +62,7 @@ export function LandingPage({
             </p>
             <div className="lp-testimonial-source">実際に試験導入したデイサービス職員の声</div>
           </div>
+          <p className="lp-owner-note">記録時間の短縮は、残業削減にもつながります。</p>
         </div>
       </div>
 

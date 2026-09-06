@@ -905,6 +905,7 @@
 }
 .lp-testimonial-quote { font-size: 17px; font-weight: 700; margin: 0; }
 .lp-testimonial-source { margin-top: 8px; font-size: 13px; color: var(--text-muted); }
+.lp-owner-note { margin-top: 16px; font-size: 14px; color: var(--text-muted); }
 
 .lp-steps { display: flex; gap: 40px; justify-content: center; text-align: center; }
 .lp-step { flex: 1; }
