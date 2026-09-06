@@ -649,6 +649,25 @@ export function showConfirm(title: string, message: string): Promise<boolean> {
   ));
 }
 
+// 楽観的ロックの競合(別の端末が先に同じ記録を更新した)時に表示する確認。
+// 'overwrite'=今の入力内容で上書きする、'refresh'=別の端末の内容を優先して
+// 読み込み直す、null=どちらも選ばず今の入力内容をそのまま残す(背景タップ等)。
+export function showRecordConflictDialog(): Promise<'overwrite' | 'refresh' | null> {
+  return openDialog<'overwrite' | 'refresh' | null>((close) => (
+    <ModalShell width={400} onBackdropClick={() => close(null)}>
+      <h2 className="modal-title">保存できませんでした</h2>
+      <p className="modal-body">
+        この利用者はほかの端末により内容が更新されました。
+        上書きする場合は「上書きする」を、別の端末による変更を優先する場合は「更新する」を押してください。
+      </p>
+      <div className="modal-actions">
+        <button className="btn btn-text" onClick={() => close('refresh')}>更新する</button>
+        <button className="btn btn-filled" onClick={() => close('overwrite')}>上書きする</button>
+      </div>
+    </ModalShell>
+  ));
+}
+
 /// 保存確認: null=キャンセル(何もしない), true=保存して続行, false=保存せず続行
 export function showSaveConfirm(): Promise<boolean | null> {
   return openDialog<boolean | null>((close) => (

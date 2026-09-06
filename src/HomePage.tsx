@@ -32,6 +32,7 @@ import {
   showPricingDialog,
   showPlanChangeDialog,
   showUsageGuideDialog,
+  showRecordConflictDialog,
 } from './dialogs';
 import { closeAllDialogs } from './dialogHost';
 import { ItemRow } from './components/ItemRow';
@@ -304,16 +305,19 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         return false;
       }
       if (e instanceof ConflictError) {
-        const shouldRefresh = await showConfirm(
-          '保存できませんでした',
-          'この内容は別の端末で更新されています。今入力中の内容はまだ保存されていません。\n\n' +
-          '必要であれば内容をコピーしてから「はい」を選んでください。最新の内容に置き換わります(今の入力内容は消えます)。\n' +
-          '「いいえ」を選ぶと、今の入力内容はそのまま残ります。',
-        );
-        if (shouldRefresh) {
+        const choice = await showRecordConflictDialog();
+        if (choice === 'refresh') {
           await storage.refetchRecord(selectedUserId, target);
           const user = users.find((u) => u.id === selectedUserId);
           if (user) loadFormFor(user, target);
+        } else if (choice === 'overwrite') {
+          try {
+            await storage.upsertMonthlyRecord(selectedUserId, record, { force: true });
+            dirtyRef.current = false;
+            return true;
+          } catch (e2) {
+            await showWarning('保存エラー', `保存に失敗しました: ${e2 instanceof Error ? e2.message : String(e2)}`);
+          }
         }
       } else {
         await showWarning('保存エラー', `保存に失敗しました: ${e instanceof Error ? e.message : String(e)}`);
@@ -605,15 +609,19 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           return { saved: true as const, report };
         } catch (e) {
           if (e instanceof ConflictError) {
-            const shouldRefresh = await showConfirm(
-              '保存できませんでした',
-              'この内容は別の端末で更新されています。今入力中の内容はまだ保存されていません。\n\n' +
-              '必要であれば内容をコピーしてから「はい」を選んでください。最新の内容に置き換わります(今の入力内容は消えます)。\n' +
-              '「いいえ」を選ぶと、今の入力内容はそのまま残ります。',
-            );
-            if (shouldRefresh) {
+            const choice = await showRecordConflictDialog();
+            if (choice === 'refresh') {
               const fresh = await storage.refetchRecord(user.id, targetYearMonth);
               return { saved: false as const, refreshedReport: fresh?.report ?? '' };
+            }
+            if (choice === 'overwrite') {
+              try {
+                await storage.upsertMonthlyRecord(user.id, record, { force: true });
+                return { saved: true as const, report };
+              } catch (e2) {
+                await showWarning('保存エラー', `保存に失敗しました: ${e2 instanceof Error ? e2.message : String(e2)}`);
+                return { saved: false as const };
+              }
             }
             return { saved: false as const };
           }

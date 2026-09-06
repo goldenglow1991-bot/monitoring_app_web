@@ -309,7 +309,13 @@ export function loadRecords(residentId: string): MonthlyRecord[] {
 // 値と一致する時だけ成功させ(楽観的ロック)、一致しなければConflictErrorを
 // 投げる。新規作成の場合(updatedAtがない)は、既に他の端末が同じ年月の記録を
 // 作っていた場合もConflictErrorとして扱う。
-export async function upsertMonthlyRecord(residentId: string, record: MonthlyRecord): Promise<MonthlyRecord> {
+// options.force=trueの場合は、競合を確認した上でユーザーが「上書きする」を
+// 選んだときの再試行用に、updated_atの一致チェックをスキップして上書きする。
+export async function upsertMonthlyRecord(
+  residentId: string,
+  record: MonthlyRecord,
+  options?: { force?: boolean },
+): Promise<MonthlyRecord> {
   const uid = await requireUserId();
   const payload = {
     user_id: uid,
@@ -324,12 +330,15 @@ export async function upsertMonthlyRecord(residentId: string, record: MonthlyRec
   };
 
   if (record.updatedAt) {
-    const { data, error } = await supabase
+    let query = supabase
       .from('monthly_records')
       .update(payload)
       .eq('resident_id', residentId)
-      .eq('year_month', record.yearMonth)
-      .eq('updated_at', record.updatedAt)
+      .eq('year_month', record.yearMonth);
+    if (!options?.force) {
+      query = query.eq('updated_at', record.updatedAt);
+    }
+    const { data, error } = await query
       .select('resident_id, year_month, notes, items, extra_notes, report, draft, draft_generated, updated_at')
       .maybeSingle();
     if (error) throw error;
