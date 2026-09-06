@@ -861,6 +861,11 @@
 .lp-logo-yomi { font-size: 11px; color: var(--text-muted); }
 .lp-logo-main { font-size: 22px; font-weight: 700; margin-top: -2px; }
 .lp-logo-tagline { font-size: 12px; color: var(--text-muted); }
+@media (min-width: 721px) {
+  .lp-logo-yomi { font-size: 17px; }
+  .lp-logo-main { font-size: 33px; }
+  .lp-logo-tagline { font-size: 36px; }
+}
 .lp-header-actions { display: flex; align-items: center; gap: 8px; }
 .lp-section { padding: 96px 40px; }
 .lp-wrap { max-width: 880px; margin: 0 auto; }
