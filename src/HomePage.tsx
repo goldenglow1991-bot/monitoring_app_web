@@ -1088,10 +1088,11 @@ export function HomePage({ onExit }: { onExit: () => void }) {
               <select value={year} onChange={(e) => changeYearMonth(e.target.value, month)}>
                 {TOP_YEAR_VALUES.map((y) => <option key={y} value={y}>{y}</option>)}
               </select>
-              /
+              年
               <select value={month} onChange={(e) => changeYearMonth(year, e.target.value)}>
                 {MONTH_VALUES.map((m) => <option key={m} value={m}>{m}</option>)}
               </select>
+              月
             </span>
           </div>
           <div className="top-bar-group top-bar-group-end">
