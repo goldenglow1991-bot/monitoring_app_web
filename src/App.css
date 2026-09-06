@@ -861,8 +861,8 @@
 .lp-logo-yomi { font-size: 11px; color: var(--text-muted); }
 .lp-logo-main { font-size: 22px; font-weight: 700; margin-top: -2px; }
 @media (min-width: 721px) {
-  .lp-logo-yomi { font-size: 17px; }
-  .lp-logo-main { font-size: 33px; }
+  .lp-logo-yomi { font-size: 14px; }
+  .lp-logo-main { font-size: 26px; }
 }
 .lp-header-actions { display: flex; align-items: center; gap: 8px; }
 .lp-section { padding: 96px 40px; }
@@ -891,7 +891,7 @@
   margin: 0 auto 40px auto;
 }
 .lp-hero-actions { display: flex; gap: 16px; justify-content: center; }
-.lp-hero-note { margin-top: 16px; font-size: 15px; color: var(--text-muted); }
+.lp-hero-note { margin-top: 16px; font-size: 15px; color: var(--teal); font-weight: 700; }
 
 .lp-empathy-bridge { margin: 28px 0 0 0; font-weight: 700; color: var(--teal-dark); }
 
