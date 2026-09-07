@@ -1132,30 +1132,26 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             )}
           </div>
           <div className="top-bar-group top-bar-group-end">
-            {/* 一時的に非表示にしています。すぐ元に戻す予定なので、この
-                {false && (...)}のブロックごと削除して復元してください。 */}
-            {false && (
-              <span className="usage-status">
-                {isSubscribed ? (
-                  <>
-                    <span className="usage-status-line">
-                      ご利用中: {planTiers.find((t) => t.key === config.subscription_plan)?.label ?? config.subscription_plan}
-                    </span>
-                    {monthlyUsageCount != null && (
-                      <span className="usage-status-line">今月{monthlyUsageCount}回</span>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <span className="usage-status-line">無料枠</span>
-                    <span className="usage-status-line">
-                      残り{Math.max(0, freeGenerationLimit - ((config.free_generations_used as number | undefined) ?? 0))}回
-                    </span>
-                  </>
-                )}
-              </span>
-            )}
-            {false && !(isSubscribed && phoneLike) && (
+            <span className="usage-status">
+              {isSubscribed ? (
+                <>
+                  <span className="usage-status-line">
+                    ご利用中: {planTiers.find((t) => t.key === config.subscription_plan)?.label ?? config.subscription_plan}
+                  </span>
+                  {monthlyUsageCount != null && (
+                    <span className="usage-status-line">今月{monthlyUsageCount}回</span>
+                  )}
+                </>
+              ) : (
+                <>
+                  <span className="usage-status-line">無料枠</span>
+                  <span className="usage-status-line">
+                    残り{Math.max(0, freeGenerationLimit - ((config.free_generations_used as number | undefined) ?? 0))}回
+                  </span>
+                </>
+              )}
+            </span>
+            {!(isSubscribed && phoneLike) && (
               <button className="btn btn-outlined" onClick={openBilling}>{isSubscribed ? 'プラン管理' : 'プラン選択'}</button>
             )}
             <button className="btn btn-outlined" onClick={openModeSelectDialog}>モード選択</button>
