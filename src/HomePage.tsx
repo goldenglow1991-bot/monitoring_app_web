@@ -1101,7 +1101,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
       <div className={`top-bar${phoneLike && topBarHidden ? ' top-bar-hidden' : ''}`} ref={topBarRef}>
         <div className={`top-bar-inner${topBarStacked ? ' top-bar-stacked' : ''}`}>
           <div className="top-bar-group">
-            <button className="btn btn-filled btn-compact" onClick={saveAndExit}>保存して終了</button>
+            <button className="btn btn-filled btn-compact" onClick={saveAndExit} aria-label="保存して終了">{mobile ? '◀' : '保存して終了'}</button>
             <button className="btn btn-filled btn-compact" onClick={finalizeUser}>保存</button>
             <span className="year-month-picker">
               <select value={year} onChange={(e) => changeYearMonth(e.target.value, month)}>
