@@ -1109,8 +1109,6 @@ export function HomePage({ onExit }: { onExit: () => void }) {
                 <input
                   type="month"
                   className="year-month-native-input"
-                  aria-label="年月の設定"
-                  required
                   value={`${year}-${month}`}
                   min={`${TOP_YEAR_VALUES[0]}-01`}
                   max={`${TOP_YEAR_VALUES[TOP_YEAR_VALUES.length - 1]}-12`}
