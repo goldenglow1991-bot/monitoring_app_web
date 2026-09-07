@@ -381,6 +381,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
   }
 
   async function changeYearMonth(newYear: string, newMonth: string) {
+    setYearMonthEditing(false);
     if (newYear === year && newMonth === month) return;
     if (selectedUserId != null && dirtyRef.current) {
       await saveInputs();
@@ -1035,6 +1036,9 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     return () => mq.removeEventListener('change', update);
   }, []);
   const phoneLike = mobile || phoneLandscape;
+  // スマホ(縦横問わず)では、年月を「26/09」のように一体化して表示し、
+  // タップした時だけ通常の年/月プルダウンを表示する(選択後は自動で戻す)。
+  const [yearMonthEditing, setYearMonthEditing] = useState(false);
 
   const [topBarHidden, setTopBarHidden] = useState(false);
   const lastScrollTopRef = useRef(0);
@@ -1103,16 +1107,26 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           <div className="top-bar-group">
             <button className="btn btn-filled btn-compact" onClick={saveAndExit}>保存して終了</button>
             <button className="btn btn-filled btn-compact" onClick={finalizeUser}>保存</button>
-            <span className="year-month-picker">
-              <select value={year} onChange={(e) => changeYearMonth(e.target.value, month)}>
-                {TOP_YEAR_VALUES.map((y) => <option key={y} value={y}>{y}</option>)}
-              </select>
-              年
-              <select value={month} onChange={(e) => changeYearMonth(year, e.target.value)}>
-                {MONTH_VALUES.map((m) => <option key={m} value={m}>{m}</option>)}
-              </select>
-              月
-            </span>
+            {phoneLike && !yearMonthEditing ? (
+              <button
+                type="button"
+                className="btn btn-outlined btn-compact year-month-compact"
+                onClick={() => setYearMonthEditing(true)}
+              >
+                {year.slice(2)}/{month}
+              </button>
+            ) : (
+              <span className="year-month-picker">
+                <select value={year} onChange={(e) => changeYearMonth(e.target.value, month)}>
+                  {TOP_YEAR_VALUES.map((y) => <option key={y} value={y}>{y}</option>)}
+                </select>
+                年
+                <select value={month} onChange={(e) => changeYearMonth(year, e.target.value)}>
+                  {MONTH_VALUES.map((m) => <option key={m} value={m}>{m}</option>)}
+                </select>
+                月
+              </span>
+            )}
           </div>
           <div className="top-bar-group top-bar-group-end">
             <span className="usage-status">
