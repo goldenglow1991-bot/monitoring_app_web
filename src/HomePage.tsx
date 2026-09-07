@@ -33,6 +33,7 @@ import {
   showPlanChangeDialog,
   showUsageGuideDialog,
   showRecordConflictDialog,
+  showYearMonthDialog,
 } from './dialogs';
 import { closeAllDialogs } from './dialogHost';
 import { ItemRow } from './components/ItemRow';
@@ -381,7 +382,6 @@ export function HomePage({ onExit }: { onExit: () => void }) {
   }
 
   async function changeYearMonth(newYear: string, newMonth: string) {
-    setYearMonthEditing(false);
     if (newYear === year && newMonth === month) return;
     if (selectedUserId != null && dirtyRef.current) {
       await saveInputs();
@@ -1036,9 +1036,6 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     return () => mq.removeEventListener('change', update);
   }, []);
   const phoneLike = mobile || phoneLandscape;
-  // スマホ(縦横問わず)では、年月を「26/09」のように一体化して表示し、
-  // タップした時だけ通常の年/月プルダウンを表示する(選択後は自動で戻す)。
-  const [yearMonthEditing, setYearMonthEditing] = useState(false);
 
   const [topBarHidden, setTopBarHidden] = useState(false);
   const lastScrollTopRef = useRef(0);
@@ -1107,11 +1104,19 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           <div className="top-bar-group">
             <button className="btn btn-filled btn-compact" onClick={saveAndExit}>保存して終了</button>
             <button className="btn btn-filled btn-compact" onClick={finalizeUser}>保存</button>
-            {phoneLike && !yearMonthEditing ? (
+            {phoneLike ? (
               <button
                 type="button"
                 className="btn btn-outlined btn-compact year-month-compact"
-                onClick={() => setYearMonthEditing(true)}
+                onClick={async () => {
+                  const result = await showYearMonthDialog({
+                    initialYear: year,
+                    initialMonth: month,
+                    yearValues: TOP_YEAR_VALUES,
+                    monthValues: MONTH_VALUES,
+                  });
+                  if (result) changeYearMonth(result.year, result.month);
+                }}
               >
                 {year.slice(2)}/{month}
               </button>

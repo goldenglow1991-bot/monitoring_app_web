@@ -693,6 +693,60 @@ export function showRecordConflictDialog(): Promise<'overwrite' | 'refresh' | nu
   ));
 }
 
+// スマホでトップバーの年月表示をタップした時に開く、年月をまとめて選ぶ
+// ダイアログ。OKで{year, month}、キャンセル・背景タップでnullを返す。
+function YearMonthDialogView({
+  initialYear,
+  initialMonth,
+  yearValues,
+  monthValues,
+  close,
+}: {
+  initialYear: string;
+  initialMonth: string;
+  yearValues: string[];
+  monthValues: string[];
+  close: (value: { year: string; month: string } | null) => void;
+}) {
+  const [year, setYear] = useState(initialYear);
+  const [month, setMonth] = useState(initialMonth);
+
+  return (
+    <ModalShell width={320} onBackdropClick={() => close(null)}>
+      <h2 className="modal-title">対象年月を選択</h2>
+      <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+        <select value={year} onChange={(e) => setYear(e.target.value)}>
+          {yearValues.map((y) => <option key={y} value={y}>{y}年</option>)}
+        </select>
+        <select value={month} onChange={(e) => setMonth(e.target.value)}>
+          {monthValues.map((m) => <option key={m} value={m}>{m}月</option>)}
+        </select>
+      </div>
+      <div className="modal-actions">
+        <button className="btn btn-text" onClick={() => close(null)}>キャンセル</button>
+        <button className="btn btn-filled" onClick={() => close({ year, month })}>OK</button>
+      </div>
+    </ModalShell>
+  );
+}
+
+export function showYearMonthDialog(params: {
+  initialYear: string;
+  initialMonth: string;
+  yearValues: string[];
+  monthValues: string[];
+}): Promise<{ year: string; month: string } | null> {
+  return openDialog<{ year: string; month: string } | null>((close) => (
+    <YearMonthDialogView
+      initialYear={params.initialYear}
+      initialMonth={params.initialMonth}
+      yearValues={params.yearValues}
+      monthValues={params.monthValues}
+      close={close}
+    />
+  ));
+}
+
 /// 保存確認: null=キャンセル(何もしない), true=保存して続行, false=保存せず続行
 export function showSaveConfirm(): Promise<boolean | null> {
   return openDialog<boolean | null>((close) => (
