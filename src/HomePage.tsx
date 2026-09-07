@@ -1059,11 +1059,11 @@ export function HomePage({ onExit }: { onExit: () => void }) {
     }
     const now = Date.now();
     if (now - lastToggleAtRef.current < TOP_BAR_TOGGLE_COOLDOWN_MS) return;
+    // 上に戻すのは、画面の一番上まで到達した時(上のscrollTop<=8の分岐)のみ
+    // 行う。少し上にスクロールしただけで上部バーがすぐ復帰すると、下の方を
+    // 見ようとして少し行き来しただけでもチラつくため。
     if (delta > 4 && !topBarHidden) {
       setTopBarHidden(true);
-      lastToggleAtRef.current = now;
-    } else if (delta < -4 && topBarHidden) {
-      setTopBarHidden(false);
       lastToggleAtRef.current = now;
     }
   }

@@ -440,6 +440,9 @@
   font-weight: 600;
   line-height: 1.2;
   cursor: pointer;
+  /* タブレット等でタップした際、ブラウザ標準の灰色のタップハイライトが
+     一瞬表示されてしまうのを防ぐ(選択時の緑色表示はuser-row-selectedで別途行う)。 */
+  -webkit-tap-highlight-color: transparent;
 }
 .user-row:hover { background: #f0f0f0; }
 .user-row-selected { background: var(--teal-light); }
@@ -497,6 +500,7 @@
   text-align: left;
   padding: 10px 14px;
   font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
 }
 .user-select-dropdown-item:hover { background: #f0f0f0; }
 .user-select-dropdown-item-selected { background: var(--teal-light); font-weight: 700; }
