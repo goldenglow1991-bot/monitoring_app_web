@@ -400,6 +400,11 @@ export function HomePage({ onExit }: { onExit: () => void }) {
   // api/generate-draft側(サーバー)でも必ず検証しており、ここでの判定は
   // ユーザーへの早期案内のためのもの。
   function currentPlanCap(): { cap: number; tierLabel: string; isSubscribedNow: boolean } {
+    // 運営側が個別に許可した特定のアカウントは、人数上限を一切課さない
+    // (アプリの画面からは変更できない列)。
+    if (config.unlimited_access) {
+      return { cap: Number.MAX_SAFE_INTEGER, tierLabel: '無制限', isSubscribedNow: true };
+    }
     const isSubscribedNow = config.subscription_status === 'active' || config.subscription_status === 'trialing';
     const tier = isSubscribedNow ? planTiers.find((t) => t.key === config.subscription_plan) : undefined;
     const cap = tier?.maxResidents ?? planTiers[0].maxResidents;
@@ -426,11 +431,12 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         currentPlanKey: config.subscription_plan as string | undefined,
         currentInterval: config.subscription_interval as string | undefined,
         reason,
+        unlimited: config.unlimited_access as boolean | undefined,
         onOpenGeneralPortal: () => storage.createPortalSession(),
         onSelectPlan: (planKey, interval) => storage.createPortalSession(planKey, interval),
       });
     } else {
-      await showPricingDialog(residentCountForDisplay, reason);
+      await showPricingDialog(residentCountForDisplay, reason, config.unlimited_access as boolean | undefined);
     }
   }
 
@@ -845,11 +851,16 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           currentResidentCount: users.length,
           currentPlanKey: config.subscription_plan as string | undefined,
           currentInterval: config.subscription_interval as string | undefined,
+          unlimited: config.unlimited_access as boolean | undefined,
           onOpenGeneralPortal: () => storage.createPortalSession(),
           onSelectPlan: (planKey, interval) => storage.createPortalSession(planKey, interval),
         });
       } else {
-        await showPricingDialog(users.length, '登録人数に応じて、いずれかのプランをお選びください。');
+        await showPricingDialog(
+          users.length,
+          '登録人数に応じて、いずれかのプランをお選びください。',
+          config.unlimited_access as boolean | undefined,
+        );
       }
     } catch (e) {
       await showWarning('エラー', e instanceof Error ? e.message : String(e));

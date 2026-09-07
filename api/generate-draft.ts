@@ -53,7 +53,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const admin = createClient(supabaseUrl, serviceRoleKey);
   const { data: config, error: configError } = await admin
     .from('facility_config')
-    .select('subscription_status, subscription_plan')
+    .select('subscription_status, subscription_plan, unlimited_access')
     .eq('user_id', uid)
     .maybeSingle();
   if (configError) {
@@ -61,6 +61,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
   const hasActiveSubscription = !!config?.subscription_status && ACTIVE_STATUSES.has(config.subscription_status);
+  // 運営側が個別に許可した特定のアカウントは、利用者数・生成回数のいずれの
+  // 上限チェックも一切行わない(アプリの画面からは変更できない列)。
+  const hasUnlimitedAccess = !!config?.unlimited_access;
 
   // 登録人数が、現在のプラン(未加入の場合は最小プラン)の上限を超えていないか確認する。
   // クライアント側の追加時チェックだけでは、加入後に大人数を登録してから
@@ -71,18 +74,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     ? planTiers.find((t) => t.key === config?.subscription_plan)
     : undefined;
   const residentCap = currentTier?.maxResidents ?? planTiers[0].maxResidents;
-  const { count: residentCount, error: residentCountError } = await admin
-    .from('residents')
-    .select('id', { count: 'exact', head: true })
-    .eq('user_id', uid)
-    .is('deleted_at', null);
-  if (residentCountError) {
-    res.status(500).json({ error: 'db_error', detail: residentCountError.message });
-    return;
-  }
-  if ((residentCount ?? 0) > residentCap) {
-    res.status(429).json({ error: 'resident_limit_exceeded' });
-    return;
+  if (!hasUnlimitedAccess) {
+    const { count: residentCount, error: residentCountError } = await admin
+      .from('residents')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', uid)
+      .is('deleted_at', null);
+    if (residentCountError) {
+      res.status(500).json({ error: 'db_error', detail: residentCountError.message });
+      return;
+    }
+    if ((residentCount ?? 0) > residentCap) {
+      res.status(429).json({ error: 'resident_limit_exceeded' });
+      return;
+    }
   }
 
   // 無料枠・月間上限のチェックとカウント更新をAI呼び出し前にアトミックに行う
@@ -99,7 +104,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (reservedMonthly) await admin.rpc('release_monthly_usage', { p_user_id: uid, p_year_month: yearMonth });
   }
 
-  if (!hasActiveSubscription) {
+  if (hasUnlimitedAccess) {
+    // 上限チェック・カウント予約とも一切行わない。
+  } else if (!hasActiveSubscription) {
     const { data: ok, error: reserveError } = await admin.rpc('reserve_free_generation', {
       p_user_id: uid,
       p_limit: freeGenerationLimit,

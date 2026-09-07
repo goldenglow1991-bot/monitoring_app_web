@@ -63,6 +63,7 @@ export function LandingPage({
           <div className="lp-testimonial">
             <p className="lp-testimonial-quote">「1人あたり15〜20分かかっていた記録が、5分もかからずにできるようになりました。」</p>
             <p className="lp-testimonial-quote">「所見を見ながらの記入なので、利用者さんの様子も思い出しやすいです。」</p>
+            <p className="lp-testimonial-quote">「スマホからでも入力できて便利。見た目もシンプルで使いやすいです」</p>
             <div className="lp-testimonial-source">実際に試験導入したデイサービス職員の声</div>
           </div>
         </div>

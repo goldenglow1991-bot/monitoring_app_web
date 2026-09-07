@@ -58,6 +58,7 @@ function PricingDialogView({
   onBack,
   selectPlan: selectPlanUrl,
   footerExtra,
+  unlimited,
   close,
 }: {
   currentResidentCount: number;
@@ -68,6 +69,7 @@ function PricingDialogView({
   onBack?: () => void;
   selectPlan: (planKey: string, interval: 'month' | 'year') => Promise<string>;
   footerExtra?: ReactNode;
+  unlimited?: boolean;
   close: (value: void) => void;
 }) {
   const [busyKey, setBusyKey] = useState<string | null>(null);
@@ -99,6 +101,18 @@ function PricingDialogView({
       setErrorText(e instanceof Error ? e.message : String(e));
       setBusyKey(null);
     }
+  }
+
+  if (unlimited) {
+    return (
+      <ModalShell width={420} onBackdropClick={() => close()}>
+        <h2 className="modal-title">プランを選択</h2>
+        <p className="modal-body">このアカウントは無制限でご利用いただけます。有料プランへのお申し込みは不要です。</p>
+        <div className="modal-actions">
+          <button className="btn btn-text" onClick={() => close()}>閉じる</button>
+        </div>
+      </ModalShell>
+    );
   }
 
   return (
@@ -218,12 +232,14 @@ function PricingDialogView({
 export function showPricingDialog(
   currentResidentCount: number,
   reason: string = `無料の${freeGenerationLimit}回を使い切りました。引き続きAI下書き生成をご利用いただくには、いずれかのプランへのお申し込みが必要です。`,
+  unlimited?: boolean,
 ): Promise<void> {
   return openDialog<void>((close) => (
     <PricingDialogView
       currentResidentCount={currentResidentCount}
       reason={reason}
       selectPlan={(planKey, interval) => createCheckoutSession(planKey, interval)}
+      unlimited={unlimited}
       close={close}
     />
   ));
@@ -262,6 +278,7 @@ export function showPlanChangeDialog(params: {
   currentPlanKey?: string;
   currentInterval?: string;
   reason?: string;
+  unlimited?: boolean;
   onOpenGeneralPortal: () => Promise<string>;
   onSelectPlan: (planKey: string, interval: 'month' | 'year') => Promise<string>;
 }): Promise<void> {
@@ -271,6 +288,7 @@ export function showPlanChangeDialog(params: {
       currentPlanKey={params.currentPlanKey}
       currentInterval={params.currentInterval}
       reason={params.reason ?? 'ご利用中のプランを変更できます。現在の登録人数を下回るプランは選択できません。'}
+      unlimited={params.unlimited}
       selectPlan={params.onSelectPlan}
       footerExtra={
         <p className="modal-body">
@@ -333,12 +351,17 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
           currentResidentCount: loadUsers().length,
           currentPlanKey: config.subscription_plan as string | undefined,
           currentInterval: config.subscription_interval as string | undefined,
+          unlimited: config.unlimited_access,
           onOpenGeneralPortal: () => createPortalSession(),
           onSelectPlan: (planKey, interval) => createPortalSession(planKey, interval),
         });
       } else {
         close();
-        await showPricingDialog(loadUsers().length, '登録人数に応じて、いずれかのプランをお選びください。');
+        await showPricingDialog(
+          loadUsers().length,
+          '登録人数に応じて、いずれかのプランをお選びください。',
+          config.unlimited_access,
+        );
       }
     } catch (e) {
       await showWarning('エラー', e instanceof Error ? e.message : String(e));
@@ -441,7 +464,9 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
     <ModalShell width={360} onBackdropClick={handleBackdropClick}>
       <h2 className="modal-title">アカウント</h2>
       <p className="modal-body">
-        {isSubscribed
+        {config.unlimited_access
+          ? 'このアカウントは無制限でご利用いただけます'
+          : isSubscribed
           ? `ご利用中のプラン: ${planTiers.find((t) => t.key === config.subscription_plan)?.label ?? config.subscription_plan}`
           : `無料枠 残り${Math.max(0, freeGenerationLimit - ((config.free_generations_used as number | undefined) ?? 0))}回`}
       </p>

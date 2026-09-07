@@ -66,6 +66,10 @@ alter table facility_config add column if not exists subscription_plan text;
 alter table facility_config add column if not exists subscription_status text;
 -- 'month' | 'year'。年間プラン(15%オフ)対応のため、契約中の請求間隔を保持する。
 alter table facility_config add column if not exists subscription_interval text;
+-- trueの事業所は、利用者数の上限・生成回数の上限(無料枠/月間上限とも)を
+-- 一切課さない。運営側が個別に許可した特定のアカウントにのみ、Supabase側で
+-- 直接この列を立てて使う想定(アプリの画面からは変更できない)。
+alter table facility_config add column if not exists unlimited_access boolean not null default false;
 
 -- サインアップ時に(任意で)申告してもらう、登録予定の利用者数。
 -- プラン選択画面のおすすめプラン算出に使う(実際の登録人数の下限は下回らない)。
@@ -153,6 +157,7 @@ begin
       new.stripe_customer_id := old.stripe_customer_id;
       new.stripe_subscription_id := old.stripe_subscription_id;
       new.free_generations_used := old.free_generations_used;
+      new.unlimited_access := old.unlimited_access;
     elsif TG_OP = 'INSERT' then
       new.subscription_status := null;
       new.subscription_plan := null;
@@ -160,6 +165,7 @@ begin
       new.stripe_customer_id := null;
       new.stripe_subscription_id := null;
       new.free_generations_used := 0;
+      new.unlimited_access := false;
     end if;
   end if;
   return new;
@@ -267,6 +273,7 @@ returns trigger as $$
 declare
   v_status text;
   v_plan text;
+  v_unlimited boolean;
   v_cap integer;
   v_active_count integer;
   v_should_check boolean;
@@ -286,8 +293,12 @@ begin
     return new;
   end if;
 
-  select subscription_status, subscription_plan into v_status, v_plan
+  select subscription_status, subscription_plan, unlimited_access into v_status, v_plan, v_unlimited
     from facility_config where user_id = new.user_id;
+
+  if v_unlimited then
+    return new;
+  end if;
 
   if v_status is not null and v_status in ('active', 'trialing') then
     v_cap := case v_plan
