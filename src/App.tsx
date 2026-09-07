@@ -11,7 +11,11 @@ import * as storage from './storage';
 import './App.css';
 
 export default function App() {
-  const [page, setPage] = useState<'start' | 'home'>('start');
+  // Stripe Checkout/カスタマーポータルから戻ってきた場合(成功・キャンセルとも
+  // ?checkout=が付く)は、スタート画面ではなくメイン画面に直接戻す。
+  const [page, setPage] = useState<'start' | 'home'>(
+    () => (new URLSearchParams(window.location.search).get('checkout') ? 'home' : 'start'),
+  );
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   // データ読み込み中(ログイン確認後、画面を出す前に一度だけSupabaseから
   // 全データを取得する)かどうか。同じセッションの間は読み込み直さない。

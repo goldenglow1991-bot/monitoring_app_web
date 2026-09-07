@@ -95,7 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const session = await stripe.billingPortal.sessions.create({
       customer: config.stripe_customer_id as string,
-      return_url: origin,
+      return_url: `${origin}/?checkout=return`,
       ...(flowData ? { flow_data: flowData } : {}),
     });
     res.status(200).json({ url: session.url });
