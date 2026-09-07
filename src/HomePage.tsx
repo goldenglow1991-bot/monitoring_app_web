@@ -1113,7 +1113,6 @@ export function HomePage({ onExit }: { onExit: () => void }) {
                     initialYear: year,
                     initialMonth: month,
                     yearValues: TOP_YEAR_VALUES,
-                    monthValues: MONTH_VALUES,
                   });
                   if (result) changeYearMonth(result.year, result.month);
                 }}

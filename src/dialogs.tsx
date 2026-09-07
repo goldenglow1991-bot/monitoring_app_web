@@ -694,37 +694,43 @@ export function showRecordConflictDialog(): Promise<'overwrite' | 'refresh' | nu
 }
 
 // スマホでトップバーの年月表示をタップした時に開く、年月をまとめて選ぶ
-// ダイアログ。OKで{year, month}、キャンセル・背景タップでnullを返す。
+// ダイアログ。<input type="month">を使うことで、端末標準の年月ピッカーで
+// 年と月を1つの操作でまとめて選べるようにする(2つのプルダウンを別々に
+// 操作する必要がない)。OKで{year, month}、キャンセル・背景タップでnullを返す。
 function YearMonthDialogView({
   initialYear,
   initialMonth,
   yearValues,
-  monthValues,
   close,
 }: {
   initialYear: string;
   initialMonth: string;
   yearValues: string[];
-  monthValues: string[];
   close: (value: { year: string; month: string } | null) => void;
 }) {
-  const [year, setYear] = useState(initialYear);
-  const [month, setMonth] = useState(initialMonth);
+  const [value, setValue] = useState(`${initialYear}-${initialMonth}`);
+  const minYear = yearValues[0];
+  const maxYear = yearValues[yearValues.length - 1];
+
+  function submit() {
+    const [y, m] = value.split('-');
+    if (y && m) close({ year: y, month: m });
+  }
 
   return (
     <ModalShell width={320} onBackdropClick={() => close(null)}>
       <h2 className="modal-title">対象年月を選択</h2>
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-        <select value={year} onChange={(e) => setYear(e.target.value)}>
-          {yearValues.map((y) => <option key={y} value={y}>{y}年</option>)}
-        </select>
-        <select value={month} onChange={(e) => setMonth(e.target.value)}>
-          {monthValues.map((m) => <option key={m} value={m}>{m}月</option>)}
-        </select>
-      </div>
+      <input
+        type="month"
+        className="year-month-input"
+        value={value}
+        min={`${minYear}-01`}
+        max={`${maxYear}-12`}
+        onChange={(e) => setValue(e.target.value)}
+      />
       <div className="modal-actions">
         <button className="btn btn-text" onClick={() => close(null)}>キャンセル</button>
-        <button className="btn btn-filled" onClick={() => close({ year, month })}>OK</button>
+        <button className="btn btn-filled" onClick={submit}>OK</button>
       </div>
     </ModalShell>
   );
@@ -734,14 +740,12 @@ export function showYearMonthDialog(params: {
   initialYear: string;
   initialMonth: string;
   yearValues: string[];
-  monthValues: string[];
 }): Promise<{ year: string; month: string } | null> {
   return openDialog<{ year: string; month: string } | null>((close) => (
     <YearMonthDialogView
       initialYear={params.initialYear}
       initialMonth={params.initialMonth}
       yearValues={params.yearValues}
-      monthValues={params.monthValues}
       close={close}
     />
   ));
