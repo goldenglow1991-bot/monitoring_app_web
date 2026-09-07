@@ -33,7 +33,6 @@ import {
   showPlanChangeDialog,
   showUsageGuideDialog,
   showRecordConflictDialog,
-  showYearMonthDialog,
 } from './dialogs';
 import { closeAllDialogs } from './dialogHost';
 import { ItemRow } from './components/ItemRow';
@@ -1105,20 +1104,22 @@ export function HomePage({ onExit }: { onExit: () => void }) {
             <button className="btn btn-filled btn-compact" onClick={saveAndExit}>保存して終了</button>
             <button className="btn btn-filled btn-compact" onClick={finalizeUser}>保存</button>
             {phoneLike ? (
-              <button
-                type="button"
-                className="btn btn-outlined btn-compact year-month-compact"
-                onClick={async () => {
-                  const result = await showYearMonthDialog({
-                    initialYear: year,
-                    initialMonth: month,
-                    yearValues: TOP_YEAR_VALUES,
-                  });
-                  if (result) changeYearMonth(result.year, result.month);
-                }}
-              >
+              <label className="btn btn-outlined btn-compact year-month-compact">
                 {year.slice(2)}/{month}
-              </button>
+                <input
+                  type="month"
+                  className="year-month-native-input"
+                  aria-label="年月の設定"
+                  required
+                  value={`${year}-${month}`}
+                  min={`${TOP_YEAR_VALUES[0]}-01`}
+                  max={`${TOP_YEAR_VALUES[TOP_YEAR_VALUES.length - 1]}-12`}
+                  onChange={(e) => {
+                    const [y, m] = e.target.value.split('-');
+                    if (y && m) changeYearMonth(y, m);
+                  }}
+                />
+              </label>
             ) : (
               <span className="year-month-picker">
                 <select value={year} onChange={(e) => changeYearMonth(e.target.value, month)}>

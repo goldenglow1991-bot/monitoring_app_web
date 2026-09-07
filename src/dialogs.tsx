@@ -693,64 +693,6 @@ export function showRecordConflictDialog(): Promise<'overwrite' | 'refresh' | nu
   ));
 }
 
-// スマホでトップバーの年月表示をタップした時に開く、年月をまとめて選ぶ
-// ダイアログ。<input type="month">を使うことで、端末標準の年月ピッカーで
-// 年と月を1つの操作でまとめて選べるようにする(2つのプルダウンを別々に
-// 操作する必要がない)。OKで{year, month}、キャンセル・背景タップでnullを返す。
-function YearMonthDialogView({
-  initialYear,
-  initialMonth,
-  yearValues,
-  close,
-}: {
-  initialYear: string;
-  initialMonth: string;
-  yearValues: string[];
-  close: (value: { year: string; month: string } | null) => void;
-}) {
-  const [value, setValue] = useState(`${initialYear}-${initialMonth}`);
-  const minYear = yearValues[0];
-  const maxYear = yearValues[yearValues.length - 1];
-
-  function submit() {
-    const [y, m] = value.split('-');
-    if (y && m) close({ year: y, month: m });
-  }
-
-  return (
-    <ModalShell width={320} onBackdropClick={() => close(null)}>
-      <h2 className="modal-title">対象年月を選択</h2>
-      <input
-        type="month"
-        className="year-month-input"
-        value={value}
-        min={`${minYear}-01`}
-        max={`${maxYear}-12`}
-        onChange={(e) => setValue(e.target.value)}
-      />
-      <div className="modal-actions">
-        <button className="btn btn-text" onClick={() => close(null)}>キャンセル</button>
-        <button className="btn btn-filled" onClick={submit}>OK</button>
-      </div>
-    </ModalShell>
-  );
-}
-
-export function showYearMonthDialog(params: {
-  initialYear: string;
-  initialMonth: string;
-  yearValues: string[];
-}): Promise<{ year: string; month: string } | null> {
-  return openDialog<{ year: string; month: string } | null>((close) => (
-    <YearMonthDialogView
-      initialYear={params.initialYear}
-      initialMonth={params.initialMonth}
-      yearValues={params.yearValues}
-      close={close}
-    />
-  ));
-}
-
 /// 保存確認: null=キャンセル(何もしない), true=保存して続行, false=保存せず続行
 export function showSaveConfirm(): Promise<boolean | null> {
   return openDialog<boolean | null>((close) => (

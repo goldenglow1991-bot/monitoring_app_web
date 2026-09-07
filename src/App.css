@@ -338,13 +338,17 @@
   white-space: nowrap;
 }
 .year-month-picker select { margin: 0 2px; }
-.year-month-compact { border-radius: 4px; }
-.year-month-input {
-  display: block;
-  width: 100%;
-  margin-top: 8px;
-  padding: 10px 12px;
-  font-size: 16px;
+.year-month-compact { border-radius: 4px; position: relative; }
+.year-month-native-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 .usage-status {
   display: flex;
