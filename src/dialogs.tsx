@@ -897,7 +897,9 @@ function TextEditDialogView({
         onChange={(e) => setText(e.target.value)}
         className="modal-textarea"
       />
-      <p className="hint-muted">外側をタップすると保存されます。</p>
+      <div className="modal-actions">
+        <button type="button" className="btn btn-filled" onClick={() => close(text)}>OK</button>
+      </div>
     </ModalShell>
   );
 }
