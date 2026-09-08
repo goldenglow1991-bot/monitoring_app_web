@@ -55,6 +55,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   });
 
   if (!resendResp.ok) {
+    const detail = await resendResp.text().catch(() => '');
+    console.error('Resendへの送信に失敗しました', resendResp.status, detail);
     res.status(502).json({ error: 'send_failed' });
     return;
   }
