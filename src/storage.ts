@@ -1,7 +1,7 @@
 import { supabase } from './supabaseClient';
 import type { DeletedUser, ItemValue, MonthlyRecord, User } from './types';
 import { newMonthlyRecord } from './types';
-import { facilityTypePresets, canonicalItemOrder } from './items';
+import { facilityTypePresets, canonicalItemOrder, demoItemValues } from './items';
 import { currentYearMonth } from './utils';
 
 // Supabase(residents / monthly_records / facility_config テーブル)を
@@ -145,6 +145,46 @@ export async function applyInitialFacilityTypeFromSignup(): Promise<void> {
     .from('facility_config')
     .insert({ user_id: uid, enabled_items: canonicalItemOrder(preset.itemKeys) });
   if (error) throw error;
+
+  await createSampleResident(uid, preset.itemKeys);
+}
+
+// 初回ログイン時、すぐに「文章を生成」を試せるよう、施設種別に応じた
+// サンプル利用者と当月分の記録を自動作成する。失敗しても初回ログイン
+// 自体は継続できるよう、エラーは投げずに握りつぶす(体験の上乗せ機能のため)。
+async function createSampleResident(uid: string, itemKeys: string[]): Promise<void> {
+  try {
+    const residentId = crypto.randomUUID();
+    const { error: residentErr } = await supabase.from('residents').insert({
+      id: residentId,
+      user_id: uid,
+      name: 'サンプル太郎',
+      furigana: 'さんぷるたろう',
+      precautions:
+        '軽度の高血圧があり、歩行時は杖を使用。物忘れがみられるため、繰り返しの声かけが必要。',
+    });
+    if (residentErr) throw residentErr;
+
+    const items: Record<string, ItemValue> = {};
+    for (const key of itemKeys) {
+      const value = demoItemValues[key];
+      if (value) items[key] = { status: value, free: '' };
+    }
+
+    const { error: recordErr } = await supabase.from('monthly_records').insert({
+      resident_id: residentId,
+      year_month: currentYearMonth(),
+      notes: '',
+      items,
+      extra_notes: '今月は家族の面会があり、終始穏やかに過ごされていた。',
+      report: '',
+      draft: '',
+      draft_generated: false,
+    });
+    if (recordErr) throw recordErr;
+  } catch (e) {
+    console.error('サンプル利用者の自動作成に失敗しました', e);
+  }
 }
 
 // ログイン後、画面を表示する前に一度だけ呼ぶ。全データをキャッシュへ読み込む。

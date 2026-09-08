@@ -154,6 +154,48 @@ export const itemCatalog: ItemDef[] = [
   ] },
 ];
 
+// 初回ログイン時に自動作成するサンプル利用者用の、各項目のデモ値。
+// 施設種別プリセットを問わず、実際に有効になっている項目だけを見て
+// 値を埋めることで、サインアップ直後から「文章を生成」をすぐ試せるようにする。
+// (exercise_type_3はあえて空欄にし、実際の入力に近い見た目にしている)
+export const demoItemValues: Record<string, string> = {
+  exercise_type_1: '有酸素運動',
+  exercise_type_2: 'ストレッチ・体操',
+  exercise_time: '20〜30分程度',
+  exercise_condition: '疲労少なく取り組めている',
+  transfer_movement: '自立',
+  gait: '見守り',
+  balance_stability: 'やや不安定',
+  toileting: '自立(問題なし)',
+  bathing: '見守り',
+  adl_other: '自立',
+  meal_form: '常食',
+  meal_independence: '自立',
+  meal_intake_amount: '良好(全量摂取)',
+  choking_sign: 'なし',
+  hydration: '良好',
+  oral_condition: '良好',
+  communication: 'やや良好',
+  facial_expression: '穏やか・明るい',
+  cognitive_function: 'やや低下',
+  orientation: 'やや低下(日時のあいまいさ)',
+  memory: '物忘れがときどきみられる',
+  bpsd: 'なし',
+  mental_state: '安定',
+  motivation_activity: '意欲的',
+  anxiety_depression: 'なし',
+  vitals: '良好',
+  sleep_condition: '良好',
+  medication_management: '自己管理できている',
+  medical_treatment: '特記事項なし',
+  skin_condition: '異常なし',
+  pain: 'なし',
+  fall_injury: 'なし',
+  mobility_aid: '杖を使用',
+  outing: '声かけで外出する',
+  home_environment_burden: '特に問題なし',
+};
+
 // モード選択画面のカテゴリー表示順(itemCategoriesの並び→カテゴリー内は
 // itemCatalogの登録順)に合わせてkeysを並べ替える。新規登録時の初期値や
 // 施設種別プリセットを適用した直後など、まだユーザーが並び替えていない
