@@ -674,6 +674,55 @@ export function showConfirm(title: string, message: string): Promise<boolean> {
   ));
 }
 
+// LPからのお問い合わせフォーム。専用の送信サーバーは持たないため、入力内容を
+// もとにメールソフトを起動する(mailto:)簡易な実装にしている。
+function ContactDialogView({ close }: { close: (value: void) => void }) {
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [errorText, setErrorText] = useState<string | null>(null);
+
+  function submit() {
+    if (email.trim() === '') {
+      setErrorText('メールアドレスを入力してください。');
+      return;
+    }
+    if (message.trim() === '') {
+      setErrorText('お問い合わせ内容を入力してください。');
+      return;
+    }
+    const subject = encodeURIComponent('assistへのお問い合わせ');
+    const body = encodeURIComponent(`${message}\n\n---\n返信先メールアドレス: ${email.trim()}`);
+    window.location.href = `mailto:info@kaigoassist.jp?subject=${subject}&body=${body}`;
+    close();
+  }
+
+  return (
+    <ModalShell width={420} onBackdropClick={() => close()}>
+      <h2 className="modal-title">お問い合わせ</h2>
+      <p className="modal-body">
+        送信を押すと、入力内容をもとにお使いのメールソフトが起動します。内容をご確認のうえ、そのまま送信してください。
+      </p>
+      <div className="field">
+        <label>メールアドレス(返信先)</label>
+        <input value={email} onChange={(e) => setEmail(e.target.value)} />
+      </div>
+      <div className="field">
+        <label>お問い合わせ内容</label>
+        <textarea rows={5} className="modal-textarea" value={message} onChange={(e) => setMessage(e.target.value)} />
+      </div>
+      {errorText && <p className="hint-error">{errorText}</p>}
+      <div className="modal-actions">
+        <button className="btn btn-text" onClick={() => close()}>閉じる</button>
+        <button className="btn btn-filled" onClick={submit}>送信</button>
+      </div>
+    </ModalShell>
+  );
+}
+
+export function showContactDialog(): Promise<void> {
+  return openDialog<void>((close) => <ContactDialogView close={close} />);
+}
+
 // 楽観的ロックの競合(別の端末が先に同じ記録を更新した)時に表示する確認。
 // 'overwrite'=今の入力内容で上書きする、'refresh'=別の端末の内容を優先して
 // 読み込み直す、null=どちらも選ばず今の入力内容をそのまま残す(背景タップ等)。

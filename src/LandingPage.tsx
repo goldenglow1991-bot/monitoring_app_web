@@ -1,4 +1,4 @@
-import { showTokushohoDialog } from './dialogs';
+import { showTokushohoDialog, showContactDialog } from './dialogs';
 import { planTiers, freeGenerationLimit, annualDiscountRate, annualPriceFor } from './stripePrices';
 
 export function LandingPage({
@@ -291,7 +291,13 @@ export function LandingPage({
 
       <div className="lp-footer">
         <div className="lp-footer-logo">Assist</div>
-        <div>Golden Glow ｜ お問い合わせ: info@kaigoassist.jp</div>
+        <div>
+          Golden Glow ｜{' '}
+          <button type="button" className="inline-link" onClick={() => showContactDialog()}>
+            お問い合わせ
+          </button>
+          : info@kaigoassist.jp
+        </div>
         <button type="button" className="btn btn-text lp-footer-link" onClick={() => showTokushohoDialog()}>
           特定商取引法に基づく表記
         </button>
