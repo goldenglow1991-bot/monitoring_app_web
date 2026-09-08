@@ -21,6 +21,9 @@ export function translateAuthError(message: string): string {
   if (/for security purposes.*only request this/i.test(message)) {
     return 'しばらく時間をおいてから再度お試しください。';
   }
+  if (/email rate limit exceeded/i.test(message)) {
+    return 'メール送信の上限に達しました。しばらく時間をおいてから再度お試しください。';
+  }
   return message;
 }
 
