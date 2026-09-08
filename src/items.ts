@@ -62,7 +62,7 @@ export const itemCatalog: ItemDef[] = [
     UNSET, '自立', '見守り', '一部介助', '全介助', '拒否がみられる',
   ] },
   { key: 'adl_other', label: 'その他日常生活動作', categoryKey: 'adl', options: [
-    UNSET, '安定', '概ね安定', 'やや不安定', '不安定',
+    UNSET, '自立', '見守り', '一部介助', '全介助',
   ] },
 
   // 食事・嚥下機能
