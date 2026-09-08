@@ -1300,10 +1300,11 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           )}
         </div>
 
-        <div className="section-heading">自由記入欄(その他メモ・気づいたことなど)</div>
+        <div className="section-heading">自由記入欄</div>
         <textarea
           className="extra-notes-textarea"
           rows={6}
+          placeholder="その他の所見・気づいたことなど"
           value={extraNotes}
           onChange={(e) => { setExtraNotes(e.target.value); markDirty(); }}
         />
@@ -1323,6 +1324,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           className="draft-textarea"
           rows={12}
           readOnly={isGenerating}
+          placeholder="今月の所見を入力後、「文章を生成」をクリック"
           value={draft}
           onChange={(e) => { setDraft(e.target.value); markDirty(); }}
         />
