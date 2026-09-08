@@ -571,7 +571,7 @@
 .text-muted { color: var(--text-muted); }
 .panel-label-strong {
   font-weight: 700;
-  font-size: 22px;
+  font-size: 20px;
 }
 .panel-label-suffix {
   font-weight: 700;
@@ -582,7 +582,7 @@
   align-items: center;
   gap: 8px;
   font-weight: 700;
-  font-size: 22px;
+  font-size: 20px;
   margin-top: 16px;
   margin-bottom: 8px;
 }
