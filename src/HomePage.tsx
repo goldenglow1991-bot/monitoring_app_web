@@ -1310,7 +1310,7 @@ export function HomePage({ onExit }: { onExit: () => void }) {
         />
 
         <div className="generation-toolbar">
-          <span className="panel-label-strong">生成結果(編集可能)</span>
+          <span className="panel-label-strong">生成結果</span><span className="panel-label-suffix">(編集可能)</span>
           <button className="btn btn-filled" disabled={isGenerating} onClick={handleGenerateDraft}>
             {isGenerating ? '生成中...' : '文章を生成'}
           </button>

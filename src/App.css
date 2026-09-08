@@ -571,6 +571,10 @@
 .text-muted { color: var(--text-muted); }
 .panel-label-strong {
   font-weight: 700;
+  font-size: 22px;
+}
+.panel-label-suffix {
+  font-weight: 700;
   font-size: 17px;
 }
 .section-heading {
@@ -578,7 +582,7 @@
   align-items: center;
   gap: 8px;
   font-weight: 700;
-  font-size: 17px;
+  font-size: 22px;
   margin-top: 16px;
   margin-bottom: 8px;
 }
@@ -1076,7 +1080,8 @@
 
   .right-panel { padding: 10px; }
   .right-panel-user-name { font-size: 21px; }
-  .panel-label-strong, .section-heading { font-size: 15px; }
+  .panel-label-strong, .section-heading { font-size: 20px; }
+  .panel-label-suffix { font-size: 15px; }
   .empty-items-hint { font-size: 14px; }
   .right-panel-empty { font-size: 16px; padding-top: 60px; }
 
