@@ -21,6 +21,9 @@ export default function App() {
   // 全データを取得する)かどうか。同じセッションの間は読み込み直さない。
   const [dataReady, setDataReady] = useState(false);
   const [loadErrorText, setLoadErrorText] = useState<string | null>(null);
+  // 初回ログインでサンプル利用者が新規作成された場合、メイン画面表示直後に
+  // 一度だけ案内ダイアログを出すためのフラグ。
+  const [showWelcome, setShowWelcome] = useState(false);
   const [passwordRecovery, setPasswordRecovery] = useState(false);
   const [showAuth, setShowAuth] = useState(
     // クエリパラメータ(?screen=auth)は、ドメインのリダイレクト設定等の
@@ -129,7 +132,8 @@ export default function App() {
     setLoadErrorText(null);
     (async () => {
       try {
-        await storage.applyInitialFacilityTypeFromSignup();
+        const created = await storage.applyInitialFacilityTypeFromSignup();
+        if (created) setShowWelcome(true);
       } catch (e) {
         // 初回施設種別の適用に失敗しても、標準の項目でアプリ自体は使えるようにする。
         console.error('初回施設種別の適用に失敗しました', e);
@@ -208,7 +212,12 @@ export default function App() {
       {page === 'start' ? (
         <StartPage onStart={() => setPage('home')} />
       ) : (
-        <HomePage key="home" onExit={() => setPage('start')} />
+        <HomePage
+          key="home"
+          onExit={() => setPage('start')}
+          showWelcomeOnMount={showWelcome}
+          onWelcomeShown={() => setShowWelcome(false)}
+        />
       )}
       <DialogHost />
     </>

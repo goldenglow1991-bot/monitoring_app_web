@@ -123,11 +123,12 @@ export async function getAccessToken(): Promise<string> {
 // サインアップ時に入力した施設種別(ユーザーメタデータ)を、facility_configが
 // まだ一度も作られていない(=初回ログイン)場合にだけ適用する。2回目以降の
 // ログインや、アプリ内で既に設定済みの場合は何もしない。
-export async function applyInitialFacilityTypeFromSignup(): Promise<void> {
+// 戻り値: 今回が初回ログインで、サンプル利用者を新規作成した場合はtrue。
+export async function applyInitialFacilityTypeFromSignup(): Promise<boolean> {
   const { data: userData, error: userErr } = await supabase.auth.getUser();
   if (userErr) throw userErr;
   const presetKey = userData.user?.user_metadata?.facility_type as string | undefined;
-  if (!presetKey) return;
+  if (!presetKey) return false;
   const uid = userData.user!.id;
 
   const { data: existing, error: existingErr } = await supabase
@@ -136,10 +137,10 @@ export async function applyInitialFacilityTypeFromSignup(): Promise<void> {
     .eq('user_id', uid)
     .maybeSingle();
   if (existingErr) throw existingErr;
-  if (existing) return;
+  if (existing) return false;
 
   const preset = facilityTypePresets.find((p) => p.key === presetKey);
-  if (!preset) return;
+  if (!preset) return false;
 
   const { error } = await supabase
     .from('facility_config')
@@ -147,6 +148,7 @@ export async function applyInitialFacilityTypeFromSignup(): Promise<void> {
   if (error) throw error;
 
   await createSampleResident(uid, preset.itemKeys);
+  return true;
 }
 
 // 初回ログイン時、すぐに「文章を生成」を試せるよう、施設種別に応じた
@@ -172,6 +174,7 @@ async function createSampleResident(uid: string, itemKeys: string[]): Promise<vo
     }
 
     const { error: recordErr } = await supabase.from('monthly_records').insert({
+      user_id: uid,
       resident_id: residentId,
       year_month: currentYearMonth(),
       notes: '',
