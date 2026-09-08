@@ -1241,11 +1241,11 @@ export function HomePage({ onExit }: { onExit: () => void }) {
           </button>
         </div>
         <div className="right-panel-row">
-          <span className="panel-label-strong">留意点(重要な既往歴や注意事項)</span>
+          <span className="panel-label-strong">留意点</span>
           <button className="btn btn-filled" onClick={openEditPrecautionsDialog}>留意点を追加・編集</button>
         </div>
         <div className="precautions-box">
-          {selectedUser.precautions !== '' ? selectedUser.precautions : <span className="text-muted">(留意点を追加してください（任意）)</span>}
+          {selectedUser.precautions !== '' ? selectedUser.precautions : <span className="text-muted">(重要な既往歴や注意事項を追加してください（任意）)</span>}
         </div>
 
         <div className="section-heading">
