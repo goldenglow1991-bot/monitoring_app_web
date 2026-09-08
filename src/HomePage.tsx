@@ -173,7 +173,7 @@ export function HomePage({
     if (!showWelcomeOnMount) return;
     showWarning(
       'ようこそ',
-      'Assistにようこそ。すでに仮の利用者と所見が入力済みです。下の「文章を生成」を押すと自動で文章が生成されます。',
+      'Assistにようこそ。すでに仮の利用者と所見が入力済みです。利用者名を選択して、下の「文章を生成」を押すと自動で文章が生成されます。',
     ).finally(() => onWelcomeShown?.());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

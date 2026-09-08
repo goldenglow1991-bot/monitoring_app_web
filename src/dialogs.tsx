@@ -678,42 +678,87 @@ export function showConfirm(title: string, message: string): Promise<boolean> {
 // もとにメールソフトを起動する(mailto:)簡易な実装にしている。
 function ContactDialogView({ close }: { close: (value: void) => void }) {
   const [email, setEmail] = useState('');
+  const [emailConfirm, setEmailConfirm] = useState('');
   const [message, setMessage] = useState('');
+  const [honeypot, setHoneypot] = useState('');
   const [errorText, setErrorText] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
 
-  function submit() {
-    if (email.trim() === '') {
-      setErrorText('メールアドレスを入力してください。');
+  async function submit() {
+    setErrorText(null);
+    if (email.trim() === '' || emailConfirm.trim() === '') {
+      setErrorText('メールアドレスを2か所とも入力してください。');
+      return;
+    }
+    if (email.trim() !== emailConfirm.trim()) {
+      setErrorText('メールアドレスが一致しません。');
       return;
     }
     if (message.trim() === '') {
       setErrorText('お問い合わせ内容を入力してください。');
       return;
     }
-    const subject = encodeURIComponent('assistへのお問い合わせ');
-    const body = encodeURIComponent(`${message}\n\n---\n返信先メールアドレス: ${email.trim()}`);
-    window.location.href = `mailto:info@kaigoassist.jp?subject=${subject}&body=${body}`;
-    close();
+    setBusy(true);
+    try {
+      const resp = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), message: message.trim(), honeypot }),
+      });
+      if (!resp.ok) throw new Error();
+      setSent(true);
+    } catch {
+      setErrorText('送信に失敗しました。時間をおいて再度お試しください。');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (sent) {
+    return (
+      <ModalShell width={420} onBackdropClick={() => close()}>
+        <h2 className="modal-title">お問い合わせ</h2>
+        <p className="modal-body">お問い合わせを受け付けました。ご返信までしばらくお待ちください。</p>
+        <div className="modal-actions">
+          <button className="btn btn-filled" onClick={() => close()}>閉じる</button>
+        </div>
+      </ModalShell>
+    );
   }
 
   return (
     <ModalShell width={420} onBackdropClick={() => close()}>
       <h2 className="modal-title">お問い合わせ</h2>
       <p className="modal-body">
-        送信を押すと、入力内容をもとにお使いのメールソフトが起動します。内容をご確認のうえ、そのまま送信してください。
+        返信のため、メールアドレスは確認のため2回入力してください。
       </p>
       <div className="field">
         <label>メールアドレス(返信先)</label>
-        <input value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input value={email} onChange={(e) => setEmail(e.target.value)} disabled={busy} />
+      </div>
+      <div className="field">
+        <label>メールアドレス(確認用)</label>
+        <input value={emailConfirm} onChange={(e) => setEmailConfirm(e.target.value)} disabled={busy} />
       </div>
       <div className="field">
         <label>お問い合わせ内容</label>
-        <textarea rows={5} className="modal-textarea" value={message} onChange={(e) => setMessage(e.target.value)} />
+        <textarea rows={5} className="modal-textarea" value={message} onChange={(e) => setMessage(e.target.value)} disabled={busy} />
       </div>
+      {/* botよけのダミー欄。人間には見えない位置に置き、埋まっていたら送信を握りつぶす */}
+      <input
+        type="text"
+        value={honeypot}
+        onChange={(e) => setHoneypot(e.target.value)}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: 'absolute', left: -9999, width: 1, height: 1, opacity: 0 }}
+      />
       {errorText && <p className="hint-error">{errorText}</p>}
       <div className="modal-actions">
-        <button className="btn btn-text" onClick={() => close()}>閉じる</button>
-        <button className="btn btn-filled" onClick={submit}>送信</button>
+        <button className="btn btn-text" onClick={() => close()} disabled={busy}>閉じる</button>
+        <button className="btn btn-filled" onClick={submit} disabled={busy}>{busy ? '送信中...' : '送信'}</button>
       </div>
     </ModalShell>
   );
