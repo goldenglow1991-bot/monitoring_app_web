@@ -196,6 +196,39 @@ export const demoItemValues: Record<string, string> = {
   home_environment_burden: '特に問題なし',
 };
 
+// demoItemValuesに対応する、プルダウン右の自由記入欄用の軽い補足コメント。
+// 「特に問題なし」系の項目はあえて空欄のままにし、実際の入力に近い
+// 見た目にしている。
+export const demoItemFreeValues: Record<string, string> = {
+  exercise_type_1: '10分程度のウォーキング',
+  exercise_type_2: '肩や膝を中心に実施',
+  exercise_time: '休憩を挟みながら実施',
+  exercise_condition: '笑顔も見られた',
+  transfer_movement: '手すりがあれば問題なし',
+  gait: '杖を使用しながら歩行',
+  balance_stability: '方向転換時にふらつきあり',
+  toileting: '声かけなしで対応できている',
+  bathing: '洗身は自身で対応',
+  adl_other: '着替えも自分で行えている',
+  meal_independence: '箸を使い問題なく摂取',
+  meal_intake_amount: '毎食完食されている',
+  hydration: 'お茶を好んで飲まれる',
+  oral_condition: '義歯の不具合なし',
+  communication: '簡単な会話は成立する',
+  facial_expression: 'よく笑顔が見られる',
+  cognitive_function: '簡単な指示は理解できる',
+  orientation: '曜日の混同がみられる',
+  memory: '同じ話を繰り返すことがある',
+  mental_state: '穏やかに過ごされている',
+  motivation_activity: 'レクリエーションに積極的',
+  vitals: '血圧はやや高めで経過観察中',
+  sleep_condition: '夜間の中途覚醒なし',
+  medication_management: '降圧剤を服用中',
+  mobility_aid: '屋外では特に使用',
+  outing: '天気の良い日に散歩へ',
+  home_environment_burden: '家族が近くに住んでいる',
+};
+
 // モード選択画面のカテゴリー表示順(itemCategoriesの並び→カテゴリー内は
 // itemCatalogの登録順)に合わせてkeysを並べ替える。新規登録時の初期値や
 // 施設種別プリセットを適用した直後など、まだユーザーが並び替えていない

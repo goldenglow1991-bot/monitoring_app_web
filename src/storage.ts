@@ -1,7 +1,7 @@
 import { supabase } from './supabaseClient';
 import type { DeletedUser, ItemValue, MonthlyRecord, User } from './types';
 import { newMonthlyRecord } from './types';
-import { facilityTypePresets, canonicalItemOrder, demoItemValues } from './items';
+import { facilityTypePresets, canonicalItemOrder, demoItemValues, demoItemFreeValues } from './items';
 import { currentYearMonth } from './utils';
 
 // Supabase(residents / monthly_records / facility_config テーブル)を
@@ -170,7 +170,7 @@ async function createSampleResident(uid: string, itemKeys: string[]): Promise<vo
     const items: Record<string, ItemValue> = {};
     for (const key of itemKeys) {
       const value = demoItemValues[key];
-      if (value) items[key] = { status: value, free: '' };
+      if (value) items[key] = { status: value, free: demoItemFreeValues[key] ?? '' };
     }
 
     const { error: recordErr } = await supabase.from('monthly_records').insert({
