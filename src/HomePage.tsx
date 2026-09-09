@@ -8,7 +8,6 @@ import {
   itemCatalog,
   defaultEnabledItemKeys,
   defaultTonePresetKey,
-  systemPromptFor,
   canonicalItemOrder,
   type ItemDef,
 } from './items';
@@ -720,10 +719,8 @@ export function HomePage({
     setIsGenerating(true);
     setStatusText('生成中...');
 
-    const systemPrompt = systemPromptFor(
-      (config.tone_preset as string | undefined) ?? defaultTonePresetKey,
-      storage.loadFacilityType(),
-    );
+    const toneKey = (config.tone_preset as string | undefined) ?? defaultTonePresetKey;
+    const facilityTypeKey = storage.loadFacilityType();
 
     let resultText: string | undefined;
     let errorMessage: string | undefined;
@@ -732,7 +729,7 @@ export function HomePage({
     let monthlyLimitExceeded = false;
     try {
       const accessToken = await storage.getAccessToken();
-      resultText = await generateDraft({ accessToken, userPrompt, systemPrompt });
+      resultText = await generateDraft({ accessToken, userPrompt, toneKey, facilityTypeKey });
     } catch (e) {
       if (e instanceof QuotaExceededError) {
         quotaExceeded = true;

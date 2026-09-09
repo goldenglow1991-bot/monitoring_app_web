@@ -12,7 +12,8 @@ export class MonthlyLimitExceededError extends Error {}
 export async function generateDraft(params: {
   accessToken: string;
   userPrompt: string;
-  systemPrompt: string;
+  toneKey: string;
+  facilityTypeKey?: string;
 }): Promise<string> {
   let resp: Response;
   try {
@@ -24,7 +25,8 @@ export async function generateDraft(params: {
       },
       body: JSON.stringify({
         userPrompt: params.userPrompt,
-        systemPrompt: params.systemPrompt,
+        toneKey: params.toneKey,
+        facilityTypeKey: params.facilityTypeKey,
       }),
     });
   } catch (e) {

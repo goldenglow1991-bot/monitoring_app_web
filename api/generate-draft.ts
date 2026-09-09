@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
-import { MODEL_NAME } from '../src/items.js';
+import { MODEL_NAME, systemPromptFor } from '../src/items.js';
 import { freeGenerationLimit, planTiers } from '../src/stripePrices.js';
 import { currentYearMonth } from '../src/utils.js';
 
@@ -40,14 +40,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   const uid = userData.user.id;
 
-  const { userPrompt, systemPrompt } = (req.body ?? {}) as {
+  const { userPrompt, toneKey, facilityTypeKey } = (req.body ?? {}) as {
     userPrompt?: string;
-    systemPrompt?: string;
+    toneKey?: string;
+    facilityTypeKey?: string;
   };
-  if (!userPrompt || !systemPrompt) {
+  if (!userPrompt || !toneKey) {
     res.status(400).json({ error: 'invalid_request' });
     return;
   }
+  // AIへの役割設定(systemPrompt)はクライアントの文字列をそのまま信用せず、
+  // 決まった選択肢(言葉遣い・施設種別のキー)からサーバー自身が組み立てる。
+  // こうしないと、クライアントの改変によって役割設定そのものを乗っ取られ、
+  // 本来の用途と無関係な文章を共有のAnthropicキーで生成されてしまう。
+  const systemPrompt = systemPromptFor(toneKey, facilityTypeKey);
 
   // 有効なサブスクがあれば無制限、なければ生涯累計10回までの無料枠。
   const admin = createClient(supabaseUrl, serviceRoleKey);
