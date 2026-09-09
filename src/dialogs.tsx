@@ -8,12 +8,12 @@ import { privacyText } from './privacyContent';
 import { tokushohoText } from './tokushohoContent';
 import { announcements } from './announcementsContent';
 import { planTiers, freeGenerationLimit, annualPriceFor, annualOriginalPriceFor } from './stripePrices';
-import { createCheckoutSession, createPortalSession, loadConfig, loadUsers } from './storage';
+import { createCheckoutSession, createPortalSession, loadConfig, loadUsers, getMonthlyUsageCount } from './storage';
 import { supabase } from './supabaseClient';
 
 // ---- 汎用: 警告・確認 ----
 
-export function showWarning(title: string, message: string): Promise<void> {
+export function showWarning(title: string, message: ReactNode): Promise<void> {
   return openDialog<void>((close) => (
     <ModalShell width={360} onBackdropClick={() => close()}>
       <h2 className="modal-title">{title}</h2>
@@ -119,11 +119,9 @@ function PricingDialogView({
     <ModalShell width={480} onBackdropClick={() => close()}>
       <h2 className="modal-title">
         {annual ? '年間プランを選択(15%オフ)' : 'プランを選択'}
-        {!currentPlanKey && (
-          <span style={{ fontWeight: 700, fontSize: 14, marginLeft: 8, color: 'var(--teal-dark)' }}>
-            現在: {currentTierLabel}
-          </span>
-        )}
+        <span style={{ fontWeight: 700, fontSize: 14, marginLeft: 8, color: 'var(--teal-dark)' }}>
+          現在: {currentTierLabel}
+        </span>
       </h2>
       <p className="modal-body">{reason}</p>
       {eligible.length === 0 && (
@@ -325,8 +323,11 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
   const [pwSuccess, setPwSuccess] = useState(false);
   const [pwBusy, setPwBusy] = useState(false);
 
+  const [monthlyUsageCount, setMonthlyUsageCount] = useState<number | null>(null);
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
+    getMonthlyUsageCount().then(setMonthlyUsageCount).catch((e) => console.error('利用状況の取得に失敗しました', e));
   }, []);
 
   // Stripeの決済・管理画面等へ遷移した後、ブラウザの「戻る」でbfcacheから
@@ -470,6 +471,13 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
           ? `ご利用中のプラン: ${planTiers.find((t) => t.key === config.subscription_plan)?.label ?? config.subscription_plan}`
           : `無料枠 残り${Math.max(0, freeGenerationLimit - ((config.free_generations_used as number | undefined) ?? 0))}回`}
       </p>
+      {isSubscribed && !config.unlimited_access && monthlyUsageCount != null && (
+        <p className="modal-body">
+          今月の生成可能回数 残り
+          {Math.max(0, (planTiers.find((t) => t.key === config.subscription_plan)?.maxResidents ?? 0) * 3 - monthlyUsageCount)}
+          回
+        </p>
+      )}
       <button
         type="button"
         className="inline-link"

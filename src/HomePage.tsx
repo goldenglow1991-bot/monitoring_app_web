@@ -144,7 +144,6 @@ export function HomePage({
   });
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [config, setConfigState] = useState<AppConfig>(() => storage.loadConfig());
-  const [monthlyUsageCount, setMonthlyUsageCount] = useState<number | null>(null);
   const [itemStatus, setItemStatus] = useState<Record<string, string>>(emptyItemStatus);
   const [itemFree, setItemFree] = useState<Record<string, string>>(emptyItemFree);
   const [extraNotes, setExtraNotes] = useState('');
@@ -163,17 +162,14 @@ export function HomePage({
   const yearMonth = `${year}-${month}`;
 
   useEffect(() => {
-    // Stripe Checkoutからの戻り(?checkout=success)の検知とプラン情報の
-    // 再取得は、StartPage/HomePageどちらが表示されるかに関わらず必ず
-    // 一度通るApp.tsx側(ログイン直後のデータ読み込み)で行っている。
-    storage.getMonthlyUsageCount().then(setMonthlyUsageCount).catch((e) => console.error('利用状況の取得に失敗しました', e));
-  }, []);
-
-  useEffect(() => {
     if (!showWelcomeOnMount) return;
     showWarning(
       'Assistにようこそ',
-      'すでに仮の利用者と所見が入力済みです。下の「文章を生成」を押すと自動で文章が生成されます。詳しい使いかたは右上の?からご確認ください',
+      <>
+        すでに仮の利用者と所見が入力済みです。下の
+        <span style={{ fontWeight: 700, color: 'var(--teal-dark)' }}>「文章を生成」</span>
+        を押すと自動で文章が生成されます。詳しい使いかたは右上の?からご確認ください
+      </>,
     )
       .then(() => {
         const sample = users.find((u) => u.name === 'サンプル太郎');
@@ -779,7 +775,7 @@ export function HomePage({
       return;
     }
 
-    storage.getMonthlyUsageCount().then(setMonthlyUsageCount).catch((e) => console.error('利用状況の取得に失敗しました', e));
+    storage.refreshUsageStatus().then(setConfigState).catch((e) => console.error('利用状況の取得に失敗しました', e));
 
     const stillShowing = selectedUserIdRef.current === requestingUserId && yearMonthRef.current === requestingTarget;
     if (stillShowing) {
@@ -1155,16 +1151,9 @@ export function HomePage({
           </div>
           <div className="top-bar-group top-bar-group-end">
             <span className="usage-status">
-              {isSubscribed ? (
-                <>
-                  <span className="usage-status-line">
-                    ご利用中: {planTiers.find((t) => t.key === config.subscription_plan)?.label ?? config.subscription_plan}
-                  </span>
-                  {monthlyUsageCount != null && (
-                    <span className="usage-status-line">今月{monthlyUsageCount}回</span>
-                  )}
-                </>
-              ) : (
+              {config.unlimited_access ? (
+                <span className="usage-status-line">利用無制限</span>
+              ) : isSubscribed ? null : (
                 <>
                   <span className="usage-status-line">無料枠</span>
                   <span className="usage-status-line">

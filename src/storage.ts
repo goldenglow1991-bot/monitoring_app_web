@@ -447,6 +447,28 @@ export function loadConfig(): AppConfig {
   return configCache;
 }
 
+// 生成直後など、課金・利用状況に関わる列だけをサーバーから取り直してキャッシュへ
+// 反映する。loadAll()と違い、利用者・記録は巻き込まない軽量な再取得。
+export async function refreshUsageStatus(): Promise<AppConfig> {
+  const uid = await requireUserId();
+  const { data, error } = await supabase
+    .from('facility_config')
+    .select('free_generations_used, subscription_plan, subscription_status, subscription_interval, unlimited_access')
+    .eq('user_id', uid)
+    .maybeSingle();
+  if (error) throw error;
+  const row = data as Pick<ConfigRow, 'free_generations_used' | 'subscription_plan' | 'subscription_status' | 'subscription_interval' | 'unlimited_access'> | null;
+  configCache = {
+    ...configCache,
+    free_generations_used: row?.free_generations_used ?? undefined,
+    subscription_plan: row?.subscription_plan ?? undefined,
+    subscription_status: row?.subscription_status ?? undefined,
+    subscription_interval: row?.subscription_interval ?? undefined,
+    unlimited_access: row?.unlimited_access ?? undefined,
+  };
+  return configCache;
+}
+
 export async function saveConfig(config: AppConfig): Promise<void> {
   const uid = await requireUserId();
   const { error } = await supabase.from('facility_config').upsert({
