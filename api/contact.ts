@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_NAME_LENGTH = 100;
 const MAX_MESSAGE_LENGTH = 5000;
 const PER_EMAIL_LIMIT = 3;
 const PER_EMAIL_WINDOW_MS = 60 * 60 * 1000; // 1時間
@@ -18,8 +19,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const { email, message, honeypot } = (req.body ?? {}) as {
+  const { name, facilityName, email, category, message, honeypot } = (req.body ?? {}) as {
+    name?: string;
+    facilityName?: string;
     email?: string;
+    category?: string;
     message?: string;
     honeypot?: string;
   };
@@ -30,6 +34,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  if (!name || name.trim() === '' || name.length > MAX_NAME_LENGTH) {
+    res.status(400).json({ error: 'invalid_name' });
+    return;
+  }
+  if (facilityName && facilityName.length > MAX_NAME_LENGTH) {
+    res.status(400).json({ error: 'invalid_facility_name' });
+    return;
+  }
   if (!email || !EMAIL_RE.test(email)) {
     res.status(400).json({ error: 'invalid_email' });
     return;
@@ -93,8 +105,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       from: 'assist <info@kaigoassist.jp>',
       to: ['info@kaigoassist.jp'],
       reply_to: email,
-      subject: 'assistへのお問い合わせ',
-      text: `${message}\n\n---\n返信先メールアドレス: ${email}`,
+      subject: category ? `assistへのお問い合わせ(${category})` : 'assistへのお問い合わせ',
+      text: `${message}\n\n---\nお名前: ${name}\n施設名: ${facilityName || '(未入力)'}\n返信先メールアドレス: ${email}\n種別: ${category || '(未選択)'}`,
     }),
   });
 

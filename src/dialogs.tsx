@@ -683,9 +683,14 @@ export function showConfirm(title: string, message: string): Promise<boolean> {
 }
 
 // LPからのお問い合わせフォーム。api/contact.ts(Resend経由)へ送信する。
+const contactCategories = ['使い方について', '料金について', '不具合報告', 'その他'];
+
 function ContactDialogView({ close }: { close: (value: void) => void }) {
+  const [name, setName] = useState('');
+  const [facilityName, setFacilityName] = useState('');
   const [email, setEmail] = useState('');
   const [emailConfirm, setEmailConfirm] = useState('');
+  const [category, setCategory] = useState('');
   const [message, setMessage] = useState('');
   const [honeypot, setHoneypot] = useState('');
   const [errorText, setErrorText] = useState<string | null>(null);
@@ -694,6 +699,10 @@ function ContactDialogView({ close }: { close: (value: void) => void }) {
 
   async function submit() {
     setErrorText(null);
+    if (name.trim() === '') {
+      setErrorText('お名前を入力してください。');
+      return;
+    }
     if (email.trim() === '' || emailConfirm.trim() === '') {
       setErrorText('メールアドレスを2か所とも入力してください。');
       return;
@@ -711,7 +720,14 @@ function ContactDialogView({ close }: { close: (value: void) => void }) {
       const resp = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), message: message.trim(), honeypot }),
+        body: JSON.stringify({
+          name: name.trim(),
+          facilityName: facilityName.trim(),
+          email: email.trim(),
+          category,
+          message: message.trim(),
+          honeypot,
+        }),
       });
       if (!resp.ok) {
         const decoded = await resp.json().catch(() => null);
@@ -751,12 +767,29 @@ function ContactDialogView({ close }: { close: (value: void) => void }) {
         返信のため、メールアドレスは確認のため2回入力してください。
       </p>
       <div className="field">
+        <label>お名前</label>
+        <input value={name} onChange={(e) => setName(e.target.value)} disabled={busy} />
+      </div>
+      <div className="field">
+        <label>施設名(任意)</label>
+        <input value={facilityName} onChange={(e) => setFacilityName(e.target.value)} disabled={busy} />
+      </div>
+      <div className="field">
         <label>メールアドレス(返信先)</label>
         <input value={email} onChange={(e) => setEmail(e.target.value)} disabled={busy} />
       </div>
       <div className="field">
         <label>メールアドレス(確認用)</label>
         <input value={emailConfirm} onChange={(e) => setEmailConfirm(e.target.value)} disabled={busy} />
+      </div>
+      <div className="field">
+        <label>お問い合わせ種別(任意)</label>
+        <select value={category} onChange={(e) => setCategory(e.target.value)} disabled={busy}>
+          <option value=""></option>
+          {contactCategories.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
       </div>
       <div className="field">
         <label>お問い合わせ内容</label>
