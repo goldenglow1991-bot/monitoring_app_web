@@ -27,6 +27,19 @@ export function translateAuthError(message: string): string {
   return message;
 }
 
+// Stripe Checkout/Customer Portalの戻り先として使ってよいoriginの許可リスト。
+// クライアントから送られてきたoriginをそのまま信用すると、決済・解約完了後に
+// 任意の外部サイト(フィッシング先等)へリダイレクトできてしまう
+// (オープンリダイレクト)ため、サーバー側で必ずこの一覧と照合する。
+const ALLOWED_ORIGINS = [
+  'https://kaigoassist.jp',
+  'https://monitoring-app-web-sigma.vercel.app',
+];
+
+export function resolveAllowedOrigin(origin: string | undefined): string {
+  return origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+}
+
 export function currentYearMonth(): string {
   const now = new Date();
   const month = String(now.getMonth() + 1).padStart(2, '0');

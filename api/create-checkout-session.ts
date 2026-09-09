@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 import { planTiers } from '../src/stripePrices.js';
+import { resolveAllowedOrigin } from '../src/utils.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -34,10 +35,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const uid = userData.user.id;
   const email = userData.user.email ?? undefined;
 
-  const { planKey, origin, interval } = (req.body ?? {}) as { planKey?: string; origin?: string; interval?: string };
+  const { planKey, origin: rawOrigin, interval } = (req.body ?? {}) as { planKey?: string; origin?: string; interval?: string };
+  const origin = resolveAllowedOrigin(rawOrigin);
   const tier = planTiers.find((t) => t.key === planKey);
   const priceId = interval === 'year' ? tier?.annualStripePriceId : tier?.stripePriceId;
-  if (!tier || !priceId || !origin) {
+  if (!tier || !priceId) {
     res.status(400).json({ error: 'invalid_request' });
     return;
   }

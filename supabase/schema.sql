@@ -45,16 +45,20 @@ create table if not exists monthly_records (
 create index if not exists monthly_records_user_id_idx on monthly_records(user_id);
 create index if not exists monthly_records_resident_id_idx on monthly_records(resident_id);
 
--- ---------- 事業所ごとの設定(所見の項目・言葉遣い・APIキー・PIN等) ----------
+-- ---------- 事業所ごとの設定(所見の項目・言葉遣い等) ----------
 create table if not exists facility_config (
   user_id uuid primary key references auth.users(id) on delete cascade,
   enabled_items jsonb,
   tone_preset text,
-  api_key text,
-  pin_hash text,
   last_year_month text,
   updated_at timestamptz not null default now()
 );
+
+-- BYOK(利用者が自分のAnthropic APIキーを入力する方式)廃止、PIN機能は未使用の
+-- まま撤去したため、既存環境に残っている列を削除する(平文のAPIキーが古い
+-- アカウントに残ったままにしないため)。
+alter table facility_config drop column if exists api_key;
+alter table facility_config drop column if exists pin_hash;
 
 -- 課金関連(無料10回のカウントは生涯累計。サブスク有効中は参照しない)。
 -- 既存のfacility_configテーブルに対して列を追加する(テーブル自体は上のcreate
@@ -83,6 +87,20 @@ create table if not exists ai_usage (
   updated_at timestamptz not null default now(),
   primary key (user_id, year_month)
 );
+
+-- ---------- お問い合わせフォームのレート制限用ログ ----------
+-- ログイン不要で誰でも呼べるapi/contact.tsの連投・スパムを防ぐため、送信の
+-- たびに1行記録し、直近の件数を数える。ログイン中のユーザーとは無関係な
+-- 公開フォームなので、RLSを有効にしたままポリシーを一切作らず、
+-- service_role(サーバー関数)だけが読み書きできるようにする。
+create table if not exists contact_submissions (
+  id uuid primary key default gen_random_uuid(),
+  email text not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists contact_submissions_email_idx on contact_submissions(email);
+create index if not exists contact_submissions_created_at_idx on contact_submissions(created_at);
+alter table contact_submissions enable row level security;
 
 -- ---------- updated_atの自動更新 ----------
 create or replace function set_updated_at()

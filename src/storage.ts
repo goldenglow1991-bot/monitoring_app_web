@@ -28,8 +28,6 @@ export interface AppConfig {
   last_year_month?: string;
   enabled_items?: string[];
   tone_preset?: string;
-  api_key?: string;
-  pin_hash?: string;
   free_generations_used?: number;
   subscription_plan?: string;
   subscription_status?: string;
@@ -61,8 +59,6 @@ interface RecordRow {
 interface ConfigRow {
   enabled_items: string[] | null;
   tone_preset: string | null;
-  api_key: string | null;
-  pin_hash: string | null;
   last_year_month: string | null;
   free_generations_used: number | null;
   subscription_plan: string | null;
@@ -195,7 +191,7 @@ export async function loadAll(): Promise<void> {
   const [residentsRes, recordsRes, configRes, userRes] = await Promise.all([
     supabase.from('residents').select('id, name, furigana, precautions, deleted_at').order('created_at', { ascending: true }),
     supabase.from('monthly_records').select('resident_id, year_month, notes, items, extra_notes, report, draft, draft_generated, updated_at'),
-    supabase.from('facility_config').select('enabled_items, tone_preset, api_key, pin_hash, last_year_month, free_generations_used, subscription_plan, subscription_status, subscription_interval, unlimited_access').maybeSingle(),
+    supabase.from('facility_config').select('enabled_items, tone_preset, last_year_month, free_generations_used, subscription_plan, subscription_status, subscription_interval, unlimited_access').maybeSingle(),
     supabase.auth.getUser(),
   ]);
   if (residentsRes.error) throw residentsRes.error;
@@ -219,8 +215,6 @@ export async function loadAll(): Promise<void> {
     ? {
         enabled_items: configRow.enabled_items ?? undefined,
         tone_preset: configRow.tone_preset ?? undefined,
-        api_key: configRow.api_key ?? undefined,
-        pin_hash: configRow.pin_hash ?? undefined,
         last_year_month: configRow.last_year_month ?? undefined,
         free_generations_used: configRow.free_generations_used ?? undefined,
         subscription_plan: configRow.subscription_plan ?? undefined,
@@ -475,12 +469,10 @@ export async function saveConfig(config: AppConfig): Promise<void> {
     user_id: uid,
     enabled_items: config.enabled_items ?? null,
     tone_preset: config.tone_preset ?? null,
-    api_key: config.api_key ?? null,
-    pin_hash: config.pin_hash ?? null,
     last_year_month: config.last_year_month ?? null,
   });
   if (error) throw error;
-  // DBに書き込むのはこの5フィールドのみなので、キャッシュもこの5フィールドだけを
+  // DBに書き込むのはこの3フィールドのみなので、キャッシュもこの3フィールドだけを
   // 更新する。configをそのままconfigCacheに代入すると、呼び出し元がReact stateの
   // 古いスナップショットから作った(billing系フィールドを含む)configオブジェクトを
   // 渡した場合に、Webhook等が別途更新した課金情報がキャッシュ上で古い値に
@@ -489,8 +481,6 @@ export async function saveConfig(config: AppConfig): Promise<void> {
     ...configCache,
     enabled_items: config.enabled_items,
     tone_preset: config.tone_preset,
-    api_key: config.api_key,
-    pin_hash: config.pin_hash,
     last_year_month: config.last_year_month,
   };
 }

@@ -682,8 +682,7 @@ export function showConfirm(title: string, message: string): Promise<boolean> {
   ));
 }
 
-// LPからのお問い合わせフォーム。専用の送信サーバーは持たないため、入力内容を
-// もとにメールソフトを起動する(mailto:)簡易な実装にしている。
+// LPからのお問い合わせフォーム。api/contact.ts(Resend経由)へ送信する。
 function ContactDialogView({ close }: { close: (value: void) => void }) {
   const [email, setEmail] = useState('');
   const [emailConfirm, setEmailConfirm] = useState('');
@@ -714,7 +713,17 @@ function ContactDialogView({ close }: { close: (value: void) => void }) {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), message: message.trim(), honeypot }),
       });
-      if (!resp.ok) throw new Error();
+      if (!resp.ok) {
+        const decoded = await resp.json().catch(() => null);
+        if (decoded?.error === 'rate_limited_email') {
+          setErrorText('短時間に何度も送信されています。しばらく時間をおいて再度お試しください。');
+        } else if (decoded?.error === 'rate_limited_global') {
+          setErrorText('現在、お問い合わせが混み合っています。しばらく時間をおいて再度お試しください。');
+        } else {
+          setErrorText('送信に失敗しました。時間をおいて再度お試しください。');
+        }
+        return;
+      }
       setSent(true);
     } catch {
       setErrorText('送信に失敗しました。時間をおいて再度お試しください。');

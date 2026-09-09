@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 import { planTiers } from '../src/stripePrices.js';
+import { resolveAllowedOrigin } from '../src/utils.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -33,11 +34,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   const uid = userData.user.id;
 
-  const { origin, planKey, interval } = (req.body ?? {}) as { origin?: string; planKey?: string; interval?: string };
-  if (!origin) {
-    res.status(400).json({ error: 'invalid_request' });
-    return;
-  }
+  const { origin: rawOrigin, planKey, interval } = (req.body ?? {}) as { origin?: string; planKey?: string; interval?: string };
+  const origin = resolveAllowedOrigin(rawOrigin);
 
   const admin = createClient(supabaseUrl, serviceRoleKey);
   const { data: config, error: configError } = await admin
