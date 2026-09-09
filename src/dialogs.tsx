@@ -1434,10 +1434,10 @@ function ItemVisibilityDialogView({
             onApplyPreset(preset.itemKeys);
           }}
         >
-          <option value="" disabled>施設種別を選択</option>
           {facilityTypePresets.map((p) => (
             <option key={p.key} value={p.key}>{p.label}</option>
           ))}
+          <option value="" disabled>その他</option>
         </select>
         <hr />
         <div className="facility-preset-label facility-preset-label-sub">項目は自由にカスタマイズできます</div>
