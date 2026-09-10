@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import { supabase } from './supabaseClient';
 import { facilityTypePresets } from './items';
-import { showTermsDialog, showPrivacyDialog } from './dialogs';
+import { showTermsDialog, showPrivacyDialog, showWarning } from './dialogs';
 import { termsVersion } from './termsContent';
 import { privacyVersion } from './privacyContent';
 import { translateAuthError } from './utils';
@@ -247,7 +247,21 @@ export function AuthPage({
                 )}
 
                 {errorText && <p className="hint-error">{errorText}</p>}
-                {infoText && <p className="hint-muted">{infoText}</p>}
+                {infoText && (
+                  <>
+                    <p className="hint-muted">{infoText}</p>
+                    <button
+                      type="button"
+                      className="inline-link"
+                      onClick={() => showWarning(
+                        'メールが届かない場合',
+                        '数分待っても届かない場合は、迷惑メールフォルダをご確認ください。まれに正しいメールアドレスでも迷惑メールに振り分けられることがあります。\n\nそれでも見つからない場合は、入力したメールアドレスに誤りがないかご確認のうえ、もう一度お試しください。',
+                      )}
+                    >
+                      メールが届かない方はこちら
+                    </button>
+                  </>
+                )}
 
                 <button type="submit" className="btn btn-filled auth-submit" disabled={busy || screenJustSwitched}>
                   {busy ? '処理中...' : mode === 'login' ? 'ログイン' : '登録する'}
