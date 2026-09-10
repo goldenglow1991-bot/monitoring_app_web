@@ -7,7 +7,7 @@ import { termsText } from './termsContent';
 import { privacyText } from './privacyContent';
 import { tokushohoText } from './tokushohoContent';
 import { announcements } from './announcementsContent';
-import { planTiers, freeGenerationLimit, annualPriceFor, annualOriginalPriceFor } from './stripePrices';
+import { planTiers, freeGenerationLimit, totalFreeGenerations, annualPriceFor, annualOriginalPriceFor } from './stripePrices';
 import { createCheckoutSession, createPortalSession, loadConfig, loadUsers, getMonthlyUsageCount } from './storage';
 import { supabase } from './supabaseClient';
 
@@ -469,7 +469,7 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
           ? 'このアカウントは無制限でご利用いただけます'
           : isSubscribed
           ? `ご利用中のプラン: ${planTiers.find((t) => t.key === config.subscription_plan)?.label ?? config.subscription_plan}`
-          : `無料枠 残り${Math.max(0, freeGenerationLimit - ((config.free_generations_used as number | undefined) ?? 0))}回`}
+          : `無料枠 残り${Math.max(0, totalFreeGenerations - ((config.free_generations_used as number | undefined) ?? 0))}回`}
       </p>
       {isSubscribed && !config.unlimited_access && monthlyUsageCount != null && (
         <p className="modal-body">

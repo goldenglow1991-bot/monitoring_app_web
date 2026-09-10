@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 import { MODEL_NAME, systemPromptFor } from '../src/items.js';
-import { freeGenerationLimit, planTiers } from '../src/stripePrices.js';
+import { totalFreeGenerations, planTiers } from '../src/stripePrices.js';
 import { currentYearMonth } from '../src/utils.js';
 
 const ACTIVE_STATUSES = new Set(['active', 'trialing']);
@@ -115,7 +115,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } else if (!hasActiveSubscription) {
     const { data: ok, error: reserveError } = await admin.rpc('reserve_free_generation', {
       p_user_id: uid,
-      p_limit: freeGenerationLimit,
+      p_limit: totalFreeGenerations,
     });
     if (reserveError) {
       res.status(500).json({ error: 'db_error', detail: reserveError.message });

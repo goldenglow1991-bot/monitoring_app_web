@@ -13,7 +13,7 @@ import {
 } from './items';
 import { compileNotes, pastRecordsText, buildUserPrompt } from './reportBuilder';
 import { generateDraft, AnthropicError, QuotaExceededError, ResidentLimitExceededError, MonthlyLimitExceededError } from './anthropicClient';
-import { planTiers, freeGenerationLimit } from './stripePrices';
+import { planTiers, totalFreeGenerations } from './stripePrices';
 import { currentYearMonth, previousYearMonth, furiganaSortKey, sortUsers } from './utils';
 import {
   showWarning,
@@ -1154,7 +1154,7 @@ export function HomePage({
                 <>
                   <span className="usage-status-line">無料枠</span>
                   <span className="usage-status-line">
-                    残り{Math.max(0, freeGenerationLimit - ((config.free_generations_used as number | undefined) ?? 0))}回
+                    残り{Math.max(0, totalFreeGenerations - ((config.free_generations_used as number | undefined) ?? 0))}回
                   </span>
                 </>
               )}
