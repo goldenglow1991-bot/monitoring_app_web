@@ -550,14 +550,7 @@ export function HomePage({
         }
         await storage.restoreUser(u);
         setUsers((prev) => {
-          const restored: User = {
-            id: u.id,
-            name: u.name,
-            furigana: u.furigana,
-            precautions: u.precautions,
-            shortTermGoal: u.shortTermGoal,
-            longTermGoal: u.longTermGoal,
-          };
+          const restored: User = { id: u.id, name: u.name, furigana: u.furigana, precautions: u.precautions };
           const next = [...prev, restored];
           sortUsers(next);
           return next;
@@ -579,12 +572,9 @@ export function HomePage({
       return;
     }
     const user = users.find((u) => u.id === selectedUserId)!;
-    const result = await showEditPrecautionsDialog({
-      userName: user.name,
-      initial: { precautions: user.precautions, shortTermGoal: user.shortTermGoal, longTermGoal: user.longTermGoal },
-    });
+    const result = await showEditPrecautionsDialog({ userName: user.name, initialPrecautions: user.precautions });
     if (result == null) return;
-    const updated: User = { ...user, ...result };
+    const updated: User = { ...user, precautions: result };
     try {
       await storage.updateUser(updated);
     } catch (e) {
@@ -720,14 +710,7 @@ export function HomePage({
     const target = yearMonth;
     const records = storage.loadRecords(selectedUserId);
     const pastText = pastRecordsText(records, target);
-    const userPrompt = buildUserPrompt({
-      precautions: user.precautions,
-      shortTermGoal: user.shortTermGoal,
-      longTermGoal: user.longTermGoal,
-      pastText,
-      targetYearMonth: target,
-      notes,
-    });
+    const userPrompt = buildUserPrompt({ precautions: user.precautions, pastText, targetYearMonth: target, notes });
 
     const requestingUserId = selectedUserId;
     const requestingTarget = target;

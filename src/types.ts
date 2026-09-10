@@ -3,8 +3,6 @@ export interface User {
   name: string;
   furigana: string;
   precautions: string;
-  shortTermGoal: string;
-  longTermGoal: string;
 }
 
 export interface DeletedUser extends User {
