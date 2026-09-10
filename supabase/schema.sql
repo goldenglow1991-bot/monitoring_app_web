@@ -26,6 +26,12 @@ create table if not exists residents (
 
 create index if not exists residents_user_id_idx on residents(user_id);
 
+-- モニタリングは本来「事実→評価→次の対応」の三段階で行うものであり、目標
+-- (留意点と同じく、月をまたいで保持する背景情報)に対する達成度評価を
+-- 書けるようにするための列。
+alter table residents add column if not exists short_term_goal text not null default '';
+alter table residents add column if not exists long_term_goal text not null default '';
+
 -- ---------- 月次記録(利用者×年月で1件) ----------
 create table if not exists monthly_records (
   id uuid primary key default gen_random_uuid(),

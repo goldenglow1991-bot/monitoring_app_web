@@ -16,6 +16,7 @@ export const itemCategories: ItemCategory[] = [
   { key: 'mental', label: '精神・心理面' },
   { key: 'condition', label: '体調・健康管理' },
   { key: 'other', label: '生活支援・福祉用具' },
+  { key: 'goal', label: '目標' },
 ];
 
 export interface ItemDef {
@@ -152,6 +153,15 @@ export const itemCatalog: ItemDef[] = [
   { key: 'home_environment_burden', label: '居宅環境・介護者(家族)の負担感', categoryKey: 'other', options: [
     UNSET, '特に問題なし', '軽度の負担感あり', '中等度の負担感あり', '強い負担感・支援が必要',
   ] },
+
+  // 目標(ケアプランの目標に対する達成度評価。留意点と同じく、事前に
+  // 「短期目標」「長期目標」を設定しておく前提の項目)
+  { key: 'goal_achievement', label: '目標達成度', categoryKey: 'goal', options: [
+    UNSET, '達成', '概ね達成', '一部達成', '未達成',
+  ] },
+  { key: 'future_response', label: '今後の対応', categoryKey: 'goal', options: [
+    UNSET, '現在の支援を継続', '支援内容の見直しが必要', '目標の見直しが必要',
+  ] },
 ];
 
 // 初回ログイン時に自動作成するサンプル利用者用の、各項目のデモ値。
@@ -194,6 +204,8 @@ export const demoItemValues: Record<string, string> = {
   mobility_aid: '杖を使用',
   outing: '声かけで外出する',
   home_environment_burden: '特に問題なし',
+  goal_achievement: '概ね達成',
+  future_response: '現在の支援を継続',
 };
 
 // demoItemValuesに対応する、プルダウン右の自由記入欄用の軽い補足コメント。
@@ -227,6 +239,8 @@ export const demoItemFreeValues: Record<string, string> = {
   mobility_aid: '屋外では特に使用',
   outing: '天気の良い日に散歩へ',
   home_environment_burden: '家族が近くに住んでいる',
+  goal_achievement: '歩行の安定に向けて取り組み中',
+  future_response: '来月も同じ支援内容を継続',
 };
 
 // モード選択画面のカテゴリー表示順(itemCategoriesの並び→カテゴリー内は
@@ -311,7 +325,7 @@ export const facilityTypePresets: FacilityTypePreset[] = [
   { key: 'care_manager', label: '居宅介護支援(ケアマネ)・福祉用具貸与など', itemKeys: [
     'mobility_aid', 'gait', 'adl_other', 'outing', 'communication',
     'home_environment_burden', 'fall_injury', 'cognitive_function',
-    'vitals', 'medication_management',
+    'vitals', 'medication_management', 'goal_achievement', 'future_response',
   ] },
 ];
 

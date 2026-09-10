@@ -46,16 +46,25 @@ export function pastRecordsText(
 // 実名が無くても文章生成には支障がない。
 export function buildUserPrompt(params: {
   precautions: string;
+  shortTermGoal: string;
+  longTermGoal: string;
   pastText: string;
   targetYearMonth: string;
   notes: string;
 }): string {
   const precautionsTrimmed = params.precautions.trim();
   const precautionsBlock = precautionsTrimmed !== '' ? `【留意点】\n${precautionsTrimmed}\n\n` : '';
+  const shortGoal = params.shortTermGoal.trim();
+  const longGoal = params.longTermGoal.trim();
+  const goalLines: string[] = [];
+  if (shortGoal !== '') goalLines.push(`短期目標: ${shortGoal}`);
+  if (longGoal !== '') goalLines.push(`長期目標: ${longGoal}`);
+  const goalBlock = goalLines.length > 0 ? `【目標】\n${goalLines.join('\n')}\n\n` : '';
   return (
     `${precautionsBlock}` +
+    `${goalBlock}` +
     `【過去の記録】\n${params.pastText}\n\n` +
     `【今月(${params.targetYearMonth})の所見】\n${params.notes}\n\n` +
-    '上記をもとに、ケアマネージャーに提出する月次モニタリング報告の本文を作成してください。'
+    '上記をもとに、ケアマネージャーに提出する月次モニタリング報告の本文を作成してください。目標が設定されている場合は、今月の所見が目標に対してどのような状況かを踏まえて記述してください。'
   );
 }

@@ -888,7 +888,7 @@ function AddUserDialogView({ close }: { close: (value: User | null) => void }) {
       await showWarning('入力エラー', 'フリガナはひらがなで入力してください。');
       return;
     }
-    close({ id: crypto.randomUUID(), name: trimmedName, furigana: hira, precautions: '' });
+    close({ id: crypto.randomUUID(), name: trimmedName, furigana: hira, precautions: '', shortTermGoal: '', longTermGoal: '' });
   }
 
   async function handleBackdropClick() {
@@ -989,25 +989,45 @@ export function showRenameUserDialog(user: User): Promise<{ name: string; furiga
   return openDialog((close) => <RenameUserDialogView user={user} close={close} />);
 }
 
+export interface PrecautionsEditResult {
+  precautions: string;
+  shortTermGoal: string;
+  longTermGoal: string;
+}
+
 function EditPrecautionsDialogView({
   userName,
-  initialPrecautions,
+  initial,
   close,
 }: {
   userName: string;
-  initialPrecautions: string;
-  close: (value: string | null) => void;
+  initial: PrecautionsEditResult;
+  close: (value: PrecautionsEditResult | null) => void;
 }) {
-  const [text, setText] = useState(initialPrecautions);
+  const [precautions, setPrecautions] = useState(initial.precautions);
+  const [shortTermGoal, setShortTermGoal] = useState(initial.shortTermGoal);
+  const [longTermGoal, setLongTermGoal] = useState(initial.longTermGoal);
+
+  function isDirty() {
+    return (
+      precautions.trim() !== initial.precautions ||
+      shortTermGoal.trim() !== initial.shortTermGoal ||
+      longTermGoal.trim() !== initial.longTermGoal
+    );
+  }
+
+  function currentResult(): PrecautionsEditResult {
+    return { precautions: precautions.trim(), shortTermGoal: shortTermGoal.trim(), longTermGoal: longTermGoal.trim() };
+  }
 
   async function handleBackdropClick() {
-    if (text.trim() === initialPrecautions) {
+    if (!isDirty()) {
       close(null);
       return;
     }
     const answer = await showSaveConfirm();
     if (answer == null) return;
-    close(answer ? text.trim() : null);
+    close(answer ? currentResult() : null);
   }
 
   return (
@@ -1017,13 +1037,31 @@ function EditPrecautionsDialogView({
       <textarea
         autoFocus
         rows={6}
-        value={text}
-        onChange={(e) => setText(e.target.value)}
+        value={precautions}
+        onChange={(e) => setPrecautions(e.target.value)}
         className="modal-textarea"
       />
+      <div className="field">
+        <label>短期目標(任意)</label>
+        <textarea
+          rows={2}
+          value={shortTermGoal}
+          onChange={(e) => setShortTermGoal(e.target.value)}
+          className="modal-textarea"
+        />
+      </div>
+      <div className="field">
+        <label>長期目標(任意)</label>
+        <textarea
+          rows={2}
+          value={longTermGoal}
+          onChange={(e) => setLongTermGoal(e.target.value)}
+          className="modal-textarea"
+        />
+      </div>
       <div className="modal-actions">
         <button className="btn btn-text" onClick={() => close(null)}>キャンセル</button>
-        <button className="btn btn-filled" onClick={() => close(text.trim())}>保存</button>
+        <button className="btn btn-filled" onClick={() => close(currentResult())}>保存</button>
       </div>
     </ModalShell>
   );
@@ -1031,12 +1069,12 @@ function EditPrecautionsDialogView({
 
 export function showEditPrecautionsDialog(params: {
   userName: string;
-  initialPrecautions: string;
-}): Promise<string | null> {
+  initial: PrecautionsEditResult;
+}): Promise<PrecautionsEditResult | null> {
   return openDialog((close) => (
     <EditPrecautionsDialogView
       userName={params.userName}
-      initialPrecautions={params.initialPrecautions}
+      initial={params.initial}
       close={close}
     />
   ));

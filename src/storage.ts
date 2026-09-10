@@ -41,6 +41,8 @@ interface ResidentRow {
   name: string;
   furigana: string;
   precautions: string;
+  short_term_goal: string;
+  long_term_goal: string;
   deleted_at: string | null;
 }
 
@@ -68,7 +70,14 @@ interface ConfigRow {
 }
 
 function rowToUser(row: ResidentRow): User {
-  return { id: row.id, name: row.name, furigana: row.furigana, precautions: row.precautions };
+  return {
+    id: row.id,
+    name: row.name,
+    furigana: row.furigana,
+    precautions: row.precautions,
+    shortTermGoal: row.short_term_goal,
+    longTermGoal: row.long_term_goal,
+  };
 }
 
 function rowToDeletedUser(row: ResidentRow): DeletedUser {
@@ -160,6 +169,8 @@ async function createSampleResident(uid: string, itemKeys: string[]): Promise<vo
       furigana: 'さんぷるたろう',
       precautions:
         '軽度の高血圧があり、歩行時は杖を使用。物忘れがみられるため、繰り返しの声かけが必要。',
+      short_term_goal: '見守りのもと、安全に歩行できるようになる。',
+      long_term_goal: '住み慣れた自宅での生活を継続できる。',
     });
     if (residentErr) throw residentErr;
 
@@ -189,7 +200,7 @@ async function createSampleResident(uid: string, itemKeys: string[]): Promise<vo
 // ログイン後、画面を表示する前に一度だけ呼ぶ。全データをキャッシュへ読み込む。
 export async function loadAll(): Promise<void> {
   const [residentsRes, recordsRes, configRes, userRes] = await Promise.all([
-    supabase.from('residents').select('id, name, furigana, precautions, deleted_at').order('created_at', { ascending: true }),
+    supabase.from('residents').select('id, name, furigana, precautions, short_term_goal, long_term_goal, deleted_at').order('created_at', { ascending: true }),
     supabase.from('monthly_records').select('resident_id, year_month, notes, items, extra_notes, report, draft, draft_generated, updated_at'),
     supabase.from('facility_config').select('enabled_items, tone_preset, last_year_month, free_generations_used, subscription_plan, subscription_status, subscription_interval, unlimited_access').maybeSingle(),
     supabase.auth.getUser(),
@@ -290,6 +301,8 @@ export async function addUser(user: User): Promise<void> {
     name: user.name,
     furigana: user.furigana,
     precautions: user.precautions,
+    short_term_goal: user.shortTermGoal,
+    long_term_goal: user.longTermGoal,
   });
   if (error) throw error;
   residentsCache = [...residentsCache, user];
@@ -298,7 +311,13 @@ export async function addUser(user: User): Promise<void> {
 export async function updateUser(user: User): Promise<void> {
   const { error } = await supabase
     .from('residents')
-    .update({ name: user.name, furigana: user.furigana, precautions: user.precautions })
+    .update({
+      name: user.name,
+      furigana: user.furigana,
+      precautions: user.precautions,
+      short_term_goal: user.shortTermGoal,
+      long_term_goal: user.longTermGoal,
+    })
     .eq('id', user.id);
   if (error) throw error;
   residentsCache = residentsCache.map((u) => (u.id === user.id ? user : u));
