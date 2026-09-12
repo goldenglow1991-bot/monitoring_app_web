@@ -158,7 +158,7 @@ export function LandingPage({
           </div>
         </div>
         <div className="lp-emotion-photo-row">
-          <img src="/images/lp/time-with-resident.jpg" alt="浮いた時間で利用者と笑顔で向き合う介護スタッフ" />
+          <img src="/images/lp/time-with-resident.jpg" alt="浮いた時間で利用者と笑顔で向き合う介護スタッフ" className="lp-photo" />
           <div className="lp-emotion-text">
             <h3>浮いた時間を、利用者との時間に。</h3>
             <p>記録に追われる時間が減れば、そのぶん利用者さんとゆっくり向き合う時間が増えます。</p>
