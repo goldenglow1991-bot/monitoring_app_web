@@ -914,9 +914,9 @@
 .lp-hero-lead {
   font-size: 18px;
   color: var(--text-muted);
-  margin: 0 0 40px 0;
+  margin: 0;
 }
-.lp-hero-actions { display: flex; gap: 16px; justify-content: flex-start; }
+.lp-hero-actions { display: flex; gap: 16px; justify-content: center; margin-top: 40px; }
 .lp-hero-note { margin-top: 16px; font-size: 15px; color: var(--teal); font-weight: 700; }
 
 .lp-empathy-bridge { margin: 28px 0 0 0; font-weight: 700; color: var(--teal-dark); font-size: 26px; }
@@ -1053,8 +1053,6 @@
   .lp-section { padding: 64px 20px; }
   .lp-hero-title { font-size: 32px; }
   .lp-hero-inner { flex-direction: column; text-align: center; gap: 32px; }
-  .lp-hero-actions { justify-content: center; }
-  .lp-hero-lead { margin: 0 auto 40px auto; }
   .lp-steps { flex-direction: column; gap: 40px; }
   .lp-pricing-grid { grid-template-columns: repeat(2, 1fr); }
   .lp-header { padding: 16px 20px; }
