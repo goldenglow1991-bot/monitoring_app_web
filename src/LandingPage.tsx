@@ -28,30 +28,28 @@ export function LandingPage({
       </div>
 
       <div className="lp-section lp-hero">
-        <div className="lp-wrap">
-          <div className="lp-hero-inner">
-            <div className="lp-hero-text">
-              <div className="lp-eyebrow">介護現場向け<br />かんたんモニタリング作成AI</div>
-              <h1 className="lp-hero-title">
-                モニタリング作成に、<br />もう時間をかけない。
-              </h1>
-              <p className="lp-hero-lead">
-                選んだ所見から、AIが自然な文章を数秒で作成。
-                <br />
-                簡単な操作で、書類仕事の負担を減らし、本来のケアに向き合う時間を取り戻します。
-                <br />
-                スマホからでも、すきま時間にサッと入力できます。
-              </p>
+        <div className="lp-wrap lp-hero-inner">
+          <div className="lp-hero-text">
+            <div className="lp-eyebrow">介護現場向け<br />かんたんモニタリング作成AI</div>
+            <h1 className="lp-hero-title">
+              モニタリング作成に、<br />もう時間をかけない。
+            </h1>
+            <p className="lp-hero-lead">
+              選んだ所見から、AIが自然な文章を数秒で作成。
+              <br />
+              簡単な操作で、書類仕事の負担を減らし、本来のケアに向き合う時間を取り戻します。
+              <br />
+              スマホからでも、すきま時間にサッと入力できます。
+            </p>
+            <div className="lp-hero-actions">
+              <button type="button" className="btn btn-filled" onClick={onGetStarted}>無料で試してみる</button>
+              <a href="#faq" className="btn btn-outlined">よくあるご質問を見る</a>
             </div>
-            <div className="lp-hero-photo">
-              <img src="/images/lp/hero.jpg" alt="Assistで落ち着いてモニタリングを作成する介護スタッフ" className="lp-photo" />
-            </div>
+            <div className="lp-hero-note">はじめの10回の文章生成は無料でお試しいただけます</div>
           </div>
-          <div className="lp-hero-actions">
-            <button type="button" className="btn btn-filled" onClick={onGetStarted}>無料で試してみる</button>
-            <a href="#faq" className="btn btn-outlined">よくあるご質問を見る</a>
+          <div className="lp-hero-photo">
+            <img src="/images/lp/hero.jpg" alt="Assistで落ち着いてモニタリングを作成する介護スタッフ" className="lp-photo" />
           </div>
-          <div className="lp-hero-note">はじめの10回の文章生成は無料でお試しいただけます</div>
         </div>
       </div>
 
