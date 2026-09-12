@@ -180,21 +180,7 @@ export function LandingPage({
           <div className="lp-screenshot-bar">
             <span /><span /><span />
           </div>
-          <div className="lp-screenshot-body">
-            <div className="lp-screenshot-side">
-              <div className="lp-sk lp-sk-label" />
-              <div className="lp-sk lp-sk-item lp-sk-active" />
-              <div className="lp-sk lp-sk-item" />
-              <div className="lp-sk lp-sk-item" />
-            </div>
-            <div className="lp-screenshot-main">
-              <div className="lp-sk lp-sk-label" style={{ width: '40%' }} />
-              <div className="lp-sk lp-sk-field" />
-              <div className="lp-sk lp-sk-field" />
-              <div className="lp-sk lp-sk-field" />
-              <div className="lp-sk lp-sk-block" />
-            </div>
-          </div>
+          <img src="/images/lp/screenshot.png" alt="Assistの実際の操作画面(サンプル利用者の入力例)" className="lp-screenshot-img" />
         </div>
       </div>
 

@@ -990,7 +990,7 @@
 .lp-feature-row p { margin: 0; color: var(--text-muted); font-size: 17px; }
 
 .lp-screenshot-mock {
-  max-width: 760px;
+  max-width: 960px;
   margin: 0 auto;
   border-radius: 16px;
   overflow: hidden;
@@ -999,15 +999,7 @@
 }
 .lp-screenshot-bar { background: #f0f0f0; padding: 10px 16px; display: flex; gap: 6px; }
 .lp-screenshot-bar span { width: 10px; height: 10px; border-radius: 999px; background: #d8d8d8; display: block; }
-.lp-screenshot-body { background: #fff; padding: 28px; display: flex; gap: 20px; }
-.lp-screenshot-side { width: 140px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
-.lp-screenshot-main { flex: 1; display: flex; flex-direction: column; gap: 10px; }
-.lp-sk { background: var(--border-light); border-radius: 4px; }
-.lp-sk-label { height: 14px; width: 70%; }
-.lp-sk-item { height: 34px; background: #f4f4f4; border-radius: 8px; }
-.lp-sk-active { background: var(--teal-light); }
-.lp-sk-field { height: 38px; background: #f7f7f7; border: 1px solid var(--border-light); border-radius: 8px; }
-.lp-sk-block { height: 80px; background: var(--teal-light); border-radius: 8px; margin-top: 8px; }
+.lp-screenshot-img { width: 100%; height: auto; display: block; }
 
 .lp-faq {
   display: flex;
@@ -1058,8 +1050,6 @@
   .lp-steps { flex-direction: column; gap: 40px; }
   .lp-pricing-grid { grid-template-columns: repeat(2, 1fr); }
   .lp-header { padding: 16px 20px; }
-  .lp-screenshot-body { flex-direction: column; }
-  .lp-screenshot-side { width: 100%; flex-direction: row; }
   .lp-before-after { flex-direction: column; gap: 16px; }
   .lp-before-after-arrow { transform: rotate(90deg); }
   .lp-emotion-photo-row { flex-direction: column; gap: 20px; }
