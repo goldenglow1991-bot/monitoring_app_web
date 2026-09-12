@@ -931,6 +931,31 @@
 .lp-testimonial-quote + .lp-testimonial-quote { margin-top: 10px; }
 .lp-testimonial-source { margin-top: 8px; font-size: 13px; color: var(--text-muted); }
 
+.lp-photo { width: 100%; height: auto; display: block; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+.lp-photo-caption { margin-top: 10px; font-size: 14px; color: var(--text-muted); text-align: center; }
+.lp-before-after {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin: 40px auto 0;
+  max-width: 720px;
+}
+.lp-before-after-item { flex: 1; min-width: 0; }
+.lp-before-after-arrow { font-size: 28px; font-weight: 700; color: var(--teal); flex-shrink: 0; }
+
+.lp-emotion-photo-row {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  max-width: 880px;
+  margin: 56px auto 0;
+}
+.lp-emotion-photo-row img { flex: 1 1 45%; min-width: 0; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+.lp-emotion-text { flex: 1 1 45%; text-align: left; }
+.lp-emotion-text h3 { font-size: 22px; margin: 0 0 8px 0; color: var(--teal-dark); }
+.lp-emotion-text p { margin: 0; color: var(--text-muted); font-size: 16px; }
+
 .lp-steps { display: flex; gap: 40px; justify-content: center; text-align: center; }
 .lp-step { flex: 1; }
 .lp-step-label { font-size: 15px; font-weight: 700; color: var(--teal); margin-bottom: 12px; }
@@ -1030,6 +1055,10 @@
   .lp-header { padding: 16px 20px; }
   .lp-screenshot-body { flex-direction: column; }
   .lp-screenshot-side { width: 100%; flex-direction: row; }
+  .lp-before-after { flex-direction: column; gap: 16px; }
+  .lp-before-after-arrow { transform: rotate(90deg); }
+  .lp-emotion-photo-row { flex-direction: column; gap: 20px; }
+  .lp-emotion-text { text-align: center; }
 
   /* 文字サイズはPC・タブレット幅のみ拡大し、スマホ幅は元のサイズに戻す。 */
   .lp-eyebrow { font-size: 14px; }

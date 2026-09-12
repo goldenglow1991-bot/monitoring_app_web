@@ -59,6 +59,17 @@ export function LandingPage({
             <br />
             介護の現場では、ケアそのものより記録の時間に追われてしまうことが少なくありません。
           </p>
+          <div className="lp-before-after">
+            <div className="lp-before-after-item">
+              <img src="/images/lp/pain-point.jpg" alt="記録に追われて疲れている介護スタッフ" className="lp-photo" />
+              <div className="lp-photo-caption">記録に追われる毎日…</div>
+            </div>
+            <div className="lp-before-after-arrow">→</div>
+            <div className="lp-before-after-item">
+              <img src="/images/lp/solved.jpg" alt="Assistでスムーズに記録を終えて喜ぶ介護スタッフ" className="lp-photo" />
+              <div className="lp-photo-caption">Assistでスムーズに完了</div>
+            </div>
+          </div>
           <p className="lp-empathy-bridge">その負担を、Assistが一緒に軽くします。</p>
           <div className="lp-testimonial">
             <p className="lp-testimonial-quote">「1人あたり15〜20分かかっていた記録が、5分もかからずにできるようになりました。」</p>
@@ -144,6 +155,13 @@ export function LandingPage({
                 訪問の合間や休憩中など、ちょっとしたすきま時間にサッと記録を済ませられます。
               </p>
             </div>
+          </div>
+        </div>
+        <div className="lp-emotion-photo-row">
+          <img src="/images/lp/time-with-resident.jpg" alt="浮いた時間で利用者と笑顔で向き合う介護スタッフ" />
+          <div className="lp-emotion-text">
+            <h3>浮いた時間を、利用者との時間に。</h3>
+            <p>記録に追われる時間が減れば、そのぶん利用者さんとゆっくり向き合う時間が増えます。</p>
           </div>
         </div>
       </div>
