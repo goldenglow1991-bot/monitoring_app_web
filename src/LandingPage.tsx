@@ -85,6 +85,19 @@ export function LandingPage({
         </div>
       </div>
 
+      <div className="lp-section lp-panel">
+        <div className="lp-wrap lp-center" style={{ marginBottom: 48 }}>
+          <div className="lp-eyebrow">実際の画面</div>
+          <h2>迷わず使える、シンプルな画面</h2>
+        </div>
+        <div className="lp-screenshot-mock">
+          <div className="lp-screenshot-bar">
+            <span /><span /><span />
+          </div>
+          <img src="/images/lp/screenshot.png" alt="Assistの実際の操作画面(サンプル利用者の入力例)" className="lp-screenshot-img" />
+        </div>
+      </div>
+
       <div className="lp-section">
         <div className="lp-wrap lp-center" style={{ marginBottom: 56 }}>
           <div className="lp-eyebrow">むずかしい操作は、ひとつもありません</div>
@@ -168,19 +181,6 @@ export function LandingPage({
             <h3>浮いた時間を、利用者との時間に。</h3>
             <p>記録に追われる時間が減れば、そのぶん利用者さんとゆっくり向き合う時間が増えます。</p>
           </div>
-        </div>
-      </div>
-
-      <div className="lp-section lp-panel">
-        <div className="lp-wrap lp-center" style={{ marginBottom: 48 }}>
-          <div className="lp-eyebrow">実際の画面</div>
-          <h2>迷わず使える、シンプルな画面</h2>
-        </div>
-        <div className="lp-screenshot-mock">
-          <div className="lp-screenshot-bar">
-            <span /><span /><span />
-          </div>
-          <img src="/images/lp/screenshot.png" alt="Assistの実際の操作画面(サンプル利用者の入力例)" className="lp-screenshot-img" />
         </div>
       </div>
 
