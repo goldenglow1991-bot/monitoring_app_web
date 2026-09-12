@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { showTokushohoDialog, showContactDialog } from './dialogs';
 import { planTiers, freeGenerationLimit, annualDiscountRate, annualPriceFor } from './stripePrices';
 
@@ -9,8 +8,6 @@ export function LandingPage({
   onGetStarted: () => void;
   onLogin: () => void;
 }) {
-  const [screenshotOpen, setScreenshotOpen] = useState(false);
-
   return (
     <div className="lp">
       <div className="lp-header">
@@ -93,24 +90,13 @@ export function LandingPage({
           <div className="lp-eyebrow">実際の画面</div>
           <h2>迷わず使える、シンプルな画面</h2>
         </div>
-        <button
-          type="button"
-          className="lp-screenshot-mock lp-screenshot-trigger"
-          onClick={() => setScreenshotOpen(true)}
-          aria-label="スクリーンショットを拡大表示"
-        >
+        <div className="lp-screenshot-mock">
           <div className="lp-screenshot-bar">
             <span /><span /><span />
           </div>
           <img src="/images/lp/screenshot.png" alt="Assistの実際の操作画面(サンプル利用者の入力例)" className="lp-screenshot-img" />
-        </button>
-      </div>
-
-      {screenshotOpen && (
-        <div className="lp-lightbox" onClick={() => setScreenshotOpen(false)}>
-          <img src="/images/lp/screenshot.png" alt="Assistの実際の操作画面(拡大)" className="lp-lightbox-img" />
         </div>
-      )}
+      </div>
 
       <div className="lp-section">
         <div className="lp-wrap lp-center" style={{ marginBottom: 56 }}>

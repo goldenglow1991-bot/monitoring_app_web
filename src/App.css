@@ -997,34 +997,9 @@
   box-shadow: 0 20px 50px rgba(0,0,0,0.08);
   border: 1px solid var(--border-light);
 }
-.lp-screenshot-trigger {
-  display: block;
-  width: 100%;
-  padding: 0;
-  background: none;
-  cursor: zoom-in;
-}
 .lp-screenshot-bar { background: #f0f0f0; padding: 10px 16px; display: flex; gap: 6px; }
 .lp-screenshot-bar span { width: 10px; height: 10px; border-radius: 999px; background: #d8d8d8; display: block; }
 .lp-screenshot-img { width: 100%; height: auto; display: block; }
-
-.lp-lightbox {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px;
-  z-index: 1000;
-  cursor: zoom-out;
-}
-.lp-lightbox-img {
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: 8px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-}
 
 .lp-faq {
   display: flex;
