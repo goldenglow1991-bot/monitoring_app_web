@@ -1069,6 +1069,7 @@
 
 @media (max-width: 720px) {
   .lp-section { padding: 64px 20px; }
+  .lp-hero { padding-top: 24px; }
   .lp-hero-title { font-size: 32px; }
   .lp-hero-inner { flex-direction: column; text-align: center; gap: 32px; }
   .lp-hero-photo img { transform: scaleX(-1); }
