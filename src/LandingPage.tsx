@@ -107,6 +107,8 @@ export function LandingPage({
           <img src="/images/lp/screenshot.png" alt="Assistの実際の操作画面(サンプル利用者の入力例)" className="lp-screenshot-img" />
         </button>
         <p className="lp-lead" style={{ marginTop: 32, fontWeight: 700 }}>
+          プルダウンから所見を選んだり、自由記入欄に簡単な文を書くだけでOK。
+          <br />
           画面右上の「モード選択」から、入力項目や生成する文章の口調を事業所に合わせて自由にカスタマイズできます。
         </p>
       </div>
