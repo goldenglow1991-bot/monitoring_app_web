@@ -31,9 +31,11 @@ export function LandingPage({
       </div>
 
       <div className="lp-section lp-hero">
+        <div className="lp-wrap">
+          <div className="lp-eyebrow lp-hero-eyebrow">介護現場向け<br />かんたんモニタリング作成AI</div>
+        </div>
         <div className="lp-wrap lp-hero-inner">
           <div className="lp-hero-text">
-            <div className="lp-eyebrow lp-hero-eyebrow">介護現場向け<br />かんたんモニタリング作成AI</div>
             <h1 className="lp-hero-title">
               モニタリング作成に、<br />もう時間をかけない。
             </h1>
