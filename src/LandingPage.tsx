@@ -31,11 +31,9 @@ export function LandingPage({
       </div>
 
       <div className="lp-section lp-hero">
-        <div className="lp-wrap">
-          <div className="lp-eyebrow lp-hero-eyebrow">介護現場向け<br />かんたんモニタリング作成AI</div>
-        </div>
         <div className="lp-wrap lp-hero-inner">
           <div className="lp-hero-text">
+            <div className="lp-eyebrow lp-hero-eyebrow">介護現場向け<br />かんたんモニタリング作成AI</div>
             <h1 className="lp-hero-title">
               モニタリング作成に、<br />もう時間をかけない。
             </h1>
@@ -244,11 +242,11 @@ export function LandingPage({
           <div className="lp-eyebrow">料金プラン</div>
           <h2>まずは10回、無料でお試しを</h2>
           <p className="lp-lead">
-            {freeGenerationLimit}回目までは無料でご利用いただけます。
+            <strong>{freeGenerationLimit}回目までは無料でご利用いただけます。</strong>
             <br />
             それ以降は、登録人数に応じたプランへのお申し込みが必要です。
             <br />
-            年払いなら、月払いの{Math.round(annualDiscountRate * 100)}%オフでご利用いただけます。
+            <strong>年払いなら、月払いの{Math.round(annualDiscountRate * 100)}%オフでご利用いただけます。</strong>
           </p>
         </div>
         <div className="lp-wrap lp-pricing-grid">
