@@ -40,11 +40,11 @@ export function LandingPage({
               モニタリング作成に、<br />もう時間をかけない。
             </h1>
             <p className="lp-hero-lead">
-              選んだ所見から、AIが自然な文章を数秒で作成。
+              AIが自然な文章を数秒で作成。
               <br />
-              簡単な操作で、書類仕事の負担を減らし、本来のケアに向き合う時間を取り戻します。
+              スマホからでも、すきま時間にサッと入力。
               <br />
-              スマホからでも、すきま時間にサッと入力できます。
+              簡単操作で、負担を減らし、利用者に向き合う時間を取り戻す。
             </p>
             <div className="lp-hero-actions">
               <button type="button" className="btn btn-filled" onClick={onGetStarted}>無料で試してみる</button>
@@ -63,11 +63,11 @@ export function LandingPage({
           <div className="lp-eyebrow">こんなお悩みはありませんか</div>
           <h2>「今月の記録、まだ書けていない…」</h2>
           <p className="lp-lead">
-            シフトを終えたあとにまとめて書く記録作成。
+            シフトを終えたあとの記録作成。
             <br />
-            毎月の言葉選びの負担、書き忘れへの不安。
+            ゼロからの文章作りは負担が大きく、なかなか進まない。
             <br />
-            介護の現場では、ケアそのものより記録の時間に追われてしまうことが少なくありません。
+            介護の現場では、ケアそのものより記録の時間に追われてしまうことが少なくありませんよね。
           </p>
           <div className="lp-before-after">
             <div className="lp-before-after-item">
@@ -244,7 +244,7 @@ export function LandingPage({
           <div className="lp-eyebrow">料金プラン</div>
           <h2>まずは10回、無料でお試しを</h2>
           <p className="lp-lead">
-            <strong>{freeGenerationLimit}回目までは無料でご利用いただけます。</strong>
+            {freeGenerationLimit}回目までは無料でご利用いただけます。
             <br />
             それ以降は、登録人数に応じたプランへのお申し込みが必要です。
             <br />
