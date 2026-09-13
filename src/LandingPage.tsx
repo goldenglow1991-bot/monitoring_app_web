@@ -9,7 +9,7 @@ export function LandingPage({
   onGetStarted: () => void;
   onLogin: () => void;
 }) {
-  const [screenshotOpen, setScreenshotOpen] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   return (
     <div className="lp">
@@ -96,7 +96,7 @@ export function LandingPage({
         <button
           type="button"
           className="lp-screenshot-mock lp-screenshot-trigger"
-          onClick={() => setScreenshotOpen(true)}
+          onClick={() => setLightboxSrc('/images/lp/screenshot.png')}
           aria-label="スクリーンショットを拡大表示"
         >
           <div className="lp-screenshot-bar">
@@ -109,9 +109,9 @@ export function LandingPage({
         </p>
       </div>
 
-      {screenshotOpen && (
-        <div className="lp-lightbox" onClick={() => setScreenshotOpen(false)}>
-          <img src="/images/lp/screenshot.png" alt="Assistの実際の操作画面(拡大)" className="lp-lightbox-img" />
+      {lightboxSrc && (
+        <div className="lp-lightbox" onClick={() => setLightboxSrc(null)}>
+          <img src={lightboxSrc} alt="拡大表示" className="lp-lightbox-img" />
         </div>
       )}
 
@@ -128,6 +128,14 @@ export function LandingPage({
             </div>
             <div className="lp-step-title">所見をタップして選ぶ</div>
             <div className="lp-step-desc">いつもの所見をプルダウンで選ぶだけ</div>
+            <button
+              type="button"
+              className="lp-step-photo-trigger"
+              onClick={() => setLightboxSrc('/images/lp/step1.png')}
+              aria-label="STEP1の画面を拡大表示"
+            >
+              <img src="/images/lp/step1.png" alt="所見のプルダウンを選ぶ画面" className="lp-step-photo" />
+            </button>
           </div>
           <div className="lp-step">
             <div className="lp-step-label">STEP 2</div>
@@ -136,6 +144,14 @@ export function LandingPage({
             </div>
             <div className="lp-step-title">AIが下書きを作成</div>
             <div className="lp-step-desc">自然な文章が数秒で出来上がる</div>
+            <button
+              type="button"
+              className="lp-step-photo-trigger"
+              onClick={() => setLightboxSrc('/images/lp/step2.png')}
+              aria-label="STEP2の画面を拡大表示"
+            >
+              <img src="/images/lp/step2.png" alt="AIが文章を生成中の画面" className="lp-step-photo" />
+            </button>
           </div>
           <div className="lp-step">
             <div className="lp-step-label">STEP 3</div>
@@ -144,6 +160,14 @@ export function LandingPage({
             </div>
             <div className="lp-step-title">確認して保存</div>
             <div className="lp-step-desc">内容を確かめて整えるだけで完了</div>
+            <button
+              type="button"
+              className="lp-step-photo-trigger"
+              onClick={() => setLightboxSrc('/images/lp/step3.png')}
+              aria-label="STEP3の画面を拡大表示"
+            >
+              <img src="/images/lp/step3.png" alt="生成結果を確認する画面" className="lp-step-photo" />
+            </button>
           </div>
         </div>
       </div>
