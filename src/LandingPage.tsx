@@ -33,7 +33,7 @@ export function LandingPage({
       <div className="lp-section lp-hero">
         <div className="lp-wrap lp-hero-inner">
           <div className="lp-hero-text">
-            <div className="lp-eyebrow">介護現場向け<br />かんたんモニタリング作成AI</div>
+            <div className="lp-eyebrow lp-hero-eyebrow">介護現場向け<br />かんたんモニタリング作成AI</div>
             <h1 className="lp-hero-title">
               モニタリング作成に、<br />もう時間をかけない。
             </h1>
@@ -104,7 +104,7 @@ export function LandingPage({
           </div>
           <img src="/images/lp/screenshot.png" alt="Assistの実際の操作画面(サンプル利用者の入力例)" className="lp-screenshot-img" />
         </button>
-        <p className="lp-lead" style={{ marginTop: 32 }}>
+        <p className="lp-lead" style={{ marginTop: 32, fontWeight: 700 }}>
           画面右上の「モード選択」から、入力項目や生成する文章の口調を事業所に合わせて自由にカスタマイズできます。
         </p>
       </div>
