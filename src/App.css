@@ -1071,6 +1071,7 @@
   .lp-section { padding: 64px 20px; }
   .lp-hero-title { font-size: 32px; }
   .lp-hero-inner { flex-direction: column; text-align: center; gap: 32px; }
+  .lp-hero-photo img { transform: scaleX(-1); }
   .lp-hero-actions { justify-content: center; }
   .lp-hero-lead { margin: 0 auto 40px auto; }
   .lp-steps { flex-direction: column; gap: 40px; }
