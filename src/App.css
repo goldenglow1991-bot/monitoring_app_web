@@ -906,7 +906,7 @@
 .lp h2 { font-size: 33px; line-height: 1.5; margin: 12px 0 20px 0; }
 .lp-lead { color: var(--text-muted); font-size: 19px; max-width: 640px; margin: 0 auto; }
 
-.lp-hero { text-align: center; padding-top: 72px; padding-bottom: 72px; }
+.lp-hero { text-align: center; padding-top: 40px; padding-bottom: 72px; }
 .lp-hero-inner { display: flex; align-items: center; gap: 48px; text-align: left; }
 .lp-hero-text { flex: 1 1 50%; min-width: 0; }
 .lp-hero-eyebrow { font-size: 24px; text-align: center; margin-bottom: 8px; }
@@ -1038,7 +1038,7 @@
 }
 .lp-pricing-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
 .lp-pricing-card {
-  background: #fff;
+  background: var(--teal-light);
   border: 1px solid var(--border-light);
   border-radius: 12px;
   padding: 24px 12px;
