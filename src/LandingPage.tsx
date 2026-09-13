@@ -44,7 +44,7 @@ export function LandingPage({
               <br />
               スマホからでも、すきま時間にサッと入力。
               <br />
-              簡単操作で、負担を減らし、利用者に向き合う時間を取り戻す。
+              簡単操作で、負担を減らし、利用者に向き合う時間を取り戻しませんか。
             </p>
             <div className="lp-hero-actions">
               <button type="button" className="btn btn-filled" onClick={onGetStarted}>無料で試してみる</button>
@@ -80,7 +80,7 @@ export function LandingPage({
               <div className="lp-photo-caption">Assistでスムーズに完了</div>
             </div>
           </div>
-          <p className="lp-empathy-bridge">その負担を、Assistが一緒に軽くします。</p>
+          <p className="lp-empathy-bridge">その負担、Assistが一緒に軽くします。</p>
           <div className="lp-testimonial">
             <p className="lp-testimonial-quote">「1人あたり15〜20分かかっていた記録が、5分もかからずにできるようになりました。」</p>
             <p className="lp-testimonial-quote">「所見を見ながらの記入なので、利用者さんの様子も思い出しやすいです。」</p>
