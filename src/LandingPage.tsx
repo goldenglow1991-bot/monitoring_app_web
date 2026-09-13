@@ -19,6 +19,7 @@ export function LandingPage({
           className="lp-logo"
           onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
         >
+          <img src="/favicon.png" alt="" className="lp-logo-icon" />
           <div className="lp-logo-brand">
             <div className="lp-logo-yomi">アシスト</div>
             <div className="lp-logo-main">Assist</div>
