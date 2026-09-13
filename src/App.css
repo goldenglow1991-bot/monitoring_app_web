@@ -910,6 +910,7 @@
 .lp-hero-inner { display: flex; align-items: center; gap: 48px; text-align: left; }
 .lp-hero-text { flex: 1 1 50%; min-width: 0; }
 .lp-hero-photo { flex: 1 1 44%; min-width: 0; }
+.lp-hero-photo img { transform: scaleX(-1) scale(1.2); }
 .lp-hero-title { font-size: 34px; line-height: 1.5; margin: 20px 0; font-weight: 700; }
 .lp-hero-lead {
   font-size: 18px;
