@@ -148,7 +148,7 @@ export function LandingPage({
         </div>
       </div>
 
-      <div className="lp-section">
+      <div className="lp-section lp-panel">
         <div className="lp-wrap lp-center" style={{ marginBottom: 64 }}>
           <div className="lp-eyebrow">Assistでできること</div>
           <h2>記録の負担を、そのぶんケアの時間に</h2>
