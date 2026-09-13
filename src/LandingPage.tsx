@@ -206,6 +206,34 @@ export function LandingPage({
         </div>
       </div>
 
+      <div className="lp-section lp-panel" id="pricing">
+        <div className="lp-wrap lp-center" style={{ marginBottom: 40 }}>
+          <div className="lp-eyebrow">料金プラン</div>
+          <h2>まずは10回、無料でお試しを</h2>
+          <p className="lp-lead">
+            {freeGenerationLimit}回目までは無料でご利用いただけます。
+            <br />
+            それ以降は、登録人数に応じたプランへのお申し込みが必要です。
+            <br />
+            <strong>年払いなら、月払いの{Math.round(annualDiscountRate * 100)}%オフでご利用いただけます。</strong>
+          </p>
+        </div>
+        <div className="lp-wrap lp-pricing-grid">
+          {planTiers.map((tier) => (
+            <div className="lp-pricing-card" key={tier.key}>
+              <div className="lp-pricing-tier">{tier.label}</div>
+              <div className="lp-pricing-price">
+                {tier.priceYen.toLocaleString()}<span>円/月</span>
+              </div>
+              <div className="lp-pricing-annual">年払い {annualPriceFor(tier).toLocaleString()}円/年</div>
+            </div>
+          ))}
+        </div>
+        <div className="lp-center" style={{ marginTop: 40 }}>
+          <button type="button" className="btn btn-filled" onClick={onGetStarted}>無料で試してみる</button>
+        </div>
+      </div>
+
       <div className="lp-section">
         <div className="lp-wrap lp-center" style={{ marginBottom: 56 }}>
           <div className="lp-eyebrow">安心してお使いいただけます</div>
@@ -239,31 +267,6 @@ export function LandingPage({
               <p>お支払い情報は決済代行会社(Stripe)が管理し、カード番号等が当方のサーバーに保存されることはありません。</p>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="lp-section lp-panel" id="pricing">
-        <div className="lp-wrap lp-center" style={{ marginBottom: 40 }}>
-          <div className="lp-eyebrow">料金プラン</div>
-          <h2>まずは10回、無料でお試しを</h2>
-          <p className="lp-lead">
-            {freeGenerationLimit}回目までは無料でご利用いただけます。
-            <br />
-            それ以降は、登録人数に応じたプランへのお申し込みが必要です。
-            <br />
-            <strong>年払いなら、月払いの{Math.round(annualDiscountRate * 100)}%オフでご利用いただけます。</strong>
-          </p>
-        </div>
-        <div className="lp-wrap lp-pricing-grid">
-          {planTiers.map((tier) => (
-            <div className="lp-pricing-card" key={tier.key}>
-              <div className="lp-pricing-tier">{tier.label}</div>
-              <div className="lp-pricing-price">
-                {tier.priceYen.toLocaleString()}<span>円/月</span>
-              </div>
-              <div className="lp-pricing-annual">年払い {annualPriceFor(tier).toLocaleString()}円/年</div>
-            </div>
-          ))}
         </div>
       </div>
 
