@@ -206,7 +206,7 @@ export function LandingPage({
         </div>
       </div>
 
-      <div className="lp-section lp-panel" id="pricing">
+      <div className="lp-section" id="pricing">
         <div className="lp-wrap lp-center" style={{ marginBottom: 40 }}>
           <div className="lp-eyebrow">料金プラン</div>
           <h2>まずは10回、無料でお試しを</h2>
@@ -234,7 +234,7 @@ export function LandingPage({
         </div>
       </div>
 
-      <div className="lp-section">
+      <div className="lp-section lp-panel">
         <div className="lp-wrap lp-center" style={{ marginBottom: 56 }}>
           <div className="lp-eyebrow">安心してお使いいただけます</div>
           <h2>大切な記録を、安全に</h2>
