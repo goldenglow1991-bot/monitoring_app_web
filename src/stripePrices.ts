@@ -15,12 +15,13 @@ export interface PlanTier {
   annualStripePriceId: string | null;
 }
 
+// stripe-test-modeブランチ: Stripeテストモード用のPrice IDに差し替え中。mainにはマージしないこと。
 export const planTiers: PlanTier[] = [
-  { key: 'tier1', label: '〜20人', maxResidents: 20, priceYen: 980, stripePriceId: 'price_1UCeaFJTYmeJezLxSuX4r9p8', annualStripePriceId: 'price_1UCee0JTYmeJezLx6XTxMheG' },
-  { key: 'tier2', label: '〜40人', maxResidents: 40, priceYen: 1980, stripePriceId: 'price_1UCeb3JTYmeJezLx1trya7Ul', annualStripePriceId: 'price_1UCeeRJTYmeJezLxYIsAQ0OP' },
-  { key: 'tier3', label: '〜70人', maxResidents: 70, priceYen: 2980, stripePriceId: 'price_1UCebnJTYmeJezLx1g3HtzYU', annualStripePriceId: 'price_1UCeesJTYmeJezLxjtXUSsea' },
-  { key: 'tier4', label: '〜110人', maxResidents: 110, priceYen: 3980, stripePriceId: 'price_1UCec6JTYmeJezLxm2TJDPNT', annualStripePriceId: 'price_1UCefGJTYmeJezLxZnqrIdI0' },
-  { key: 'tier5', label: '〜150人', maxResidents: 150, priceYen: 4980, stripePriceId: 'price_1UCecOJTYmeJezLxMxxIaq8J', annualStripePriceId: 'price_1UCefoJTYmeJezLxnDJCHiZz' },
+  { key: 'tier1', label: '〜20人', maxResidents: 20, priceYen: 980, stripePriceId: 'price_1UFXz0JTYmeJezLx4gI9cD3g', annualStripePriceId: 'price_1UFY0IJTYmeJezLxEhF7cWJk' },
+  { key: 'tier2', label: '〜40人', maxResidents: 40, priceYen: 1980, stripePriceId: 'price_1UFXzGJTYmeJezLxSl4vYNet', annualStripePriceId: 'price_1UFY0kJTYmeJezLxTXyQ44Tq' },
+  { key: 'tier3', label: '〜70人', maxResidents: 70, priceYen: 2980, stripePriceId: 'price_1UFXzbJTYmeJezLx594JIVtD', annualStripePriceId: 'price_1UFY26JTYmeJezLxkDEgIiqR' },
+  { key: 'tier4', label: '〜110人', maxResidents: 110, priceYen: 3980, stripePriceId: 'price_1UFXzoJTYmeJezLxTvSwLZos', annualStripePriceId: 'price_1UFY2VJTYmeJezLxiEuiiU8O' },
+  { key: 'tier5', label: '〜150人', maxResidents: 150, priceYen: 4980, stripePriceId: 'price_1UFY02JTYmeJezLxxXsZR6Zv', annualStripePriceId: 'price_1UFY2sJTYmeJezLxBuMY9Wh2' },
 ];
 
 // LP等の案内文言に使う、対外的に約束する無料回数。この値自体は変更しない。
