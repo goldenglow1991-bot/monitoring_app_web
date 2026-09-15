@@ -143,7 +143,7 @@ function PricingDialogView({
               onClick={() => selectPlan(tier.key)}
             >
               {isCurrent ? (
-                <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, width: '100%' }}>
                   <span>
                     {tier.label}: {annual
                       ? `${annualPriceFor(tier).toLocaleString()}円/年`
