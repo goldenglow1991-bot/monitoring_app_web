@@ -88,7 +88,7 @@ function PricingDialogView({
 
   const eligible = planTiers.filter((t) => t.maxResidents >= currentResidentCount);
   const currentTierLabel = currentPlanKey
-    ? planTiers.find((t) => t.key === currentPlanKey)?.label ?? currentPlanKey
+    ? `${planTiers.find((t) => t.key === currentPlanKey)?.label ?? currentPlanKey}プラン(${(currentInterval ?? 'month') === 'year' ? '年額' : '月額'})`
     : '無料お試し中';
 
   async function selectPlan(planKey: string) {
