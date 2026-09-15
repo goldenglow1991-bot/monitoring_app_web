@@ -62,7 +62,7 @@ function PricingDialogView({
   close,
 }: {
   currentResidentCount: number;
-  reason: string;
+  reason: ReactNode;
   currentPlanKey?: string;
   currentInterval?: string;
   annual?: boolean;
@@ -275,7 +275,7 @@ export function showPlanChangeDialog(params: {
   currentResidentCount: number;
   currentPlanKey?: string;
   currentInterval?: string;
-  reason?: string;
+  reason?: ReactNode;
   unlimited?: boolean;
   onOpenGeneralPortal: () => Promise<string>;
   onSelectPlan: (planKey: string, interval: 'month' | 'year') => Promise<string>;
@@ -285,7 +285,11 @@ export function showPlanChangeDialog(params: {
       currentResidentCount={params.currentResidentCount}
       currentPlanKey={params.currentPlanKey}
       currentInterval={params.currentInterval}
-      reason={params.reason ?? 'ご利用中のプランを変更できます。現在の登録人数を下回るプランは選択できません。'}
+      reason={params.reason ?? (
+        <>
+          ご利用中のプランを変更できます。<strong>現在の登録人数を下回るプランは選択できません。</strong>
+        </>
+      )}
       unlimited={params.unlimited}
       selectPlan={params.onSelectPlan}
       footerExtra={
