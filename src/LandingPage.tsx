@@ -27,7 +27,7 @@ export function LandingPage({
         </a>
         <div className="lp-header-actions">
           <button type="button" className="btn btn-text" onClick={onLogin}>ログイン</button>
-          <button type="button" className="btn btn-filled" onClick={onGetStarted}>無料で<br className="lp-header-cta-break" />試してみる</button>
+          <button type="button" className="btn btn-filled" onClick={onGetStarted}>無料で試してみる</button>
         </div>
       </div>
 
