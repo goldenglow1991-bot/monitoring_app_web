@@ -1079,8 +1079,8 @@
   .lp-hero-lead { margin: 0 auto 40px auto; }
   .lp-steps { flex-direction: column; gap: 40px; }
   .lp-pricing-grid { grid-template-columns: repeat(2, 1fr); }
-  .lp-header { padding: 8px 20px; }
-  .lp-header-actions { flex-direction: column; align-items: flex-end; gap: 0px; }
+  .lp-header { padding: 2px 20px; }
+  .lp-header-actions { flex-direction: column; align-items: flex-end; gap: 2px; }
   .lp-before-after { flex-direction: column; gap: 16px; }
   .lp-before-after-arrow { transform: rotate(90deg); }
   .lp-emotion-photo-row { flex-direction: column; gap: 20px; }
