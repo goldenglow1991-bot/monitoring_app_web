@@ -1081,6 +1081,8 @@
   .lp-pricing-grid { grid-template-columns: repeat(2, 1fr); }
   .lp-header { padding: 8px 20px; }
   .lp-header-actions { flex-direction: column; align-items: flex-end; gap: 2px; }
+  .lp-header-actions .btn-filled { order: 1; }
+  .lp-header-actions .btn-text { order: 2; }
   .lp-before-after { flex-direction: column; gap: 16px; }
   .lp-before-after-arrow { transform: rotate(90deg); }
   .lp-emotion-photo-row { flex-direction: column; gap: 20px; }
