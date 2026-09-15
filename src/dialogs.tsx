@@ -119,7 +119,7 @@ function PricingDialogView({
     <ModalShell width={480} onBackdropClick={() => close()}>
       <h2 className="modal-title">
         {annual ? '年間プランを選択(15%オフ)' : 'プランを選択'}
-        <span style={{ fontWeight: 700, fontSize: 14, marginLeft: 8, color: 'var(--teal-dark)' }}>
+        <span style={{ fontWeight: 700, fontSize: 14, marginLeft: 8, color: 'var(--accent-orange)' }}>
           現在: {currentTierLabel}
         </span>
       </h2>
