@@ -33,7 +33,7 @@ export function LandingPage({
 
       <div className="lp-section lp-hero">
         <div className="lp-wrap">
-          <div className="lp-eyebrow lp-hero-eyebrow">介護現場向け<br />かんたんモニタリング作成AIツール</div>
+          <div className="lp-eyebrow lp-hero-eyebrow">介護現場向け<br />かんたんモニタリング作成AIアプリ</div>
         </div>
         <div className="lp-wrap lp-hero-inner">
           <div className="lp-hero-text">

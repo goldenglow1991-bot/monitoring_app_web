@@ -13,7 +13,7 @@ import {
 } from './items';
 import { compileNotes, pastRecordsText, buildUserPrompt } from './reportBuilder';
 import { generateDraft, AnthropicError, QuotaExceededError, ResidentLimitExceededError, MonthlyLimitExceededError } from './anthropicClient';
-import { planTiers, totalFreeGenerations } from './stripePrices';
+import { planTiers, freeGenerationLimit } from './stripePrices';
 import { currentYearMonth, previousYearMonth, furiganaSortKey, sortUsers } from './utils';
 import {
   showWarning,
@@ -1154,7 +1154,7 @@ export function HomePage({
                 <>
                   <span className="usage-status-line">無料枠</span>
                   <span className="usage-status-line">
-                    残り{Math.max(0, totalFreeGenerations - ((config.free_generations_used as number | undefined) ?? 0))}回
+                    残り{Math.max(0, freeGenerationLimit - ((config.free_generations_used as number | undefined) ?? 0))}回
                   </span>
                 </>
               )}
@@ -1230,7 +1230,7 @@ export function HomePage({
     return (
       <div className="right-panel">
         <div className="right-panel-header">
-          <span className="right-panel-user-name">利用者: {selectedUser.name}</span>
+          <span className="right-panel-user-name">{mobile ? '' : '利用者: '}{selectedUser.name}</span>
           <button className="btn btn-outlined btn-pill" onClick={openHistoryDialog}>過去の記録</button>
           {!phoneLike && (
             <button className="btn btn-outlined btn-pill" onClick={openAddPastRecordDialog}>過去の記録の追加・編集</button>

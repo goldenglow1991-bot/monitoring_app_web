@@ -25,13 +25,9 @@ export const planTiers: PlanTier[] = [
 ];
 
 // LP等の案内文言に使う、対外的に約束する無料回数。この値自体は変更しない。
+// 初回ログイン時に自動作成するサンプル利用者の「お試し生成」も、この回数のうち
+// 1回として通常通り消費される。
 export const freeGenerationLimit = 10;
-
-// 初回ログイン時に自動作成するサンプル利用者の「お試し生成」1回分を、
-// 案内している10回とは別枠にするためのボーナス。実際の上限チェック・
-// 残り回数表示にはfreeGenerationLimit + freeGenerationBonus(=11)を使う。
-export const freeGenerationBonus = 1;
-export const totalFreeGenerations = freeGenerationLimit + freeGenerationBonus;
 
 // 年間プランの割引率(15%オフ)。
 export const annualDiscountRate = 0.15;
