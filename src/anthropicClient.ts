@@ -29,8 +29,8 @@ export async function generateDraft(params: {
         facilityTypeKey: params.facilityTypeKey,
       }),
     });
-  } catch (e) {
-    throw new AnthropicError(`通信に失敗しました: ${e}`);
+  } catch {
+    throw new AnthropicError('通信に失敗しました。インターネット接続をご確認のうえ、もう一度お試しください。');
   }
 
   if (!resp.ok) {
