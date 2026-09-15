@@ -1,7 +1,7 @@
 import { supabase } from './supabaseClient';
 import type { DeletedUser, ItemValue, MonthlyRecord, User } from './types';
 import { newMonthlyRecord } from './types';
-import { facilityTypePresets, canonicalItemOrder, demoItemValues, demoItemFreeValues } from './items';
+import { facilityTypePresets, canonicalItemOrder, defaultEnabledItemKeys, demoItemValues, demoItemFreeValues } from './items';
 import { currentYearMonth } from './utils';
 
 // Supabase(residents / monthly_records / facility_config テーブル)を
@@ -118,13 +118,14 @@ export async function getAccessToken(): Promise<string> {
 
 // サインアップ時に入力した施設種別(ユーザーメタデータ)を、facility_configが
 // まだ一度も作られていない(=初回ログイン)場合にだけ適用する。2回目以降の
-// ログインや、アプリ内で既に設定済みの場合は何もしない。
+// ログインや、アプリ内で既に設定済みの場合は何もしない。施設種別が未選択
+// (または不明な値)の場合も、標準の項目セットでサンプル利用者を作成する
+// (初回ログインの体験自体は施設種別の選択有無に関わらず提供したいため)。
 // 戻り値: 今回が初回ログインで、サンプル利用者を新規作成した場合はtrue。
 export async function applyInitialFacilityTypeFromSignup(): Promise<boolean> {
   const { data: userData, error: userErr } = await supabase.auth.getUser();
   if (userErr) throw userErr;
   const presetKey = userData.user?.user_metadata?.facility_type as string | undefined;
-  if (!presetKey) return false;
   const uid = userData.user!.id;
 
   const { data: existing, error: existingErr } = await supabase
@@ -135,15 +136,15 @@ export async function applyInitialFacilityTypeFromSignup(): Promise<boolean> {
   if (existingErr) throw existingErr;
   if (existing) return false;
 
-  const preset = facilityTypePresets.find((p) => p.key === presetKey);
-  if (!preset) return false;
+  const preset = presetKey ? facilityTypePresets.find((p) => p.key === presetKey) : undefined;
+  const itemKeys = preset ? preset.itemKeys : defaultEnabledItemKeys;
 
   const { error } = await supabase
     .from('facility_config')
-    .insert({ user_id: uid, enabled_items: canonicalItemOrder(preset.itemKeys) });
+    .insert({ user_id: uid, enabled_items: canonicalItemOrder(itemKeys) });
   if (error) throw error;
 
-  await createSampleResident(uid, preset.itemKeys);
+  await createSampleResident(uid, itemKeys);
   return true;
 }
 
