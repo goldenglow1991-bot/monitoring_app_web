@@ -121,14 +121,6 @@
   font-weight: 700;
   padding: 4px 12px;
 }
-.start-logo {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-}
 .start-page-inner {
   text-align: center;
 }
@@ -1134,7 +1126,6 @@
   .start-page-top .start-yomi { font-size: 14px; }
   .start-button { padding: 14px 22px; font-size: 16px; margin-top: 18px; }
   .start-back-btn { font-size: 26px; top: 12px; left: 12px; }
-  .start-logo { top: 12px; left: 12px; width: 36px; height: 36px; }
   .start-menu-btn, .start-announce-btn { width: 40px; height: 40px; font-size: 17px; }
   .start-menu { top: 12px; right: 12px; }
   .start-announce-btn { top: 12px; right: 60px; }

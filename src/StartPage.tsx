@@ -37,7 +37,6 @@ export function StartPage({ onStart }: { onStart: () => void }) {
 
   return (
     <div className="start-page start-page-home start-page-top">
-      <img src="/favicon.png" alt="" className="start-logo" />
       <button
         type="button"
         className="start-announce-btn"
