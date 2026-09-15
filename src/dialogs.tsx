@@ -469,7 +469,7 @@ function AccountDialogView({ close }: { close: (value: void) => void }) {
           ? 'このアカウントは無制限でご利用いただけます'
           : isSubscribed
           ? `ご利用中のプラン: ${planTiers.find((t) => t.key === config.subscription_plan)?.label ?? config.subscription_plan}`
-          : `無料枠 残り${Math.max(0, totalFreeGenerations - ((config.free_generations_used as number | undefined) ?? 0))}回`}
+          : `無料枠 残り${Math.max(0, Math.min(freeGenerationLimit, totalFreeGenerations - ((config.free_generations_used as number | undefined) ?? 0)))}回`}
       </p>
       {isSubscribed && !config.unlimited_access && monthlyUsageCount != null && (
         <p className="modal-body">
