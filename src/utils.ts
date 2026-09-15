@@ -36,8 +36,16 @@ const ALLOWED_ORIGINS = [
   'https://monitoring-app-web-sigma.vercel.app',
 ];
 
+// stripe-test-modeブランチのみ: デプロイのたびに変わるVercel Preview URLからも
+// 決済テストができるよう、このプロジェクトのPreview用ドメインパターンも許可する。
+// mainにはマージしないこと。
+const PREVIEW_ORIGIN_PATTERN = /^https:\/\/monitoring-app-[a-z0-9]+-golden-glow\.vercel\.app$/;
+
 export function resolveAllowedOrigin(origin: string | undefined): string {
-  return origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  if (origin && (ALLOWED_ORIGINS.includes(origin) || PREVIEW_ORIGIN_PATTERN.test(origin))) {
+    return origin;
+  }
+  return ALLOWED_ORIGINS[0];
 }
 
 export function currentYearMonth(): string {
